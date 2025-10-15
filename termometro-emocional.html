@@ -1,0 +1,65 @@
+<div class="page-section" id="page-termometro-emocional">
+    <div class="container">
+        <header>
+            <h1>Termômetro Emocional Científico</h1>
+        </header>
+        <main>
+            <section class="content-section">
+                <p class="text-center" style="color: var(--text-color-muted); margin-bottom: 2rem;">
+                    Modelo dimensional baseado em Izard (DES, 1997) e Russell (Circumplex Model, 1980).
+                    <button id="toggle-theory-btn" class="standard-button small-button" style="margin-left: 10px;">
+                        <i class="fas fa-book-open"></i> <span id="toggle-theory-text">Ver Fundamentação</span>
+                    </button>
+                </p>
+                <div id="theory-section" style="display: none;">
+                    <h3 class="section-title">Fundamentação Científica</h3>
+                    <p>Este sistema integra duas dimensões neuropsicológicas fundamentais: <strong>valência</strong> (prazer-desprazer) e <strong>arousal</strong> (ativação-desativação), mapeando estados afetivos no espaço bidimensional do modelo circunplexo.</p>
+                    <p>A Escala de Emoções Diferenciais (DES) de Izard identifica emoções discretas fundamentais, enquanto cada gradação representa níveis crescentes de ativação fisiológica (arousal) mantendo valência relativamente constante.</p>
+                    <p><strong>Correlatos neurais:</strong> Cada emoção possui substratos neuroanatômicos específicos envolvendo amígdala, ínsula, córtex cingulado, córtex pré-frontal e sistemas de neurotransmissores (dopamina, serotonina, noradrenalina, cortisol, GABA).</p>
+                </div>
+            </section>
+            
+            <section class="content-section">
+                 <h2 class="section-title">Emoção Base</h2>
+                <div id="emotion-selector" class="emotion-selector">
+                    <!-- Emotion buttons will be rendered here by JS -->
+                </div>
+            </section>
+
+            <section class="content-section">
+                <div id="thermometer-header" class="thermometer-header">
+                    <!-- Header for the selected emotion will be rendered here -->
+                </div>
+
+                <div id="thermometer-neural-info" class="thermometer-neural-info">
+                    <!-- Neural correlates info will be rendered here -->
+                </div>
+
+                <div class="thermometer-bar-container">
+                    <div id="thermometer-gradient-bar" class="thermometer-gradient-bar"></div>
+                    <div id="thermometer-markers" class="thermometer-markers">
+                        <!-- Level markers will be rendered here by JS -->
+                    </div>
+                </div>
+
+                <div id="thermometer-info-display">
+                    <!-- Info for hovered/selected level will be rendered here -->
+                </div>
+            </section>
+
+             <section class="content-section">
+                <h3 class="section-title"><i class="fas fa-book"></i> Referências Científicas</h3>
+                <ul class="references-list">
+                    <li><strong>Izard, C. E. (1991).</strong> The Psychology of Emotions. New York: Plenum Press.</li>
+                    <li><strong>Russell, J. A. (1980).</strong> A circumplex model of affect. Journal of Personality and Social Psychology, 39(6), 1161-1178.</li>
+                    <li><strong>Ekman, P. (1992).</strong> An argument for basic emotions. Cognition & Emotion, 6(3-4), 169-200.</li>
+                    <li><strong>Panksepp, J. (1998).</strong> Affective Neuroscience: The Foundations of Human and Animal Emotions. Oxford University Press.</li>
+                </ul>
+            </section>
+
+        </main>
+         <div class="back-button-wrapper">
+            <button class="standard-button back-button" data-page="mental"><i class="fas fa-arrow-left"></i> Voltar para Saúde Mental</button>
+        </div>
+    </div>
+</div>
