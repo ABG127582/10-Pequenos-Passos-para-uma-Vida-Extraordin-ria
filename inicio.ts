@@ -89,51 +89,6 @@ export function show(): void {
             return;
         }
     });
-
-    // --- New Reflection Form Logic ---
-    const reflectionForm = page.querySelector<HTMLFormElement>('#home-reflection-form');
-    if (reflectionForm) {
-        reflectionForm.addEventListener('submit', (e) => {
-            e.preventDefault();
-            const textareas = reflectionForm.querySelectorAll<HTMLTextAreaElement>('.reflection-input');
-            let savedCount = 0;
-            const allReflections = storageService.get<any[]>(STORAGE_KEYS.UNIFIED_REFLECTIONS) || [];
-
-            textareas.forEach(textarea => {
-                const text = textarea.value.trim();
-                if (text) {
-                    const now = new Date();
-                    allReflections.push({
-                        id: `${now.getTime()}-${Math.random()}`,
-                        category: 'Pessoal',
-                        title: textarea.dataset.title || 'Reflexão Diária',
-                        text: text,
-                        date: now.toISOString().split('T')[0],
-                        timestamp: now.getTime()
-                    });
-                    textarea.value = '';
-                    textarea.dispatchEvent(new Event('input')); // Recalculate height
-                    savedCount++;
-                }
-            });
-            
-            if (savedCount > 0) {
-                storageService.set(STORAGE_KEYS.UNIFIED_REFLECTIONS, allReflections);
-                window.showToast(`${savedCount} reflexão(ões) salva(s)!`, 'success');
-            } else {
-                 window.showToast('Nenhuma reflexão preenchida para salvar.', 'info');
-            }
-        });
-        
-        reflectionForm.querySelectorAll<HTMLTextAreaElement>('textarea.reflection-input').forEach(textarea => {
-            const adjustHeight = () => {
-                textarea.style.height = 'auto';
-                textarea.style.height = `${textarea.scrollHeight}px`;
-            };
-            textarea.addEventListener('input', adjustHeight);
-            adjustHeight(); // Set initial height correctly
-        });
-    }
 }
 
 function updateMedals(page: HTMLElement) {
