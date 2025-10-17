@@ -106,62 +106,26 @@
             
             <!-- Card 2: DO -->
             <section class="content-section">
-                <h2 class="section-title">Do</h2>
+                <h2 class="section-title">Executar (Do)</h2>
                 <div id="do-financeira" class="form-section">
                      <p>Estas são suas tarefas de <strong>Saúde Financeira</strong> para hoje. Elas estão sincronizadas com seu Planejamento Diário.</p>
                     <ul id="financeira-tasks-list" class="lista-planejamento"></ul>
                     <div id="add-task-container" style="margin-top: 20px;">
-                         <button id="add-financeira-task-btn" class="standard-button"><i class="fas fa-plus"></i> Adicionar Tarefa Financeira</button>
+                         <button id="add-financeira-task-btn" class="standard-button" data-action="add-task-for-category"><i class="fas fa-plus"></i> Adicionar Tarefa Financeira</button>
                     </div>
                 </div>
             </section>
 
             <!-- Card 3: CHECK / ADJUST -->
-            <section class="content-section reflection-section">
+            <section class="content-section">
                 <h2 class="section-title">Check / Adjust</h2>
-                <form class="reflection-form" data-category="Financeira">
-                    <div class="form-group">
-                        <label for="reflection-financeira-sleep">Como dormi esta noite? (Qualidade, sonhos, sentimentos ao acordar)</label>
-                        <div class="input-wrapper textarea-wrapper has-multiple-btns">
-                            <textarea id="reflection-financeira-sleep" class="reflection-input" data-title="Reflexão do Sono"></textarea>
-                            <button type="button" class="ai-suggestion-btn" title="Gerar sugestão com IA"><i class="fas fa-wand-magic-sparkles"></i><i class="fas fa-spinner fa-spin" style="display: none;"></i></button>
-                            <button type="button" class="speech-to-text-btn" title="Digitar por Voz"><i class="fas fa-microphone"></i></button>
-                        </div>
+                <div class="action-hub-grid">
+                    <div class="routine-block">
+                        <h3>Reflexão Estoica Diária</h3>
+                        <p>Faça uma pausa para refletir sobre seu dia, seus sentimentos e seu progresso com base nos princípios estoicos de autoconsciência e melhoria contínua.</p>
+                        <button class="standard-button" data-page="reflexao-estoica"><i class="fas fa-pen-nib"></i> Iniciar Reflexão</button>
                     </div>
-                    <div class="form-group">
-                        <label for="reflection-financeira-dayReview">O que correu bem hoje? O que poderia ter feito melhor? (Análise do dia)</label>
-                        <div class="input-wrapper textarea-wrapper has-multiple-btns">
-                            <textarea id="reflection-financeira-dayReview" class="reflection-input" data-title="Análise do Dia"></textarea>
-                            <button type="button" class="ai-suggestion-btn" title="Gerar sugestão com IA"><i class="fas fa-wand-magic-sparkles"></i><i class="fas fa-spinner fa-spin" style="display: none;"></i></button>
-                            <button type="button" class="speech-to-text-btn" title="Digitar por Voz"><i class="fas fa-microphone"></i></button>
-                        </div>
-                    </div>
-                    <div class="form-group">
-                        <label for="reflection-financeira-bodyScan">Como me sinto no meu corpo agora? (Sensações, tensões, energia)</label>
-                        <div class="input-wrapper textarea-wrapper has-multiple-btns">
-                            <textarea id="reflection-financeira-bodyScan" class="reflection-input" data-title="Escaneamento Corporal"></textarea>
-                            <button type="button" class="ai-suggestion-btn" title="Gerar sugestão com IA"><i class="fas fa-wand-magic-sparkles"></i><i class="fas fa-spinner fa-spin" style="display: none;"></i></button>
-                            <button type="button" class="speech-to-text-btn" title="Digitar por Voz"><i class="fas fa-microphone"></i></button>
-                        </div>
-                    </div>
-                    <div class="form-group">
-                        <label for="reflection-financeira-mentalCheck">Que pensamentos ou emoções estão presentes? (Check-in mental)</label>
-                        <div class="input-wrapper textarea-wrapper has-multiple-btns">
-                            <textarea id="reflection-financeira-mentalCheck" class="reflection-input" data-title="Check-in Mental"></textarea>
-                            <button type="button" class="ai-suggestion-btn" title="Gerar sugestão com IA"><i class="fas fa-wand-magic-sparkles"></i><i class="fas fa-spinner fa-spin" style="display: none;"></i></button>
-                            <button type="button" class="speech-to-text-btn" title="Digitar por Voz"><i class="fas fa-microphone"></i></button>
-                        </div>
-                    </div>
-                    <div class="form-group">
-                        <label for="reflection-financeira-premeditation">O que posso enfrentar hoje/amanhã? O que está fora do meu controle? (Premeditatio Malorum)</label>
-                         <div class="input-wrapper textarea-wrapper has-multiple-btns">
-                            <textarea id="reflection-financeira-premeditation" class="reflection-input" data-title="Premeditatio Malorum"></textarea>
-                            <button type="button" class="ai-suggestion-btn" title="Gerar sugestão com IA"><i class="fas fa-wand-magic-sparkles"></i><i class="fas fa-spinner fa-spin" style="display: none;"></i></button>
-                            <button type="button" class="speech-to-text-btn" title="Digitar por Voz"><i class="fas fa-microphone"></i></button>
-                        </div>
-                    </div>
-                    <button type="submit" class="standard-button"><i class="fas fa-save"></i> Salvar Reflexões</button>
-                </form>
+                </div>
             </section>
         </main>
         <div class="back-button-wrapper">

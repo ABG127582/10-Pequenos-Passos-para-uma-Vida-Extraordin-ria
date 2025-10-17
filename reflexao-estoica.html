@@ -1,0 +1,68 @@
+<div class="page-section" id="page-reflexao-estoica">
+    <div class="container">
+        <header>
+            <h1>Check Reflexão Estoica</h1>
+        </header>
+        <main>
+            <section class="content-section reflection-section">
+                <h2 class="section-title">Reflexão Diária</h2>
+                <p>Use este espaço para refletir sobre seu dia, alinhado aos princípios estoicos de autoconsciência. Escolha uma categoria para focar sua reflexão ou deixe como "Pessoal" para uma análise geral.</p>
+                <form id="central-reflection-form">
+                    <div class="form-group">
+                        <label for="reflection-category">Categoria da Reflexão:</label>
+                        <select id="reflection-category">
+                            <!-- Options will be populated by JS -->
+                        </select>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="reflection-estoica-sleep">Como dormi esta noite? (Qualidade, sonhos, sentimentos ao acordar)</label>
+                        <div class="input-wrapper textarea-wrapper">
+                            <textarea id="reflection-estoica-sleep" class="reflection-input" data-title="Reflexão do Sono" rows="1"></textarea>
+                            <button type="button" class="speech-to-text-btn" title="Digitar por Voz"><i class="fas fa-microphone"></i></button>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label for="reflection-estoica-dayReview">O que correu bem hoje? O que poderia ter feito melhor? (Análise do dia)</label>
+                         <div class="input-wrapper textarea-wrapper">
+                            <textarea id="reflection-estoica-dayReview" class="reflection-input" data-title="Análise do Dia" rows="1"></textarea>
+                            <button type="button" class="speech-to-text-btn" title="Digitar por Voz"><i class="fas fa-microphone"></i></button>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label for="reflection-estoica-bodyScan">Como me sinto no meu corpo agora? (Sensações, tensões, energia)</label>
+                        <div class="input-wrapper textarea-wrapper">
+                            <textarea id="reflection-estoica-bodyScan" class="reflection-input" data-title="Escaneamento Corporal" rows="1"></textarea>
+                            <button type="button" class="speech-to-text-btn" title="Digitar por Voz"><i class="fas fa-microphone"></i></button>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label for="reflection-estoica-mentalCheck">Que pensamentos ou emoções estão presentes? (Check-in mental)</label>
+                        <div class="input-wrapper textarea-wrapper">
+                            <textarea id="reflection-estoica-mentalCheck" class="reflection-input" data-title="Check-in Mental" rows="1"></textarea>
+                            <button type="button" class="speech-to-text-btn" title="Digitar por Voz"><i class="fas fa-microphone"></i></button>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label for="reflection-estoica-premeditation">O que posso enfrentar hoje/amanhã? O que está fora do meu controle? (Premeditatio Malorum)</label>
+                        <div class="input-wrapper textarea-wrapper">
+                            <textarea id="reflection-estoica-premeditation" class="reflection-input" data-title="Premeditatio Malorum" rows="1"></textarea>
+                            <button type="button" class="speech-to-text-btn" title="Digitar por Voz"><i class="fas fa-microphone"></i></button>
+                        </div>
+                    </div>
+                     <div class="form-group">
+                        <label for="reflection-estoica-freeform">Reflexão Livre (Criar)</label>
+                        <div class="input-wrapper textarea-wrapper">
+                            <textarea id="reflection-estoica-freeform" class="reflection-input" data-title="Reflexão Livre" rows="3" placeholder="Use este espaço para qualquer outro pensamento ou insight do dia..."></textarea>
+                            <button type="button" class="speech-to-text-btn" title="Digitar por Voz"><i class="fas fa-microphone"></i></button>
+                        </div>
+                    </div>
+                    <button type="submit" class="standard-button"><i class="fas fa-save"></i> Salvar Reflexões</button>
+                </form>
+            </section>
+        </main>
+        <div class="back-button-wrapper">
+            <button class="standard-button back-button" data-page="inicio"><i class="fas fa-arrow-left"></i> Voltar ao Início</button>
+        </div>
+    </div>
+</div>

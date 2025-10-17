@@ -28,99 +28,130 @@
 </head>
 <body>
 
-    <nav id="sidebar-menu" class="sidebar">
-        <div>
-            <button id="sidebar-toggle" class="sidebar-toggle-button" aria-label="Alternar menu lateral" aria-expanded="false">
-                <i class="fas fa-bars"></i>
-            </button>
+    <!-- Nova Tela de Login -->
+    <div id="login-page">
+        <div class="login-container">
+            <h1>Pequenos Passos</h1>
+            <p>Seu assistente para uma vida extraordinária.</p>
             
-            <ul class="sidebar-links">
-                 <li><a href="#inicio" title="Início" class="sidebar-link" data-page="inicio" data-tooltip="Início"><i class="fas fa-home fa-fw"></i><span class="sidebar-text">Início</span></a></li>
-
-                <li>
-                    <details id="sidebar-details-fisica">
-                        <summary class="sidebar-link" data-page-parent="fisica" data-tooltip="Física"><i class="fas fa-heartbeat fa-fw"></i><span class="sidebar-text">Física</span><i class="fas fa-chevron-right sidebar-chevron"></i></summary>
-                        <ul>
-                            <li><a href="#fisica" class="sidebar-link sub-link" data-page="fisica">Visão Geral</a></li>
-                            <li><a href="#leitura-guia-fisica" class="sidebar-link sub-link" data-page="leitura-guia-fisica">Guia de Leitura</a></li>
-                            <li><a href="#alongamento" class="sidebar-link sub-link" data-page="alongamento">Guia de Alongamento</a></li>
-                            <li><a href="#alimentacao-forte" class="sidebar-link sub-link" data-page="alimentacao-forte">Guia de Alimentação</a></li>
-                        </ul>
-                    </details>
-                </li>
-                
-                <li>
-                    <details id="sidebar-details-mental">
-                        <summary class="sidebar-link" data-page-parent="mental" data-tooltip="Mental"><i class="fas fa-brain fa-fw"></i><span class="sidebar-text">Mental</span><i class="fas fa-chevron-right sidebar-chevron"></i></summary>
-                        <ul>
-                            <li><a href="#mental" class="sidebar-link sub-link" data-page="mental">Visão Geral</a></li>
-                            <li><a href="#leitura-guia-mental" class="sidebar-link sub-link" data-page="leitura-guia-mental">Guia de Leitura</a></li>
-                            <li><a href="#sono" class="sidebar-link sub-link" data-page="sono">Qualidade do Sono</a></li>
-                        </ul>
-                    </details>
-                </li>
-
-                <li>
-                     <details id="sidebar-details-financeira">
-                        <summary class="sidebar-link" data-page-parent="financeira" data-tooltip="Financeira"><i class="fas fa-dollar-sign fa-fw"></i><span class="sidebar-text">Financeira</span><i class="fas fa-chevron-right sidebar-chevron"></i></summary>
-                        <ul>
-                            <li><a href="#financeira" class="sidebar-link sub-link" data-page="financeira">Visão Geral</a></li>
-                            <li><a href="#leitura-guia-financeira" class="sidebar-link sub-link" data-page="leitura-guia-financeira">Guia de Leitura</a></li>
-                        </ul>
-                    </details>
-                </li>
-
-                <li>
-                     <details id="sidebar-details-familiar">
-                        <summary class="sidebar-link" data-page-parent="familiar" data-tooltip="Familiar"><i class="fas fa-users fa-fw"></i><span class="sidebar-text">Familiar</span><i class="fas fa-chevron-right sidebar-chevron"></i></summary>
-                        <ul>
-                            <li><a href="#familiar" class="sidebar-link sub-link" data-page="familiar">Visão Geral</a></li>
-                            <li><a href="#leitura-guia-familiar" class="sidebar-link sub-link" data-page="leitura-guia-familiar">Guia de Leitura</a></li>
-                        </ul>
-                    </details>
-                </li>
-                
-                <li><a href="#profissional" title="Saúde Profissional" class="sidebar-link" data-page="profissional" data-tooltip="Profissional"><i class="fas fa-briefcase fa-fw"></i><span class="sidebar-text">Profissional</span></a></li>
-                <li><a href="#social" title="Saúde Social" class="sidebar-link" data-page="social" data-tooltip="Social"><i class="fas fa-comments fa-fw"></i><span class="sidebar-text">Social</span></a></li>
-
-                <li>
-                     <details id="sidebar-details-espiritual">
-                        <summary class="sidebar-link" data-page-parent="espiritual" data-tooltip="Espiritual"><i class="fas fa-om fa-fw"></i><span class="sidebar-text">Espiritual</span><i class="fas fa-chevron-right sidebar-chevron"></i></summary>
-                        <ul>
-                            <li><a href="#espiritual" class="sidebar-link sub-link" data-page="espiritual">Visão Geral</a></li>
-                            <li><a href="#leitura-guia-espiritual" class="sidebar-link sub-link" data-page="leitura-guia-espiritual">Guia de Leitura</a></li>
-                        </ul>
-                    </details>
-                </li>
-                
-                <li><a href="#preventiva" title="Saúde Preventiva" class="sidebar-link" data-page="preventiva" data-tooltip="Preventiva"><i class="fas fa-shield-alt fa-fw"></i><span class="sidebar-text">Preventiva</span></a></li>
-                <li><a href="#" id="open-contract-sidebar" title="Contrato de Compromisso" class="sidebar-link" data-tooltip="Contrato"><i class="fas fa-file-signature fa-fw"></i><span class="sidebar-text">Contrato</span></a></li>
-                <li><a href="#planejamento-diario" title="Planejamento Diário" class="sidebar-link" data-page="planejamento-diario" data-tooltip="Planejamento"><i class="fas fa-calendar-day fa-fw"></i><span class="sidebar-text">Planejamento Diário</span></a></li>
-                <li><a href="#tarefas" title="Caixa de Entrada" class="sidebar-link" data-page="tarefas" data-tooltip="Tarefas"><i class="fas fa-inbox fa-fw"></i><span class="sidebar-text">Tarefas</span></a></li>
-                <li><a href="#reflexoes-diarias" title="Reflexões Diárias" class="sidebar-link" data-page="reflexoes-diarias" data-tooltip="Reflexões"><i class="fas fa-lightbulb fa-fw"></i><span class="sidebar-text">Reflexões</span></a></li>
-            </ul>
-        </div>
-        <div class="sidebar-footer">
-            <div id="user-profile-widget" class="user-profile-widget" style="display: none;">
-                <i class="fas fa-user-circle"></i>
-                <div class="user-info">
-                    <span class="user-profile-label">Perfil:</span>
-                    <span id="user-profile-name"></span>
+            <form id="login-form">
+                <div class="form-group">
+                    <label for="profile-email-input">Email (Seu Perfil)</label>
+                    <input type="email" id="profile-email-input" placeholder="seu-email@exemplo.com" required>
                 </div>
-                <button id="switch-profile-btn" title="Trocar Perfil" class="action-btn"><i class="fas fa-exchange-alt"></i></button>
-            </div>
-             <button id="theme-toggle" class="theme-toggle-button" aria-label="Ativar modo claro">
-                <i class="fas fa-sun"></i>
-            </button>
-        </div>
-    </nav>
+                <div class="form-group">
+                    <label for="profile-password-input">Senha</label>
+                    <input type="password" id="profile-password-input" placeholder="••••••••">
+                     <small style="font-size: 0.75rem; color: var(--text-color-muted);">A senha é um campo visual e não é armazenada.</small>
+                </div>
+                <button type="submit" id="login-btn" class="standard-button" style="width: 100%; margin-top: 1rem;">Entrar</button>
+            </form>
 
-    <main id="main-content">
-        <nav id="breadcrumb-nav" aria-label="breadcrumb"></nav>
-        <div id="page-content-wrapper">
-             <!-- Page content will be loaded here dynamically -->
+            <div id="existing-profiles-container" style="display: none; margin-top: 1.5rem;">
+                <p>Ou selecione um perfil existente:</p>
+                <div id="existing-profiles-list" class="existing-profiles-list"></div>
+            </div>
         </div>
-    </main>
+    </div>
+
+
+    <!-- Conteúdo principal do App (inicialmente oculto) -->
+    <div id="app-container" style="display: none;">
+        <nav id="sidebar-menu" class="sidebar">
+            <div>
+                <button id="sidebar-toggle" class="sidebar-toggle-button" aria-label="Alternar menu lateral" aria-expanded="false">
+                    <i class="fas fa-bars"></i>
+                </button>
+                
+                <ul class="sidebar-links">
+                     <li><a href="#inicio" title="Início" class="sidebar-link" data-page="inicio" data-tooltip="Início"><i class="fas fa-home fa-fw"></i><span class="sidebar-text">Início</span></a></li>
+
+                    <li>
+                        <details id="sidebar-details-fisica">
+                            <summary class="sidebar-link" data-page-parent="fisica" data-tooltip="Física"><i class="fas fa-heartbeat fa-fw"></i><span class="sidebar-text">Física</span><i class="fas fa-chevron-right sidebar-chevron"></i></summary>
+                            <ul>
+                                <li><a href="#fisica" class="sidebar-link sub-link" data-page="fisica">Visão Geral</a></li>
+                                <li><a href="#leitura-guia-fisica" class="sidebar-link sub-link" data-page="leitura-guia-fisica">Guia de Leitura</a></li>
+                                <li><a href="#alongamento" class="sidebar-link sub-link" data-page="alongamento">Guia de Alongamento</a></li>
+                                <li><a href="#alimentacao-forte" class="sidebar-link sub-link" data-page="alimentacao-forte">Guia de Alimentação</a></li>
+                            </ul>
+                        </details>
+                    </li>
+                    
+                    <li>
+                        <details id="sidebar-details-mental">
+                            <summary class="sidebar-link" data-page-parent="mental" data-tooltip="Mental"><i class="fas fa-brain fa-fw"></i><span class="sidebar-text">Mental</span><i class="fas fa-chevron-right sidebar-chevron"></i></summary>
+                            <ul>
+                                <li><a href="#mental" class="sidebar-link sub-link" data-page="mental">Visão Geral</a></li>
+                                <li><a href="#leitura-guia-mental" class="sidebar-link sub-link" data-page="leitura-guia-mental">Guia de Leitura</a></li>
+                                <li><a href="#sono" class="sidebar-link sub-link" data-page="sono">Qualidade do Sono</a></li>
+                            </ul>
+                        </details>
+                    </li>
+
+                    <li>
+                         <details id="sidebar-details-financeira">
+                            <summary class="sidebar-link" data-page-parent="financeira" data-tooltip="Financeira"><i class="fas fa-dollar-sign fa-fw"></i><span class="sidebar-text">Financeira</span><i class="fas fa-chevron-right sidebar-chevron"></i></summary>
+                            <ul>
+                                <li><a href="#financeira" class="sidebar-link sub-link" data-page="financeira">Visão Geral</a></li>
+                                <li><a href="#leitura-guia-financeira" class="sidebar-link sub-link" data-page="leitura-guia-financeira">Guia de Leitura</a></li>
+                            </ul>
+                        </details>
+                    </li>
+
+                    <li>
+                         <details id="sidebar-details-familiar">
+                            <summary class="sidebar-link" data-page-parent="familiar" data-tooltip="Familiar"><i class="fas fa-users fa-fw"></i><span class="sidebar-text">Familiar</span><i class="fas fa-chevron-right sidebar-chevron"></i></summary>
+                            <ul>
+                                <li><a href="#familiar" class="sidebar-link sub-link" data-page="familiar">Visão Geral</a></li>
+                                <li><a href="#leitura-guia-familiar" class="sidebar-link sub-link" data-page="leitura-guia-familiar">Guia de Leitura</a></li>
+                            </ul>
+                        </details>
+                    </li>
+                    
+                    <li><a href="#profissional" title="Saúde Profissional" class="sidebar-link" data-page="profissional" data-tooltip="Profissional"><i class="fas fa-briefcase fa-fw"></i><span class="sidebar-text">Profissional</span></a></li>
+                    <li><a href="#social" title="Saúde Social" class="sidebar-link" data-page="social" data-tooltip="Social"><i class="fas fa-comments fa-fw"></i><span class="sidebar-text">Social</span></a></li>
+
+                    <li>
+                         <details id="sidebar-details-espiritual">
+                            <summary class="sidebar-link" data-page-parent="espiritual" data-tooltip="Espiritual"><i class="fas fa-om fa-fw"></i><span class="sidebar-text">Espiritual</span><i class="fas fa-chevron-right sidebar-chevron"></i></summary>
+                            <ul>
+                                <li><a href="#espiritual" class="sidebar-link sub-link" data-page="espiritual">Visão Geral</a></li>
+                                <li><a href="#leitura-guia-espiritual" class="sidebar-link sub-link" data-page="leitura-guia-espiritual">Guia de Leitura</a></li>
+                            </ul>
+                        </details>
+                    </li>
+                    
+                    <li><a href="#preventiva" title="Saúde Preventiva" class="sidebar-link" data-page="preventiva" data-tooltip="Preventiva"><i class="fas fa-shield-alt fa-fw"></i><span class="sidebar-text">Preventiva</span></a></li>
+                    <li><a href="#" id="open-contract-sidebar" title="Contrato de Compromisso" class="sidebar-link" data-tooltip="Contrato"><i class="fas fa-file-signature fa-fw"></i><span class="sidebar-text">Contrato</span></a></li>
+                    <li><a href="#planejamento-diario" title="Planejamento Diário" class="sidebar-link" data-page="planejamento-diario" data-tooltip="Planejamento"><i class="fas fa-calendar-day fa-fw"></i><span class="sidebar-text">Planejamento Diário</span></a></li>
+                    <li><a href="#tarefas" title="Caixa de Entrada" class="sidebar-link" data-page="tarefas" data-tooltip="Tarefas"><i class="fas fa-inbox fa-fw"></i><span class="sidebar-text">Tarefas</span></a></li>
+                    <li><a href="#reflexoes-diarias" title="Reflexões Diárias" class="sidebar-link" data-page="reflexoes-diarias" data-tooltip="Reflexões"><i class="fas fa-lightbulb fa-fw"></i><span class="sidebar-text">Reflexões</span></a></li>
+                    <li><a href="#reflexao-estoica" title="Reflexão Estoica" class="sidebar-link" data-page="reflexao-estoica" data-tooltip="Reflexão Estoica"><i class="fas fa-pen-nib fa-fw"></i><span class="sidebar-text">Reflexão Estoica</span></a></li>
+                </ul>
+            </div>
+            <div class="sidebar-footer">
+                <div id="user-profile-widget" class="user-profile-widget" style="display: none;">
+                    <i class="fas fa-user-circle"></i>
+                    <div class="user-info">
+                        <span class="user-profile-label">Perfil:</span>
+                        <span id="user-profile-name"></span>
+                    </div>
+                    <button id="switch-profile-btn" title="Trocar Perfil" class="action-btn"><i class="fas fa-exchange-alt"></i></button>
+                </div>
+                 <button id="theme-toggle" class="theme-toggle-button" aria-label="Ativar modo claro">
+                    <i class="fas fa-sun"></i>
+                </button>
+            </div>
+        </nav>
+
+        <main id="main-content">
+            <nav id="breadcrumb-nav" aria-label="breadcrumb"></nav>
+            <div id="page-content-wrapper">
+                 <!-- Page content will be loaded here dynamically -->
+            </div>
+        </main>
+    </div>
     
     <!-- Global Floating Action Buttons and Audio -->
     <div class="fab-container">
@@ -131,24 +162,6 @@
         </button>
     </div>
     <audio id="rain-sound" src="https://www.soundjay.com/nature/rain-07.mp3" loop></audio>
-
-    <!-- Profile Selection Modal -->
-    <div id="profile-modal-overlay" class="profile-modal-overlay" style="display: none;">
-        <div id="profile-modal" class="modal-content profile-modal-content">
-            <h2>Bem-vindo ao Pequenos Passos!</h2>
-            <p>Para começar, crie um novo perfil ou selecione um existente. Seus dados ficarão salvos localmente neste navegador.</p>
-            <div id="existing-profiles-container" style="display: none; margin-top: 1rem;">
-                <label for="existing-profiles-list">Perfis existentes:</label>
-                <div id="existing-profiles-list" class="existing-profiles-list"></div>
-            </div>
-            <div class="form-group" style="margin-top: 1rem;">
-                <label for="profile-name-input">Criar novo perfil (use seu e-mail):</label>
-                <input type="email" id="profile-name-input" placeholder="seu-email@exemplo.com" required>
-            </div>
-            <button id="select-profile-btn" class="standard-button" style="margin-top: 1rem;">Acessar Perfil</button>
-        </div>
-    </div>
-
 
     <!-- Global Modals -->
     <div id="contract-modal" class="modal-container" style="display: none;" role="dialog" aria-modal="true" aria-labelledby="contract-modal-title-static">
@@ -251,7 +264,7 @@
                     <div class="form-group">
                         <label for="unified-task-description">Descrição:</label>
                         <div class="input-wrapper textarea-wrapper">
-                            <textarea id="unified-task-description" name="description" rows="4"></textarea>
+                            <textarea id="unified-task-description" name="description" rows="1"></textarea>
                             <button type="button" class="speech-to-text-btn" title="Digitar por Voz"><i class="fas fa-microphone"></i></button>
                         </div>
                     </div>
@@ -272,11 +285,11 @@
                     <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px;">
                         <div class="form-group">
                             <label for="unified-task-start-time">Início (Opcional):</label>
-                            <input type="time" id="unified-task-start-time" name="startTime" step="900">
+                            <input type="time" id="unified-task-start-time" name="startTime" step="300">
                         </div>
                         <div class="form-group">
                             <label for="unified-task-end-time">Fim (Opcional):</label>
-                            <input type="time" id="unified-task-end-time" name="endTime" step="900">
+                            <input type="time" id="unified-task-end-time" name="endTime" step="300">
                         </div>
                     </div>
                     <div class="form-group">

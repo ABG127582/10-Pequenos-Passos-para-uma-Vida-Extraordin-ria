@@ -191,14 +191,28 @@ export function openTaskModal(task?: Task, prefill?: Partial<Task>) {
         elements.taskModalDeleteBtn.style.display = 'none';
     }
     elements.taskModal.style.display = 'flex';
-    elements.modalTitleInput?.focus();
     
+    // Adjust textarea height after modal is displayed
+    if (elements.modalDescriptionInput) {
+        setTimeout(() => {
+            elements.modalDescriptionInput.style.height = 'auto';
+            elements.modalDescriptionInput.style.height = `${elements.modalDescriptionInput.scrollHeight}px`;
+        }, 0); // setTimeout ensures the browser has rendered the modal
+    }
+    
+    elements.modalTitleInput?.focus();
     removeFocusTrap = trapFocus(elements.taskModal);
 }
 
 const closeTaskModal = () => {
     if (!elements.taskModal) return;
     elements.taskModal.style.display = 'none';
+
+    // Reset textarea height on close
+    if (elements.modalDescriptionInput) {
+        elements.modalDescriptionInput.style.height = 'auto';
+    }
+
     if (removeFocusTrap) {
         removeFocusTrap();
         removeFocusTrap = null;
@@ -546,6 +560,15 @@ export function initTasks() {
         elements.modalPrioritySelect = document.getElementById('unified-task-priority') as HTMLSelectElement;
         elements.modalCategorySelect = document.getElementById('unified-task-category') as HTMLSelectElement;
 
+        if (elements.modalDescriptionInput) {
+            const adjustTextareaHeight = () => {
+                elements.modalDescriptionInput.style.height = 'auto'; // Reset height
+                // Set height to scrollHeight to fit content
+                elements.modalDescriptionInput.style.height = `${elements.modalDescriptionInput.scrollHeight}px`;
+            };
+            elements.modalDescriptionInput.addEventListener('input', adjustTextareaHeight);
+        }
+
         elements.taskModalCloseBtn?.addEventListener('click', closeTaskModal);
         elements.taskModalCancelBtn?.addEventListener('click', closeTaskModal);
         elements.taskModalForm?.addEventListener('submit', handleTaskFormSubmit);
@@ -610,7 +633,6 @@ export function setupTarefasPage() {
     elements.tableViewBtn?.addEventListener('click', () => { currentView = 'table'; elements.tableViewBtn?.classList.add('active'); elements.checklistViewBtn?.classList.remove('active'); renderTarefasPage(); });
 
     document.body.addEventListener('datachanged:tasks', () => {
-        loadData();
         if (window.location.hash === '#tarefas') {
             renderTarefasPage();
         }

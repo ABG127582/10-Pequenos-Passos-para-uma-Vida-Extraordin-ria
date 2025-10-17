@@ -29,6 +29,9 @@
     --color-planejamento-rgb: 253, 126, 20;
     --color-pessoal: #e83e8c;
     --color-pessoal-rgb: 232, 62, 140;
+    --color-ranking: #a872ff; /* New color for ranking */
+    --color-ranking-rgb: 168, 114, 255;
+
 
     /* Cores padrão (LIGHT MODE) */
     --color-primary: #007bff;
@@ -169,6 +172,64 @@ ul, ol {
     margin-bottom: 1rem;
 }
 
+/* --- Nova Tela de Login --- */
+#login-page {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background-color: var(--background-color);
+    z-index: 3000;
+    transition: opacity 0.3s ease;
+}
+#login-page.hidden {
+    opacity: 0;
+    pointer-events: none;
+}
+
+.login-container {
+    max-width: 420px;
+    width: 90%;
+    padding: 2.5rem;
+    background: var(--card-background-color);
+    border-radius: var(--card-border-radius);
+    box-shadow: var(--card-shadow);
+    text-align: center;
+}
+.login-container h1 {
+    font-size: 2rem;
+    margin-bottom: 0.5rem;
+    color: var(--color-primary);
+}
+.login-container p {
+    color: var(--text-color-muted);
+    margin-bottom: 2rem;
+}
+.login-container .form-group {
+    text-align: left;
+}
+.login-container .form-group label {
+    font-weight: 500;
+}
+.login-container #existing-profiles-list {
+    max-height: 120px;
+    overflow-y: auto;
+    padding: 5px;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+.login-container .existing-profile-btn {
+    text-align: center;
+    border: 1px solid var(--border-color);
+    padding: 10px;
+}
+
+
 /* Container Principal */
 .container {
     width: 100%;
@@ -189,6 +250,12 @@ ul, ol {
     .dashboard-grid {
         grid-template-columns: 2fr 1fr;
     }
+}
+
+.dashboard-main-widget {
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
 }
 
 .dashboard-main-widget .content-section {
@@ -339,29 +406,35 @@ ul, ol {
 }
 
 /* Cores específicas para os cartões */
-.saude-card.fisica { --card-bg-color: var(--color-fisica); }
-.saude-card.mental { --card-bg-color: var(--color-mental); }
-.saude-card.financeira { --card-bg-color: var(--color-financeira); }
-.saude-card.familiar { --card-bg-color: var(--color-familiar); }
-.saude-card.profissional { --card-bg-color: var(--color-profissional); }
-.saude-card.social { --card-bg-color: var(--color-social); }
-.saude-card.espiritual { --card-bg-color: var(--color-espiritual); }
-.saude-card.preventiva { --card-bg-color: var(--color-preventiva); }
+.saude-card.fisica, .saude-card-small.fisica { --card-bg-color: var(--color-fisica); background-color: var(--card-bg-color); }
+.saude-card.mental, .saude-card-small.mental { --card-bg-color: var(--color-mental); background-color: var(--card-bg-color); }
+.saude-card.financeira, .saude-card-small.financeira { --card-bg-color: var(--color-financeira); background-color: var(--card-bg-color); }
+.saude-card.familiar, .saude-card-small.familiar { --card-bg-color: var(--color-familiar); background-color: var(--card-bg-color); }
+.saude-card.profissional, .saude-card-small.profissional { --card-bg-color: var(--color-profissional); background-color: var(--card-bg-color); }
+.saude-card.social, .saude-card-small.social { --card-bg-color: var(--color-social); background-color: var(--card-bg-color); }
+.saude-card.espiritual, .saude-card-small.espiritual { --card-bg-color: var(--color-espiritual); background-color: var(--card-bg-color); }
+.saude-card.preventiva, .saude-card-small.preventiva { --card-bg-color: var(--color-preventiva); background-color: var(--card-bg-color); }
 .saude-card.video-livro { --card-bg-color: var(--color-video-livro); }
-.saude-card.planejamento { --card-bg-color: var(--color-planejamento); }
-.saude-card.avaliacao-card { --card-bg-color: var(--color-inicio); }
+.saude-card.planejamento, .saude-card-small.planejamento { --card-bg-color: var(--color-planejamento); background-color: var(--card-bg-color); }
+.saude-card.avaliacao-card, .saude-card-small.avaliacao-card { --card-bg-color: var(--color-inicio); background-color: var(--card-bg-color); }
+.saude-card-small.ranking { --card-bg-color: var(--color-ranking); background-color: var(--card-bg-color); cursor: default; }
 
 
 html:not(.dark-mode) .saude-card.planejamento h3, 
-html:not(.dark-mode) .saude-card.planejamento p {
+html:not(.dark-mode) .saude-card.planejamento p,
+html:not(.dark-mode) .saude-card-small.planejamento h3,
+html:not(.dark-mode) .saude-card-small.planejamento p {
     color: #212529; /* Dark text for light yellow card */
 }
 html.dark-mode .saude-card.planejamento h3, 
-html.dark-mode .saude-card.planejamento p {
+html.dark-mode .saude-card.planejamento p,
+html.dark-mode .saude-card-small.planejamento h3,
+html.dark-mode .saude-card-small.planejamento p {
     color: #212529; /* Dark text for yellow card also in dark mode */
 }
 
-.saude-card.planejamento .card-icon-title i {
+.saude-card.planejamento .card-icon-title i,
+.saude-card-small.planejamento .card-icon-title i {
     color: rgba(0,0,0,0.6);
 }
 
@@ -573,6 +646,7 @@ a[data-page*="preventiva"].active { --section-color: var(--color-preventiva); --
 a[data-page*="inicio"].active { --section-color: var(--color-inicio); --section-color-rgb: var(--color-inicio-rgb); }
 a[data-page*="planejamento-diario"].active { --section-color: var(--color-planejamento); --section-color-rgb: var(--color-planejamento-rgb); }
 a[data-page*="tarefas"].active { --section-color: var(--color-tarefas); --section-color-rgb: var(--color-tarefas-rgb); } 
+a[data-page*="reflexao-estoica"].active { --section-color: var(--color-espiritual); --section-color-rgb: var(--color-espiritual-rgb); }
 
 
 /* Hierarchical Menu (Details/Summary) */
@@ -789,7 +863,7 @@ html.dark-mode .theme-toggle-button:hover {
 /* Cores dinâmicas para títulos de seção */
 [data-page*="fisica"], [id*="fisica"], [id^="page-food-"] { --section-color: var(--color-fisica); --section-color-rgb: var(--color-fisica-rgb); }
 [data-page*="mental"], [id*="mental"], [id*="sono"] { --section-color: var(--color-mental); --section-color-rgb: var(--color-mental-rgb); }
-[data-page*="espiritual"], [id*="espiritual"] { --section-color: var(--color-espiritual); --section-color-rgb: var(--color-espiritual-rgb); }
+[data-page*="espiritual"], [id*="espiritual"], [id*="reflexao-estoica"] { --section-color: var(--color-espiritual); --section-color-rgb: var(--color-espiritual-rgb); }
 [data-page*="preventiva"], [id*="preventiva"] { --section-color: var(--color-preventiva); --section-color-rgb: var(--color-preventiva-rgb); }
 [data-page*="financeira"], [id*="financeira"] { --section-color: var(--color-financeira); --section-color-rgb: var(--color-financeira-rgb); }
 [data-page*="familiar"], [id*="familiar"] { --section-color: var(--color-familiar); --section-color-rgb: var(--color-familiar-rgb); }
@@ -834,10 +908,13 @@ html.dark-mode .form-group select {
     border-color: var(--color-primary);
     box-shadow: 0 0 0 0.2rem rgba(var(--color-primary-rgb), 0.25);
 }
+
 .form-group textarea {
-    min-height: 120px;
-    resize: vertical;
+    min-height: 0;
+    resize: none;
+    overflow-y: hidden;
 }
+
 .form-group {
     margin-bottom: 20px;
 }
@@ -845,6 +922,13 @@ html.dark-mode .form-group select {
     width: 100%;
     cursor: pointer;
 }
+
+#unified-task-description {
+    min-height: 0; /* Override generic style */
+    resize: none; /* JS will handle resizing */
+    overflow-y: hidden; /* Hide scrollbar initially */
+}
+
 
 /* Botões */
 .standard-button, .btn {
@@ -1948,7 +2032,8 @@ body.tts-selection-mode #main-content li:hover {
 #generate-social-resources-btn.loading .fa-spinner {
     display: inline-block;
 }
-#generate-social-resources-btn.loading .fa-wand-magic-sparkles {
+#generate-social-resources-btn.loading .fa-wand-magic-sparkles,
+#generate-social-resources-btn.loading .btn-text {
     display: none;
 }
 
@@ -2886,7 +2971,10 @@ body.tts-selection-mode #main-content li:hover {
 }
 
 .reflection-section textarea {
-    min-height: 80px;
+    min-height: 0;
+    resize: none;
+    overflow-y: hidden;
+    transition: height 0.2s ease-in-out;
 }
 
 /* --- Sleep Quality Page Styles --- */
@@ -3165,20 +3253,114 @@ body.tts-selection-mode #main-content li:hover {
 }
 
 /* --- Gamification: Medal on Home Card --- */
-.saude-card {
-    position: relative; /* Ensure medal can be positioned inside */
+.saude-card-small {
+    position: relative;
 }
 
 .card-medal-icon {
     position: absolute;
-    top: 10px;
-    right: 10px;
-    font-size: 2rem;
+    top: 5px;
+    right: 5px;
+    font-size: 1.5rem;
     color: #ffd700;
     text-shadow: 1px 1px 3px rgba(0,0,0,0.4);
     transition: transform 0.3s ease;
 }
 
-.saude-card:hover .card-medal-icon {
+.saude-card-small:hover .card-medal-icon {
     transform: scale(1.1);
+}
+
+/* --- Social Page AI Resource Finder --- */
+.ai-resource-finder {
+    margin-top: 2rem;
+    padding-top: 1.5rem;
+    border-top: 1px solid var(--border-color);
+}
+.ai-resource-finder .form-group {
+    margin-bottom: 1rem;
+}
+#social-resources-results {
+    margin-top: 1.5rem;
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+}
+.resource-item {
+    padding: 1rem;
+    border-radius: var(--card-border-radius);
+    background-color: rgba(var(--section-color-rgb, var(--color-primary-rgb)), 0.05);
+    border: 1px solid rgba(var(--section-color-rgb, var(--color-primary-rgb)), 0.1);
+    transition: background-color 0.2s;
+}
+.resource-item:hover {
+     background-color: rgba(var(--section-color-rgb, var(--color-primary-rgb)), 0.1);
+}
+.resource-item a {
+    font-weight: bold;
+    text-decoration: none;
+    color: var(--section-color, var(--color-primary));
+}
+.resource-item a:hover {
+    text-decoration: underline;
+}
+.resource-item p {
+    font-size: 0.9rem;
+    color: var(--text-color-muted);
+    margin: 0.25rem 0 0 0;
+}
+
+/* --- NEW: Ranking Widget --- */
+.ranking-widget {
+    padding: 20px;
+    color: var(--text-color-light);
+}
+.ranking-list {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+.ranking-item {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+    font-size: 0.95rem;
+}
+.ranking-position {
+    font-weight: bold;
+    width: 25px;
+    text-align: center;
+    flex-shrink: 0;
+    font-size: 1.1rem;
+}
+.ranking-item:nth-child(1) .ranking-position { color: #ffd700; }
+.ranking-item:nth-child(2) .ranking-position { color: #c0c0c0; }
+.ranking-item:nth-child(3) .ranking-position { color: #cd7f32; }
+
+.ranking-name {
+    flex-grow: 1;
+    font-weight: 500;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+.ranking-medals {
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    font-weight: bold;
+}
+.ranking-medals .fa-medal {
+    color: #ffd700;
+}
+.ranking-empty {
+    text-align: center;
+    font-style: italic;
+    opacity: 0.8;
+}
+.ranking-item .fa-trophy {
+    color: #ffd700;
 }

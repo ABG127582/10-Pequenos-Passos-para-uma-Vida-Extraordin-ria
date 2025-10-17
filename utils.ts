@@ -71,7 +71,12 @@ export async function startSpeechRecognition(button: HTMLButtonElement): Promise
 
     recognition.onresult = (event) => {
         const speechResult = event.results[0][0].transcript;
-        targetInput.value = speechResult;
+        const existingText = targetInput.value.trim();
+        if (existingText) {
+            targetInput.value = `${existingText} ${speechResult}`;
+        } else {
+            targetInput.value = speechResult;
+        }
         targetInput.dispatchEvent(new Event('input', { bubbles: true }));
     };
 
@@ -197,45 +202,54 @@ export function trapFocus(element: HTMLElement): () => void {
 }
 
 /**
- * Displays a medal animation over a target element.
- * @param targetElement The element to display the animation on top of.
+ * Displays a medal animation over a target element or at a specific position.
+ * Captures the target's position immediately and defers animation to the next event loop tick
+ * to prevent race conditions with DOM re-renders.
+ * @param target The element or DOMRect to display the animation on top of.
  */
-export function showMedalAnimation(targetElement: HTMLElement) {
-    const medal = document.createElement('div');
-    medal.className = 'medal-animation';
-    medal.innerHTML = '<i class="fas fa-medal"></i>';
-    document.body.appendChild(medal);
+export function showMedalAnimation(target: HTMLElement | DOMRect) {
+    // If target is an element, get its position. If it's already a rect, use it directly.
+    const targetRect = target instanceof HTMLElement ? target.getBoundingClientRect() : target;
 
-    const targetRect = targetElement.getBoundingClientRect();
-    // Position it in the center of the target element initially
-    medal.style.top = `${targetRect.top + targetRect.height / 2}px`;
-    medal.style.left = `${targetRect.left + targetRect.width / 2}px`;
-
-    // Trigger the animation
-    requestAnimationFrame(() => {
-        medal.style.animation = 'medal-pop-and-fade 1.5s ease-out forwards';
-    });
-
-    // Remove the element after the animation is done
+    // Defer the creation and animation of the medal to the next event loop tick.
+    // This ensures that any synchronous re-renders have completed, but we still have the correct coordinates.
     setTimeout(() => {
-        medal.remove();
-    }, 1500);
+        const medal = document.createElement('div');
+        medal.className = 'medal-animation';
+        medal.innerHTML = '<i class="fas fa-medal"></i>';
+        document.body.appendChild(medal);
+
+        // Position the medal using the captured coordinates.
+        medal.style.top = `${targetRect.top + targetRect.height / 2}px`;
+        medal.style.left = `${targetRect.left + targetRect.width / 2}px`;
+
+        // Trigger the animation in the next frame.
+        requestAnimationFrame(() => {
+            medal.style.animation = 'medal-pop-and-fade 1.5s ease-out forwards';
+        });
+
+        // Remove the element after the animation is done.
+        setTimeout(() => {
+            medal.remove();
+        }, 1500);
+    }, 0);
 }
 
+
 /**
- * Awards a medal for a specific health category for the current day.
+ * Awards a medal for a specific health category for a specific day.
  * @param category The category key (e.g., 'fisica', 'mental').
+ * @param dateStr The date string (YYYY-MM-DD) for which the medal is awarded.
  */
-export function awardMedalForCategory(category: string) {
-    const today = new Date().toISOString().split('T')[0];
+export function awardMedalForCategory(category: string, dateStr: string) {
     const dailyMedals = storageService.get<{ [key: string]: string[] }>(STORAGE_KEYS.DAILY_MEDALS) || {};
 
-    if (!dailyMedals[today]) {
-        dailyMedals[today] = [];
+    if (!dailyMedals[dateStr]) {
+        dailyMedals[dateStr] = [];
     }
 
-    if (!dailyMedals[today].includes(category)) {
-        dailyMedals[today].push(category);
+    if (!dailyMedals[dateStr].includes(category)) {
+        dailyMedals[dateStr].push(category);
         storageService.set(STORAGE_KEYS.DAILY_MEDALS, dailyMedals);
     }
 }

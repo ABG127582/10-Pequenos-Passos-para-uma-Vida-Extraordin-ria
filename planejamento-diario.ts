@@ -93,8 +93,38 @@ const renderSchedule = () => {
         hourSlot.className = 'hour-slot';
         hourSlot.dataset.hour = hour;
         
+        // Filter for tasks active during the current hour slot
         const tasksInThisHour = scheduledTasks
-            .filter(task => task.startTime && task.startTime.startsWith(hour + ':'))
+            .filter(task => {
+                if (!task.startTime) return false;
+
+                const startHour = parseInt(task.startTime.split(':')[0], 10);
+
+                // For tasks without an end time, show them only in their starting hour.
+                if (!task.endTime) {
+                    return startHour === i;
+                }
+
+                const endHour = parseInt(task.endTime.split(':')[0], 10);
+                const endMinutes = parseInt(task.endTime.split(':')[1], 10);
+                
+                // Case 1: Same-day or within-hour task (e.g., 10:00 -> 14:30)
+                if (startHour <= endHour) {
+                    // Exclude if it ends exactly at the start of this hour (e.g. 10:00-12:00 should not be in 12h slot)
+                    if (endHour === i && endMinutes === 0) {
+                        return false;
+                    }
+                    return i >= startHour && i <= endHour;
+                } 
+                // Case 2: Overnight task (e.g., 21:00 -> 06:00)
+                else { // startHour > endHour
+                    // Exclude if it ends exactly at the start of this hour
+                    if (endHour === i && endMinutes === 0) {
+                        return false;
+                    }
+                    return i >= startHour || i <= endHour;
+                }
+            })
             .sort((a, b) => a.startTime!.localeCompare(b.startTime!));
 
         let tasksHtml = '';
@@ -212,19 +242,21 @@ const handleScheduleClick = (e: Event) => {
         if (!task) return;
 
         if (target.closest('.complete-btn')) {
-            // FIX: Only update the data. Let the event listener handle the UI refresh.
-            // This prevents conflicts between direct DOM manipulation and re-rendering.
+            const wasIncomplete = !task.completed;
+            const targetRect = taskBlock.getBoundingClientRect(); // Capture rect before DOM change
+
+            // Update the task data. This will trigger a re-render via 'datachanged:tasks' event.
             updateTask(task.id, { completed: !task.completed });
 
-            // Handle gamification immediately as re-render may be too slow for animation
-            if (!task.completed) {
-                 const allTasks = getTasks();
+            // If the task was just marked as complete, check for medals.
+            if (wasIncomplete && task.category) {
+                 const allTasks = getTasks(); // get new, updated state
                  const categoryTasksForDay = allTasks.filter(t => t.category === task.category && t.dueDate === currentDate);
-                 // Check if ALL tasks of this category are now complete
-                 if (categoryTasksForDay.every(t => t.id === taskId ? true : t.completed)) {
-                    awardMedalForCategory(task.category.toLowerCase());
-                    window.showToast(`Medalha de ${task.category} conquistada hoje!`, 'success');
-                    showMedalAnimation(taskBlock);
+                 
+                 if (categoryTasksForDay.every(t => t.completed)) {
+                    awardMedalForCategory(task.category.toLowerCase(), currentDate);
+                    window.showToast(`Medalha de ${task.category} conquistada para ${new Date(currentDate + 'T00:00:00').toLocaleDateString('pt-BR')}!`, 'success');
+                    showMedalAnimation(targetRect); // Use the captured rect
                 }
             }
         } else if (target.closest('.edit-btn') || target.closest('.task-content')) {

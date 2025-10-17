@@ -10,7 +10,7 @@ import { storageService } from './storage';
 import { errorHandler } from './errorHandler';
 import { loadingManager } from './loadingManager';
 import { performanceMonitor } from './performance';
-import { initTasks } from './tarefas';
+import { initTasks, addTask, getTasks } from './tarefas';
 
 // --- Type definitions for the global window object ---
 // This ensures TypeScript knows about the functions we're attaching globally.
@@ -52,52 +52,165 @@ document.addEventListener('DOMContentLoaded', () => {
 
 // --- PROFILE MANAGEMENT ---
 function initProfileManager() {
-    const profileModalOverlay = document.getElementById('profile-modal-overlay') as HTMLElement;
-    const profileInput = document.getElementById('profile-name-input') as HTMLInputElement;
-    const selectProfileBtn = document.getElementById('select-profile-btn') as HTMLButtonElement;
+    const loginPage = document.getElementById('login-page') as HTMLElement;
+    const appContainer = document.getElementById('app-container') as HTMLElement;
+    const loginForm = document.getElementById('login-form') as HTMLFormElement;
+    const profileInput = document.getElementById('profile-email-input') as HTMLInputElement;
     const existingProfilesContainer = document.getElementById('existing-profiles-container') as HTMLElement;
     const existingProfilesList = document.getElementById('existing-profiles-list') as HTMLElement;
     const switchProfileBtn = document.getElementById('switch-profile-btn') as HTMLButtonElement;
     
     let isAppInitialized = false;
 
-    const showProfileModal = () => {
+    const showLoginPage = () => {
         const profiles = storageService.getAvailableProfiles();
         if (profiles.length > 0) {
             existingProfilesList.innerHTML = '';
             profiles.forEach(profile => {
                 const btn = document.createElement('button');
-                btn.className = 'existing-profile-btn';
-                btn.textContent = profile;
+                btn.className = 'existing-profile-btn btn';
+                btn.textContent = profile.split('@')[0]; // Show user-friendly name
                 btn.dataset.profile = profile;
                 existingProfilesList.appendChild(btn);
             });
-            existingProfilesContainer.style.display = 'block';
+            if (existingProfilesContainer) existingProfilesContainer.style.display = 'block';
         } else {
-            existingProfilesContainer.style.display = 'none';
+            if (existingProfilesContainer) existingProfilesContainer.style.display = 'none';
         }
-        profileModalOverlay.style.display = 'flex';
-        profileInput.focus();
+        
+        if (loginPage) loginPage.style.display = 'flex';
+        if (appContainer) appContainer.style.display = 'none';
+        if (profileInput) profileInput.focus();
     };
     
-    const hideProfileModal = () => {
-        profileModalOverlay.style.display = 'none';
+    const showApp = () => {
+        if (loginPage) loginPage.style.display = 'none';
+        if (appContainer) appContainer.style.display = 'block';
     };
 
     const loadAppForProfile = (profile: string) => {
         storageService.setCurrentProfile(profile);
-        hideProfileModal();
+        showApp();
 
-        // Update UI
+        // Update UI within the app
         const profileNameEl = document.getElementById('user-profile-name') as HTMLElement;
         const profileWidget = document.getElementById('user-profile-widget') as HTMLElement;
-        profileNameEl.textContent = profile;
-        profileWidget.style.display = 'flex';
+        if(profileNameEl) profileNameEl.textContent = profile.split('@')[0]; // Show user-friendly name
+        if(profileWidget) profileWidget.style.display = 'flex';
         
         // Initialize the rest of the app only once
         if (!isAppInitialized) {
             initializeApp();
             isAppInitialized = true;
+            
+            // For new profiles, add default tasks
+            const existingTasks = getTasks();
+            if (existingTasks.length === 0) {
+                const today = new Date().toISOString().split('T')[0];
+                
+                // --- Saúde Física ---
+                addTask({
+                    title: "Sono Qualitativo",
+                    description: "Garantir de 7 a 9 horas de sono para recuperação física e mental.",
+                    category: "Física",
+                    startTime: "22:00",
+                    endTime: "06:00",
+                    dueDate: today,
+                    priority: 'high'
+                });
+                
+                addTask({
+                    title: "Pilar 3: Exercício Físico (O Catalisador)",
+                    description: "Prática de atividade física para saúde cardiovascular e bem-estar.",
+                    category: "Física",
+                    startTime: "09:00",
+                    endTime: "10:00",
+                    dueDate: today,
+                    priority: 'high'
+                });
+
+                addTask({
+                    title: "Pilar 2: Alimentação (O Combustível)",
+                    description: "Pausa para uma refeição nutritiva e consciente.",
+                    category: "Física",
+                    startTime: "12:00",
+                    endTime: "12:30",
+                    dueDate: today,
+                    priority: 'high'
+                });
+
+                addTask({
+                    title: "Micro pausa",
+                    description: "Pausa para alongar, respirar ou descansar a mente.",
+                    category: "Física",
+                    startTime: "13:00",
+                    endTime: "13:15",
+                    dueDate: today,
+                    priority: 'medium'
+                });
+
+                addTask({
+                    title: "Micro pausa",
+                    description: "Pausa para alongar, respirar ou descansar a mente.",
+                    category: "Física",
+                    startTime: "18:00",
+                    endTime: "18:15",
+                    dueDate: today,
+                    priority: 'medium'
+                });
+
+                // --- Saúde Mental ---
+                addTask({
+                    title: "Meditar 10min para regulação emocional",
+                    description: "Prática de mindfulness para começar o dia com clareza.",
+                    category: "Mental",
+                    startTime: "06:15",
+                    endTime: "06:30",
+                    dueDate: today,
+                    priority: 'medium'
+                });
+                
+                addTask({
+                    title: "Criar ritual noturno 2h antes de dormir",
+                    description: "Desacelerar, ler, evitar telas para melhorar a qualidade do sono.",
+                    category: "Mental",
+                    startTime: "20:00",
+                    endTime: "22:00",
+                    dueDate: today,
+                    priority: 'medium'
+                });
+
+                // --- Saúde Familiar ---
+                 addTask({
+                    title: "Escuta ativa: guardar celular, manter contato visual",
+                    description: "Dedicado a conversas e conexões de qualidade com a família.",
+                    category: "Familiar",
+                    startTime: "19:00",
+                    endTime: "19:30",
+                    dueDate: today,
+                    priority: 'high'
+                });
+
+                // --- Saúde Profissional ---
+                const pomodoroTimes = ['07:00', '08:00', '09:00', '11:00', '14:00', '15:00', '16:00', '17:00'];
+                pomodoroTimes.forEach(startTime => {
+                    const startHour = startTime.split(':')[0];
+                    const endTime = `${startHour}:25`;
+
+                    addTask({
+                        title: "Técnica Pomodoro",
+                        description: "25 minutos de trabalho focado sem interrupções.",
+                        category: "Profissional",
+                        startTime: startTime,
+                        endTime: endTime,
+                        dueDate: today,
+                        priority: 'medium'
+                    });
+                });
+
+                showToast('Tarefas padrão adicionadas ao seu dia!', 'info');
+            }
+
         } else {
             // If app is already initialized, just reload the router to reflect new user data
             window.location.hash = 'inicio';
@@ -105,43 +218,43 @@ function initProfileManager() {
         }
     };
     
-    existingProfilesList.addEventListener('click', (e) => {
-        const target = e.target as HTMLElement;
-        if (target.matches('.existing-profile-btn')) {
-            const profile = target.dataset.profile;
+    // Check for nulls before adding listeners
+    if (existingProfilesList) {
+        existingProfilesList.addEventListener('click', (e) => {
+            const target = e.target as HTMLElement;
+            const profileBtn = target.closest('.existing-profile-btn') as HTMLButtonElement;
+            if (profileBtn && profileBtn.dataset.profile) {
+                loadAppForProfile(profileBtn.dataset.profile);
+            }
+        });
+    }
+
+    if (loginForm) {
+        loginForm.addEventListener('submit', (e) => {
+            e.preventDefault();
+            const profile = profileInput.value.trim();
             if (profile) {
                 loadAppForProfile(profile);
+                profileInput.value = '';
+            } else {
+                showToast('Por favor, insira um e-mail para criar ou acessar um perfil.', 'warning');
             }
-        }
-    });
-
-    selectProfileBtn.addEventListener('click', () => {
-        const profile = profileInput.value.trim();
-        if (profile) {
-            loadAppForProfile(profile);
-            profileInput.value = '';
-        } else {
-            showToast('Por favor, insira um nome para o perfil.', 'warning');
-        }
-    });
+        });
+    }
     
-    profileInput.addEventListener('keypress', (e) => {
-        if (e.key === 'Enter') {
-            selectProfileBtn.click();
-        }
-    });
-
-    switchProfileBtn.addEventListener('click', () => {
-        storageService.setCurrentProfile(null);
-        window.location.reload();
-    });
+    if (switchProfileBtn) {
+        switchProfileBtn.addEventListener('click', () => {
+            storageService.setCurrentProfile(null);
+            window.location.reload();
+        });
+    }
 
     // Initial check
     const currentProfile = storageService.getCurrentProfile();
     if (currentProfile) {
         loadAppForProfile(currentProfile);
     } else {
-        showProfileModal();
+        showLoginPage();
     }
 }
 

@@ -1,4 +1,4 @@
-// pdca-profissional-habilidades-tecnicas.ts
+// food-espinafre.ts
 
 export function setup(): void {
     // Page is static, no specific setup needed.

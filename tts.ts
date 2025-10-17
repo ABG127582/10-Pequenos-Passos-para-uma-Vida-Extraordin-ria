@@ -6,7 +6,6 @@ import { storageService } from './storage';
 import { showToast, trapFocus } from './utils';
 import { STORAGE_KEYS } from './constants';
 
-// FIX: Define an interface for TTS settings to ensure type safety when loading from storage.
 interface TTSSettings {
     voiceURI: string | null;
     rate: number;
@@ -155,10 +154,8 @@ export const ttsReader = {
     },
 
     loadSettings() {
-        // FIX: Provide a type to storageService.get to avoid 'unknown' type.
         const saved = storageService.get<TTSSettings>(STORAGE_KEYS.TTS_SETTINGS);
         if (saved) {
-            // FIX: Use nullish coalescing operator (??) to correctly handle falsy values like 0 for rate/pitch.
             this.voiceURI = saved.voiceURI ?? null;
             this.rate = saved.rate ?? 1.2;
             this.pitch = saved.pitch ?? 1.0;
@@ -292,7 +289,6 @@ export const ttsReader = {
         
         this.isSpeaking = false;
         this.speakingSessionId = null;
-        // FIX: Use window.clearInterval to avoid type conflicts with Node.js 'Timeout' type.
         if (this.keepAliveInterval) window.clearInterval(this.keepAliveInterval);
         
         speechSynthesis.resume();
@@ -421,15 +417,11 @@ export const ttsReader = {
     },
     
     startKeepAlive() {
-        // FIX: Use window.clearInterval to avoid type conflicts.
         if (this.keepAliveInterval) window.clearInterval(this.keepAliveInterval);
-        // FIX: Use window.setInterval to ensure a 'number' return type in browser environments.
         this.keepAliveInterval = window.setInterval(() => {
             if (speechSynthesis.speaking) {
                 speechSynthesis.resume();
             } else if (!this.isSpeaking) {
-                 // FIX: Use window.clearInterval to match window.setInterval. The cast is acceptable
-                 // as the interval is running, so keepAliveInterval must be a number.
                  window.clearInterval(this.keepAliveInterval as number);
             }
         }, 10000);

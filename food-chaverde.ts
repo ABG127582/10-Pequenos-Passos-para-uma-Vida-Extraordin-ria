@@ -1,4 +1,5 @@
-// pdca-profissional-habilidades-tecnicas.ts
+// This file is a placeholder for the food-chaverde page logic.
+// It ensures the router can load the page without errors.
 
 export function setup(): void {
     // Page is static, no specific setup needed.
