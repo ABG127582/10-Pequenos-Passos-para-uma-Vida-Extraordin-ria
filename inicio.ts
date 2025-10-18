@@ -3,7 +3,7 @@
 import { storageService } from './storage';
 import { STORAGE_KEYS } from './constants';
 import { getStreak, awardMedalForCategory, showMedalAnimation, updateStreak } from './utils';
-import { getTasks, openTaskModal, updateTask } from './tarefas';
+import { getTasks, openTaskModal, updateTask } from './task-store';
 import DOMPurify from 'dompurify';
 import { ai } from './ai';
 import { errorHandler } from './errorHandler';

@@ -7,7 +7,7 @@ import { STORAGE_KEYS } from './constants';
 import { showMedalAnimation, awardMedalForCategory, updateStreak } from './utils';
 import { ai } from './ai';
 import { errorHandler } from './errorHandler';
-import { getTasks, openTaskModal, updateTask, deleteTask } from './tarefas';
+import { getTasks, openTaskModal, updateTask, deleteTask } from './task-store';
 
 // Re-declare window interface
 declare global {

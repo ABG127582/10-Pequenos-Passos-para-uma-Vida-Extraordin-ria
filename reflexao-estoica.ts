@@ -2,7 +2,7 @@
 
 import { storageService } from './storage';
 import { STORAGE_KEYS } from './constants';
-import { getCategories } from './tarefas';
+import { getCategories } from './task-store';
 
 // Re-declare window interface
 declare global {

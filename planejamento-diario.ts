@@ -2,7 +2,7 @@ import DOMPurify from 'dompurify';
 import { storageService } from './storage';
 import { STORAGE_KEYS } from './constants';
 import { confirmAction, awardMedalForCategory, updateStreak, showMedalAnimation } from './utils';
-import { Task, getTasks, openTaskModal, updateTask, deleteTask, addTask } from './tarefas';
+import { Task, getTasks, openTaskModal, updateTask, deleteTask, addTask } from './task-store';
 
 
 // Re-declare global functions from index.tsx

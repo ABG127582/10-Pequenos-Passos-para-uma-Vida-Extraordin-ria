@@ -10,7 +10,7 @@ import { storageService } from './storage';
 import { errorHandler } from './errorHandler';
 import { loadingManager } from './loadingManager';
 import { performanceMonitor } from './performance';
-import { initTasks, addTask, getTasks } from './tarefas';
+import { initTasks, addTask, getTasks } from './task-store';
 
 // --- Type definitions for the global window object ---
 // This ensures TypeScript knows about the functions we're attaching globally.
