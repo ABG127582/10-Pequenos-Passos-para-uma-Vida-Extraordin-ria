@@ -1,5 +1,4 @@
-
-// pdca-mental-reducao-distracoes.ts
+// pdca-mental-resiliencia.ts
 
 export function setup(): void {
     // Page is static, no specific setup needed.

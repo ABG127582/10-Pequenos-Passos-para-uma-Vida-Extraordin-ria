@@ -1,7 +1,7 @@
 import DOMPurify from 'dompurify';
 import { storageService } from './storage';
 import { STORAGE_KEYS } from './constants';
-import { confirmAction, awardMedalForCategory, updateStreak, showMedalAnimation } from './utils';
+import { confirmAction, awardMedalForCategory, updateStreak, showMedalAnimation, awardPoints } from './utils';
 import { Task, getTasks, openTaskModal, updateTask, deleteTask, addTask } from './tarefas';
 
 
@@ -243,20 +243,24 @@ const handleScheduleClick = (e: Event) => {
 
         if (target.closest('.complete-btn')) {
             const wasIncomplete = !task.completed;
-            const targetRect = taskBlock.getBoundingClientRect(); // Capture rect before DOM change
+            const targetRect = taskBlock.getBoundingClientRect();
 
-            // Update the task data. This will trigger a re-render via 'datachanged:tasks' event.
             updateTask(task.id, { completed: !task.completed });
 
-            // If the task was just marked as complete, check for medals.
-            if (wasIncomplete && task.category) {
-                 const allTasks = getTasks(); // get new, updated state
-                 const categoryTasksForDay = allTasks.filter(t => t.category === task.category && t.dueDate === currentDate);
-                 
-                 if (categoryTasksForDay.every(t => t.completed)) {
-                    awardMedalForCategory(task.category.toLowerCase(), currentDate);
-                    window.showToast(`Medalha de ${task.category} conquistada para ${new Date(currentDate + 'T00:00:00').toLocaleDateString('pt-BR')}!`, 'success');
-                    showMedalAnimation(targetRect); // Use the captured rect
+            if (wasIncomplete) {
+                // Award points for task completion
+                const taskPoints = task.priority === 'high' ? 20 : 10;
+                awardPoints(taskPoints, { targetRect });
+                updateStreak({ targetRect }); // This will award its own bonus points
+
+                if (task.category) {
+                    const allTasks = getTasks(); // get new, updated state
+                    const categoryTasksForDay = allTasks.filter(t => t.category === task.category && t.dueDate === currentDate);
+                    
+                    if (categoryTasksForDay.every(t => t.completed)) {
+                       awardMedalForCategory(task.category.toLowerCase(), currentDate, { targetRect });
+                       window.showToast(`Medalha de ${task.category} conquistada para ${new Date(currentDate + 'T00:00:00').toLocaleDateString('pt-BR')}!`, 'success');
+                   }
                 }
             }
         } else if (target.closest('.edit-btn') || target.closest('.task-content')) {
@@ -265,7 +269,6 @@ const handleScheduleClick = (e: Event) => {
         return;
     }
 
-    // If click is on an existing inline input, let its own handlers manage it.
     if (target.closest('#inline-task-input-wrapper')) {
         return;
     }
@@ -283,7 +286,6 @@ const handleScheduleClick = (e: Event) => {
 
 // --- LIFECYCLE FUNCTIONS ---
 export function setup() {
-    // This global listener persists across page views, so it belongs in setup.
     document.body.addEventListener('datachanged:tasks', () => {
         if (window.location.hash.includes('planejamento-diario')) {
             renderPage();
@@ -292,7 +294,6 @@ export function setup() {
 }
 
 export function show() {
-    // Re-query elements every time the page is shown because the DOM is replaced by the router.
     elements.pageContainer = document.getElementById('page-planejamento-diario');
     if (!elements.pageContainer) return;
 
@@ -302,7 +303,6 @@ export function show() {
     elements.scheduleList = elements.pageContainer.querySelector('#schedule-hours-list');
     elements.addEventBtn = elements.pageContainer.querySelector('#add-event-btn') as HTMLButtonElement;
 
-    // Attach event listeners to the fresh elements.
     elements.dateInput?.addEventListener('change', handleDateChange);
     elements.addEventBtn?.addEventListener('click', () => openTaskModal(undefined, { 
         dueDate: currentDate,
@@ -310,7 +310,6 @@ export function show() {
     }));
     elements.scheduleList?.addEventListener('click', handleScheduleClick);
 
-    // Initialize page state
     currentDate = new Date().toISOString().split('T')[0];
     if(elements.dateInput) {
         elements.dateInput.value = currentDate;
@@ -318,7 +317,6 @@ export function show() {
     
     renderPage();
 
-    // Scroll to current hour after a short delay
     setTimeout(() => {
         const currentHour = new Date().getHours();
         const currentHourSlot = elements.scheduleList?.querySelector(`[data-hour="${currentHour.toString().padStart(2, '0')}"]`);

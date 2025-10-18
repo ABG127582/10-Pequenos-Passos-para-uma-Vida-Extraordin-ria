@@ -68,7 +68,7 @@
 
                     <li>
                         <details id="sidebar-details-fisica">
-                            <summary class="sidebar-link" data-page-parent="fisica" data-tooltip="Física"><i class="fas fa-heartbeat fa-fw"></i><span class="sidebar-text">Física</span><i class="fas fa-chevron-right sidebar-chevron"></i></summary>
+                            <summary class="sidebar-link" data-page-parent="fisica" data-tooltip="Física"><i class="fas fa-heart-pulse fa-fw"></i><span class="sidebar-text">Física</span><i class="fas fa-chevron-right sidebar-chevron"></i></summary>
                             <ul>
                                 <li><a href="#fisica" class="sidebar-link sub-link" data-page="fisica">Visão Geral</a></li>
                                 <li><a href="#leitura-guia-fisica" class="sidebar-link sub-link" data-page="leitura-guia-fisica">Guia de Leitura</a></li>
@@ -91,7 +91,7 @@
 
                     <li>
                          <details id="sidebar-details-financeira">
-                            <summary class="sidebar-link" data-page-parent="financeira" data-tooltip="Financeira"><i class="fas fa-dollar-sign fa-fw"></i><span class="sidebar-text">Financeira</span><i class="fas fa-chevron-right sidebar-chevron"></i></summary>
+                            <summary class="sidebar-link" data-page-parent="financeira" data-tooltip="Financeira"><i class="fas fa-piggy-bank fa-fw"></i><span class="sidebar-text">Financeira</span><i class="fas fa-chevron-right sidebar-chevron"></i></summary>
                             <ul>
                                 <li><a href="#financeira" class="sidebar-link sub-link" data-page="financeira">Visão Geral</a></li>
                                 <li><a href="#leitura-guia-financeira" class="sidebar-link sub-link" data-page="leitura-guia-financeira">Guia de Leitura</a></li>
@@ -110,7 +110,7 @@
                     </li>
                     
                     <li><a href="#profissional" title="Saúde Profissional" class="sidebar-link" data-page="profissional" data-tooltip="Profissional"><i class="fas fa-briefcase fa-fw"></i><span class="sidebar-text">Profissional</span></a></li>
-                    <li><a href="#social" title="Saúde Social" class="sidebar-link" data-page="social" data-tooltip="Social"><i class="fas fa-comments fa-fw"></i><span class="sidebar-text">Social</span></a></li>
+                    <li><a href="#social" title="Saúde Social" class="sidebar-link" data-page="social" data-tooltip="Social"><i class="fas fa-user-group fa-fw"></i><span class="sidebar-text">Social</span></a></li>
 
                     <li>
                          <details id="sidebar-details-espiritual">
@@ -122,20 +122,27 @@
                         </details>
                     </li>
                     
-                    <li><a href="#preventiva" title="Saúde Preventiva" class="sidebar-link" data-page="preventiva" data-tooltip="Preventiva"><i class="fas fa-shield-alt fa-fw"></i><span class="sidebar-text">Preventiva</span></a></li>
+                    <li><a href="#preventiva" title="Saúde Preventiva" class="sidebar-link" data-page="preventiva" data-tooltip="Preventiva"><i class="fas fa-shield-halved fa-fw"></i><span class="sidebar-text">Preventiva</span></a></li>
                     <li><a href="#" id="open-contract-sidebar" title="Contrato de Compromisso" class="sidebar-link" data-tooltip="Contrato"><i class="fas fa-file-signature fa-fw"></i><span class="sidebar-text">Contrato</span></a></li>
                     <li><a href="#planejamento-diario" title="Planejamento Diário" class="sidebar-link" data-page="planejamento-diario" data-tooltip="Planejamento"><i class="fas fa-calendar-day fa-fw"></i><span class="sidebar-text">Planejamento Diário</span></a></li>
                     <li><a href="#tarefas" title="Caixa de Entrada" class="sidebar-link" data-page="tarefas" data-tooltip="Tarefas"><i class="fas fa-inbox fa-fw"></i><span class="sidebar-text">Tarefas</span></a></li>
                     <li><a href="#reflexoes-diarias" title="Reflexões Diárias" class="sidebar-link" data-page="reflexoes-diarias" data-tooltip="Reflexões"><i class="fas fa-lightbulb fa-fw"></i><span class="sidebar-text">Reflexões</span></a></li>
                     <li><a href="#reflexao-estoica" title="Reflexão Estoica" class="sidebar-link" data-page="reflexao-estoica" data-tooltip="Reflexão Estoica"><i class="fas fa-pen-nib fa-fw"></i><span class="sidebar-text">Reflexão Estoica</span></a></li>
+                    <li><a href="#conquistas" title="Minhas Conquistas" class="sidebar-link" data-page="conquistas" data-tooltip="Conquistas"><i class="fas fa-trophy fa-fw"></i><span class="sidebar-text">Conquistas</span></a></li>
                 </ul>
             </div>
             <div class="sidebar-footer">
                 <div id="user-profile-widget" class="user-profile-widget" style="display: none;">
                     <i class="fas fa-user-circle"></i>
                     <div class="user-info">
-                        <span class="user-profile-label">Perfil:</span>
-                        <span id="user-profile-name"></span>
+                        <div class="user-profile-name-level">
+                            <span id="user-profile-name"></span>
+                            <span id="user-level">Nível 1</span>
+                        </div>
+                        <div class="user-profile-ps-bar-container">
+                            <div id="user-ps-bar" class="user-profile-ps-bar" style="width: 0%;"></div>
+                        </div>
+                        <span id="user-ps-progress-text" class="user-profile-ps-text">0 / 200 PS</span>
                     </div>
                     <button id="switch-profile-btn" title="Trocar Perfil" class="action-btn"><i class="fas fa-exchange-alt"></i></button>
                 </div>
@@ -172,20 +179,21 @@
             </header>
             <div id="contract-modal-body" class="modal-body">
                 <form id="contract-form">
-                    <p>Eu, <input type="text" id="contract-name" placeholder="Seu Nome Completo" class="inline-input" required>, portador(a) do CPF <input type="text" id="contract-cpf" placeholder="000.000.000-00" class="inline-input">, nascido(a) em <input type="date" id="contract-birthdate" class="inline-input">, residente em <input type="text" id="contract-address" placeholder="Seu Endereço" class="inline-input">, firmo este contrato de compromisso pessoal e intransferível comigo mesmo(a).</p>
+                    <p>Eu, <input type="text" id="contract-name" placeholder="Seu Nome Completo" class="inline-input" required><span class="print-only-value"></span>, nascido(a) em <input type="date" id="contract-birthdate" class="inline-input"><span class="print-only-value"></span>, firmo este contrato de compromisso pessoal e intransferível comigo mesmo(a).</p>
                     
                     <div class="form-group">
                         <label for="contract-commitment"><strong>Cláusula 1: O Compromisso</strong></label>
                         <p>Comprometo-me a dedicar tempo, energia e esforço para melhorar minha saúde e bem-estar em todas as áreas da minha vida, reconhecendo que pequenas ações consistentes levam a grandes transformações. Este compromisso é um ato de autocuidado e amor-próprio.</p>
                         <div class="input-wrapper textarea-wrapper">
                             <textarea id="contract-commitment" rows="4" placeholder="Detalhe seu compromisso pessoal aqui. Ex: Comprometo-me a ser mais paciente comigo mesmo(a) e a celebrar cada pequena vitória no meu processo de desenvolvimento..."></textarea>
+                            <span class="print-only-value"></span>
                             <button type="button" class="speech-to-text-btn" title="Digitar por Voz"><i class="fas fa-microphone"></i></button>
                         </div>
                     </div>
 
                     <div class="form-group">
                         <label for="contract-period"><strong>Cláusula 2: O Prazo</strong></label>
-                        <p>Este contrato é válido pelo período de <input type="text" id="contract-period" placeholder="Ex: 90 dias, 6 meses, 1 ano" class="inline-input">, a contar da data de assinatura, podendo ser renovado e reavaliado conforme meu progresso e novas metas.</p>
+                        <p>Este contrato é válido pelo período de <input type="text" id="contract-period" placeholder="Ex: 90 dias, 6 meses, 1 ano" class="inline-input"><span class="print-only-value"></span>, a contar da data de assinatura, podendo ser renovado e reavaliado conforme meu progresso e novas metas.</p>
                     </div>
 
                     <div class="form-group">
@@ -193,6 +201,7 @@
                         <p>Durante a vigência deste contrato, focarei em alcançar as seguintes metas principais (seja específico):</p>
                          <div class="input-wrapper textarea-wrapper">
                             <textarea id="contract-goals" rows="6" placeholder="Ex: 1. Saúde Física: Perder 5kg e correr 5km. 2. Saúde Financeira: Economizar R$1000 para a reserva de emergência. 3. Saúde Mental: Praticar meditação 3x por semana..."></textarea>
+                             <span class="print-only-value"></span>
                             <button type="button" class="speech-to-text-btn" title="Digitar por Voz"><i class="fas fa-microphone"></i></button>
                         </div>
                     </div>
@@ -202,10 +211,15 @@
                         <p>Assino o presente contrato em sinal de meu comprometimento e determinação.</p>
                         <div class="signature-line-container">
                              <input type="text" id="contract-signature" class="signature-input" placeholder="Digite seu nome para assinar" required>
+                             <span class="print-only-value"></span>
                              <input type="date" id="contract-date" required>
+                             <span class="print-only-value"></span>
                         </div>
                     </div>
                 </form>
+                 <div style="margin-top: 2rem; padding: 1rem; background-color: rgba(var(--color-secondary-rgb), 0.1); border-radius: var(--card-border-radius); font-size: 0.85rem; color: var(--text-color-muted);">
+                    <i class="fas fa-lock"></i> <strong>Privacidade:</strong> Todos os dados inseridos neste contrato são armazenados exclusivamente no seu dispositivo local. Nenhuma informação é enviada para a internet.
+                </div>
             </div>
             <footer id="contract-modal-actions" class="modal-footer">
                  <button type="button" id="contract-modal-print-btn" class="standard-button-secondary"><i class="fas fa-print"></i> Imprimir</button>
@@ -372,6 +386,37 @@
             </footer>
         </div>
     </div>
+
+    <!-- Level Up Modal -->
+    <div id="level-up-modal" class="modal-container" style="display: none;" role="dialog" aria-modal="true" aria-labelledby="level-up-title">
+        <div class="modal-content level-up-content">
+            <div class="modal-body">
+                <div class="level-up-animation">🎉</div>
+                <h2 id="level-up-title">Parabéns!</h2>
+                <p>Você alcançou o <strong id="new-level-text">Nível 2</strong>!</p>
+                <p>Continue com os pequenos passos para uma vida extraordinária.</p>
+            </div>
+            <footer class="modal-footer">
+                <button id="level-up-close-btn" class="standard-button">Continuar</button>
+            </footer>
+        </div>
+    </div>
+
+    <!-- Achievement Unlocked Modal -->
+    <div id="achievement-unlocked-modal" class="modal-container" style="display: none;" role="dialog" aria-modal="true" aria-labelledby="achievement-unlocked-title">
+        <div class="modal-content level-up-content">
+            <div class="modal-body">
+                <div id="achievement-animation-icon" class="level-up-animation"></div>
+                <h2 id="achievement-unlocked-title" class="level-up-title">Conquista Desbloqueada!</h2>
+                <p id="achievement-unlocked-text">Você alcançou a marca de 7 dias!</p>
+                <p id="achievement-unlocked-bonus" style="font-size: 1.2rem; font-weight: bold; color: var(--color-success); margin-top: 1rem;">+100 PS</p>
+            </div>
+            <footer class="modal-footer">
+                <button id="achievement-unlocked-close-btn" class="standard-button">Continuar</button>
+            </footer>
+        </div>
+    </div>
+
 
     <!-- Toast Notification Container -->
     <div id="toast-notification-container" aria-live="assertive" aria-atomic="true"></div>

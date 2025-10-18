@@ -87,7 +87,7 @@ const handleAddAsset = (e: Event) => {
     const purchaseDate = elements.assetPurchaseDateInput.value;
 
     if (name && purchaseDate) {
-        const newAsset: Asset = { id: Date.now().toString(), name, purchaseDate };
+        const newAsset: Asset = { id: crypto.randomUUID(), name, purchaseDate };
         assets.unshift(newAsset);
         storageService.set(STORAGE_KEYS.FINANCE_ASSETS, assets);
         renderAssets();

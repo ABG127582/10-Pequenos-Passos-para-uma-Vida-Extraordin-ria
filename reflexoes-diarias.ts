@@ -262,7 +262,7 @@ function switchView(view: 'list' | 'grid') {
 
 
 // --- LIFECYCLE FUNCTIONS ---
-function initElements(page: HTMLElement) {
+function initElementsAndListeners(page: HTMLElement) {
     elements = {
         page,
         searchInput: getElement<HTMLInputElement>('#reflexoes-search-input', page),
@@ -274,23 +274,13 @@ function initElements(page: HTMLElement) {
         listContainer: getElement<HTMLElement>('#reflexoes-list-container', page),
         emptyState: getElement<HTMLElement>('#reflexoes-empty-state', page),
         generateInsightsBtn: getElement<HTMLButtonElement>('#generate-insights-btn', page),
-        // Global modal elements
+        // Global modal elements are always available
         aiInsightsModal: document.getElementById('ai-insights-modal') as HTMLElement,
         aiInsightsBody: document.getElementById('ai-insights-body') as HTMLElement,
         aiInsightsCloseBtn: document.getElementById('ai-insights-close-btn') as HTMLButtonElement,
         aiInsightsOkBtn: document.getElementById('ai-insights-ok-btn') as HTMLButtonElement,
         aiInsightsCopyBtn: document.getElementById('ai-insights-copy-btn') as HTMLButtonElement,
     };
-}
-
-export function setup() {
-    const page = document.getElementById('page-reflexoes-diarias');
-    if (!page) {
-        console.warn('Página de reflexões não encontrada durante o setup.');
-        return;
-    }
-
-    initElements(page);
 
     const debouncedRender = debounce(renderReflections, 300);
 
@@ -305,21 +295,31 @@ export function setup() {
     
     elements.generateInsightsBtn.addEventListener('click', handleGenerateInsights);
 
-    // AI Modal Listeners
-    elements.aiInsightsCloseBtn.addEventListener('click', closeInsightsModal);
-    elements.aiInsightsOkBtn.addEventListener('click', closeInsightsModal);
-    elements.aiInsightsCopyBtn.addEventListener('click', () => {
-        navigator.clipboard.writeText(elements.aiInsightsBody.innerText)
-            .then(() => window.showToast('Insights copiados para a área de transferência!', 'success'))
-            .catch(() => window.showToast('Falha ao copiar texto.', 'error'));
-    });
+    // These listeners are on global modals, so they can be set up once
+    if (!elements.aiInsightsModal.dataset.listenerAttached) {
+        elements.aiInsightsCloseBtn.addEventListener('click', closeInsightsModal);
+        elements.aiInsightsOkBtn.addEventListener('click', closeInsightsModal);
+        elements.aiInsightsCopyBtn.addEventListener('click', () => {
+            navigator.clipboard.writeText(elements.aiInsightsBody.innerText)
+                .then(() => window.showToast('Insights copiados para a área de transferência!', 'success'))
+                .catch(() => window.showToast('Falha ao copiar texto.', 'error'));
+        });
+        elements.aiInsightsModal.dataset.listenerAttached = 'true';
+    }
     
     populateCategoryFilter();
 }
 
+export function setup() {
+    // No-op. All logic is now in show() to handle page re-rendering by the router.
+}
+
 export function show() {
-    if (!elements || !elements.page) return; // Guard clause if setup failed
+    const page = document.getElementById('page-reflexoes-diarias');
+    if (!page) return;
+    
+    initElementsAndListeners(page);
     loadReflections();
     renderReflections();
-    switchView('list'); // Default to list view on show
+    switchView('list');
 }

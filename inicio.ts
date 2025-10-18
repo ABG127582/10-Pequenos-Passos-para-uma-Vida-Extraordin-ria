@@ -2,7 +2,7 @@
 // This file contains the logic for the "Início" (Home) page.
 import { storageService } from './storage';
 import { STORAGE_KEYS } from './constants';
-import { getStreak, awardMedalForCategory, showMedalAnimation, updateStreak } from './utils';
+import { getStreak, awardMedalForCategory, showMedalAnimation, updateStreak, awardPoints, STREAK_MILESTONES } from './utils';
 import { getTasks, openTaskModal, updateTask } from './tarefas';
 import DOMPurify from 'dompurify';
 import { ai } from './ai';
@@ -18,8 +18,10 @@ let page: HTMLElement | null = null;
 export function setup(): void {
     // This listener is on the body, so it's safe to set up once.
     document.body.addEventListener('datachanged:tasks', () => {
-        if (window.location.hash === '#inicio' || window.location.hash === '') {
+        if ((window.location.hash === '#inicio' || window.location.hash === '') && page) {
             renderTodaySchedule();
+            updateMedals(page);
+            renderMedalLeaderboard();
         }
     });
 }
@@ -68,16 +70,18 @@ export function show(): void {
             updateTask(task.id, { completed: !task.completed });
 
             if (wasIncomplete) {
-                updateStreak();
+                // Award points for task completion
+                const taskPoints = task.priority === 'high' ? 20 : 10;
+                awardPoints(taskPoints, { targetRect });
+                updateStreak({ targetRect }); // This will award its own bonus points
                 
-                const allTasks = getTasks(); // get new, updated state
-                const todayStr = new Date().toISOString().split('T')[0];
-                const categoryTasksForDay = allTasks.filter(t => t.category === task.category && t.dueDate === todayStr);
+                // We check the new, updated state from getTasks()
+                const allTasks = getTasks();
+                const categoryTasksForDay = allTasks.filter(t => t.category === task.category && t.dueDate === task.dueDate);
                 
                 if (task.category && categoryTasksForDay.every(t => t.completed)) {
-                    awardMedalForCategory(task.category.toLowerCase(), todayStr);
+                    awardMedalForCategory(task.category.toLowerCase(), task.dueDate, { targetRect }); // This will award its own bonus points
                     window.showToast(`Medalha de ${task.category} conquistada para hoje!`, 'success');
-                    showMedalAnimation(targetRect);
                 }
             }
             return;
@@ -111,8 +115,30 @@ function updateMedals(page: HTMLElement) {
 function updateStreakDisplay(page: HTMLElement) {
     const streak = getStreak();
     const streakCountEl = page.querySelector('#streak-count');
+    const streakWidget = page.querySelector<HTMLElement>('.streak-widget');
+
     if (streakCountEl) {
         (streakCountEl as HTMLElement).textContent = streak.current.toString();
+    }
+    
+    if (streakWidget) {
+        // Remove old milestone classes
+        streakWidget.className.split(' ').forEach(className => {
+            if (className.startsWith('milestone-')) {
+                streakWidget.classList.remove(className);
+            }
+        });
+
+        // Find highest milestone achieved and apply class
+        const achievedMilestoneDays = Object.keys(STREAK_MILESTONES)
+            .map(d => parseInt(d, 10))
+            .filter(d => streak.current >= d)
+            .sort((a, b) => b - a);
+        
+        if (achievedMilestoneDays.length > 0) {
+            const highestMilestone = achievedMilestoneDays[0];
+            streakWidget.classList.add(`milestone-${highestMilestone}`);
+        }
     }
 }
 

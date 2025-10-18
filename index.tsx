@@ -5,7 +5,7 @@
 import { initRouter, pageModuleImports } from './router';
 import { ttsReader } from './tts';
 import { setupModals, openContractModal } from './modals';
-import { showToast, startSpeechRecognition, confirmAction, trapFocus } from './utils';
+import { showToast, startSpeechRecognition, confirmAction, trapFocus, updateProfileWidget } from './utils';
 import { storageService } from './storage';
 import { errorHandler } from './errorHandler';
 import { loadingManager } from './loadingManager';
@@ -120,6 +120,16 @@ function initProfileManager() {
                 });
                 
                 addTask({
+                    title: "Jejum Intermitente e Metabólico",
+                    description: "Janela de jejum das 14h às 06h do dia seguinte para otimização metabólica.",
+                    category: "Física",
+                    startTime: "14:00",
+                    endTime: "06:00",
+                    dueDate: today,
+                    priority: 'high'
+                });
+
+                addTask({
                     title: "Pilar 3: Exercício Físico (O Catalisador)",
                     description: "Prática de atividade física para saúde cardiovascular e bem-estar.",
                     category: "Física",
@@ -161,6 +171,16 @@ function initProfileManager() {
 
                 // --- Saúde Mental ---
                 addTask({
+                    title: "Rotina Matinal: Gratidão, Sol e Hidratação",
+                    description: "Acordar com calma, praticar gratidão, se expor ao sol matinal para regular o ciclo circadiano e beber 1L de água.",
+                    category: "Mental",
+                    startTime: "06:00",
+                    endTime: "06:15",
+                    dueDate: today,
+                    priority: 'high'
+                });
+
+                addTask({
                     title: "Meditar 10min para regulação emocional",
                     description: "Prática de mindfulness para começar o dia com clareza.",
                     category: "Mental",
@@ -171,11 +191,21 @@ function initProfileManager() {
                 });
                 
                 addTask({
-                    title: "Criar ritual noturno 2h antes de dormir",
-                    description: "Desacelerar, ler, evitar telas para melhorar a qualidade do sono.",
+                    title: "Ritual de Desligamento",
+                    description: "Desacelerar, ler, meditar e evitar telas para preparar para um sono de qualidade.",
                     category: "Mental",
                     startTime: "20:00",
                     endTime: "22:00",
+                    dueDate: today,
+                    priority: 'medium'
+                });
+
+                addTask({
+                    title: "Santuário do Sono (escuro, silencioso, fresco)",
+                    description: "Preparar o ambiente para o sono, garantindo escuridão total, silêncio e temperatura fresca para otimizar a qualidade do descanso.",
+                    category: "Mental",
+                    startTime: "21:00",
+                    endTime: "21:15",
                     dueDate: today,
                     priority: 'medium'
                 });
@@ -273,6 +303,12 @@ function initializeApp() {
     const detailsElements = document.querySelectorAll<HTMLDetailsElement>('.sidebar-links details');
     const themeToggle = document.getElementById('theme-toggle');
     const themeIcon = themeToggle?.querySelector('i');
+
+    // --- Gamification UI Update ---
+    updateProfileWidget(); // Initial update
+    document.body.addEventListener('gamification:update', () => {
+        updateProfileWidget();
+    });
 
     // --- Theme Management ---
     let currentTheme: 'light' | 'dark';
@@ -395,5 +431,19 @@ function initializeApp() {
             rainSoundToggle.classList.remove('playing');
             rainSoundToggle.setAttribute('aria-label', 'Tocar som de chuva');
         }
+    });
+
+    // --- Level Up Modal ---
+    const levelUpCloseBtn = document.getElementById('level-up-close-btn');
+    const levelUpModal = document.getElementById('level-up-modal');
+    levelUpCloseBtn?.addEventListener('click', () => {
+        if(levelUpModal) levelUpModal.style.display = 'none';
+    });
+
+    // --- Achievement Unlocked Modal ---
+    const achievementCloseBtn = document.getElementById('achievement-unlocked-close-btn');
+    const achievementModal = document.getElementById('achievement-unlocked-modal');
+    achievementCloseBtn?.addEventListener('click', () => {
+        if (achievementModal) achievementModal.style.display = 'none';
     });
 }

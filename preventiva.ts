@@ -296,7 +296,7 @@ export function setup() {
     supplementForm?.addEventListener('submit', (e) => {
         e.preventDefault();
         const newSup: Supplement = {
-            id: Date.now().toString(),
+            id: crypto.randomUUID(),
             name: (document.getElementById('supplement-name') as HTMLInputElement).value,
             dosage: (document.getElementById('supplement-dosage') as HTMLInputElement).value,
             frequency: (document.getElementById('supplement-frequency') as HTMLInputElement).value,

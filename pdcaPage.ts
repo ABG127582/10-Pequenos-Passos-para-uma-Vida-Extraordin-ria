@@ -4,7 +4,7 @@
 import DOMPurify from 'dompurify';
 import { storageService } from './storage';
 import { STORAGE_KEYS } from './constants';
-import { showMedalAnimation, awardMedalForCategory, updateStreak } from './utils';
+import { showMedalAnimation, awardMedalForCategory, updateStreak, awardPoints } from './utils';
 import { ai } from './ai';
 import { errorHandler } from './errorHandler';
 import { getTasks, openTaskModal, updateTask, deleteTask } from './tarefas';
@@ -51,82 +51,96 @@ export function createPdcaPageHandler(category: string, pageId: string) {
                     ${task.startTime ? `<span class="item-time"><i class="fas fa-clock"></i> ${task.startTime} - ${task.endTime || ''}</span>` : ''}
                 </div>
                 <div class="item-actions">
-                    <button class="action-btn edit-btn edit" aria-label="Editar tarefa"><i class="fas fa-edit"></i></button>
-                    <button class="action-btn delete-btn delete" aria-label="Apagar tarefa"><i class="fas fa-trash"></i></button>
+                    <button class="action-btn edit" data-id="${task.id}" aria-label="Editar tarefa"><i class="fas fa-edit"></i></button>
+                    <button class="action-btn delete" data-id="${task.id}" aria-label="Excluir tarefa"><i class="fas fa-trash"></i></button>
                 </div>
             `;
             tasksListEl.appendChild(li);
         });
     };
 
-    const handleTaskAction = async (e: Event) => {
+    const handleTaskListClick = async (e: Event, page: HTMLElement) => {
         const target = e.target as HTMLElement;
-        const li = target.closest('li');
-        if (!li || !li.dataset.id) return;
-
-        const taskId = li.dataset.id;
+        const taskItem = target.closest<HTMLLIElement>('li[data-id]');
+        if (!taskItem || !taskItem.dataset.id) return;
+        
+        const taskId = taskItem.dataset.id;
         const task = getTasks().find(t => t.id === taskId);
         if (!task) return;
 
-        if (target.closest('.edit-btn') || target.closest('.item-text-wrapper')) {
-            openTaskModal(task);
-        } else if (target.closest('.delete-btn')) {
-            await deleteTask(taskId);
-        } else if (target.matches('.task-checkbox')) {
-            const wasCompleted = task.completed;
-            const newCompletedStatus = !task.completed;
-            const targetRect = li.getBoundingClientRect(); // Capture rect before DOM change
+        if (target.matches('.task-checkbox')) {
+            const wasIncomplete = !task.completed;
+            const targetRect = taskItem.getBoundingClientRect();
+            
+            updateTask(taskId, { completed: !task.completed });
 
-            updateTask(taskId, { completed: newCompletedStatus });
+            if (wasIncomplete) {
+                const taskPoints = task.priority === 'high' ? 20 : 10;
+                awardPoints(taskPoints, { targetRect });
+                updateStreak({ targetRect });
+                
+                const allTasks = getTasks();
+                const todayStr = new Date().toISOString().split('T')[0];
+                const categoryTasksForDay = allTasks.filter(t => t.category === task.category && t.dueDate === todayStr);
 
-            if (newCompletedStatus && !wasCompleted) {
-                updateStreak();
-                
-                const categoryTasks = getTasks().filter(t => t.category === category && t.dueDate === task.dueDate);
-                const allCategoryTasksCompleted = categoryTasks.every(t => t.completed);
-                
-                if (allCategoryTasksCompleted) {
-                    const categoryKey = category.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "");
-                    awardMedalForCategory(categoryKey, task.dueDate); // Pass the task's due date
-                    showMedalAnimation(targetRect); // Pass the captured rect
-                    window.showToast(`Parabéns! Você completou todas as tarefas de Saúde ${category} e ganhou uma medalha!`, 'success');
+                if (task.category && categoryTasksForDay.every(t => t.completed)) {
+                    awardMedalForCategory(task.category.toLowerCase(), todayStr, { targetRect });
+                    window.showToast(`Medalha de ${task.category} conquistada para hoje!`, 'success');
                 }
             }
+            return;
+        }
+
+        if (target.closest('.delete')) {
+            await deleteTask(taskId);
+            return;
+        }
+
+        if (target.closest('.edit') || target.closest('.item-text-wrapper')) {
+            openTaskModal(task);
+            return;
         }
     };
 
-    // --- RETURN LIFECYCLE METHODS ---
-    return {
-        setup() {
-            // This listener is global and safe to setup once per module.
-            // It listens for data changes and re-renders the task list if the current page is active.
-            document.body.addEventListener('datachanged:tasks', () => {
-                const page = document.getElementById(pageId);
-                const hash = window.location.hash.substring(1);
-                if (page && hash === pageId.replace('page-', '')) {
-                     renderTasks(page);
-                }
-            });
-        },
-        show() {
-            const page = document.getElementById(pageId);
-            if (!page) return;
-
-            // --- Query elements and attach listeners every time the page is shown ---
-            // This is necessary because the router replaces the page's DOM content.
-            const addTaskBtn = page.querySelector<HTMLButtonElement>(`[data-action="add-task-for-category"]`);
-            const tasksList = page.querySelector<HTMLUListElement>(`#${category.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "")}-tasks-list`);
-            
-            // The event listeners are attached to the fresh DOM elements.
-            // No need to worry about removing them, as the elements are destroyed on navigation.
-            addTaskBtn?.addEventListener('click', () => {
-                openTaskModal(undefined, { category: category as any, title: '' });
-            });
-
-            tasksList?.addEventListener('click', handleTaskAction);
-            
-            // Render the initial content for the page
-            renderTasks(page);
+    const setup = () => {
+        const page = document.getElementById(pageId);
+        if (!page) {
+            console.warn(`PDCA page container (#${pageId}) not found during setup.`);
+            return;
         }
+        
+        document.body.addEventListener('datachanged:tasks', () => {
+            if (window.location.hash.includes(pageId) || (window.location.hash === '' && pageId === 'page-inicio')) {
+                 const currentPageEl = document.getElementById(pageId);
+                 if (currentPageEl) renderTasks(currentPageEl);
+            }
+        });
+
+        page.addEventListener('click', (e) => {
+            const target = e.target as HTMLElement;
+            
+            if (target.closest('[data-action="add-task-for-category"]')) {
+                openTaskModal(undefined, { 
+                    category: category as any, 
+                    dueDate: new Date().toISOString().split('T')[0] 
+                });
+                return;
+            }
+
+            if (target.closest('.lista-planejamento')) {
+                handleTaskListClick(e, page);
+            }
+        });
     };
+    
+    const show = () => {
+        const page = document.getElementById(pageId);
+        if (!page) {
+            console.warn(`PDCA page container (#${pageId}) not found on show.`);
+            return;
+        }
+        renderTasks(page);
+    };
+
+    return { setup, show };
 }

@@ -1,5 +1,5 @@
 import DOMPurify from 'dompurify';
-import { debounce, confirmAction, trapFocus } from './utils';
+import { debounce, confirmAction, trapFocus, updateStreak, awardMedalForCategory, showMedalAnimation, awardPoints } from './utils';
 import { STORAGE_KEYS } from './constants';
 import { storageService } from './storage';
 
@@ -112,7 +112,7 @@ export function getCategories(): string[] {
 
 export function addTask(taskData: Partial<Task>): Task {
     const newTask: Task = {
-        id: Date.now().toString(),
+        id: crypto.randomUUID(),
         title: taskData.title || 'Nova Tarefa',
         description: taskData.description || '',
         completed: false,
@@ -128,9 +128,9 @@ export function addTask(taskData: Partial<Task>): Task {
 }
 
 export function updateTask(taskId: string, updates: Partial<Task>) {
-    const taskIndex = allTasks.findIndex(t => t.id === taskId);
-    if (taskIndex > -1) {
-        allTasks[taskIndex] = { ...allTasks[taskIndex], ...updates };
+    const task = allTasks.find(t => t.id === taskId);
+    if (task) {
+        Object.assign(task, updates); // Mutate the object directly
         saveData();
     }
 }
@@ -498,7 +498,27 @@ const handleActionClick = async (e: Event) => {
     } else if (target.closest('.edit')) {
         openTaskModal(task);
     } else if (target.matches('.task-checkbox, .task-checkbox *')) {
+        const wasIncomplete = !task.completed;
+        const targetRect = taskEl.getBoundingClientRect();
+        
         updateTask(taskId, { completed: !task.completed });
+
+        if (wasIncomplete) {
+            const taskPoints = task.priority === 'high' ? 20 : 10;
+            awardPoints(taskPoints, { targetRect });
+            updateStreak({ targetRect });
+            
+            const allTasks = getTasks();
+            if (task.category && task.dueDate) {
+                const categoryTasksForDay = allTasks.filter(t => t.category === task.category && t.dueDate === task.dueDate);
+
+                if (categoryTasksForDay.every(t => t.completed)) {
+                    const categoryKey = task.category.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "");
+                    awardMedalForCategory(categoryKey, task.dueDate, { targetRect });
+                    window.showToast(`Parabéns! Você completou todas as tarefas de ${task.category} e ganhou uma medalha!`, 'success');
+                }
+            }
+        }
     }
 };
 

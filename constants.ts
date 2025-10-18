@@ -41,6 +41,9 @@ export const STORAGE_KEYS = {
     DAILY_MEDALS: 'dailyMedals',
     ACTIVITY_STREAK: 'activityStreak',
     HOME_TASKS_EXPANDED: 'homeTasksExpanded',
+    // Gamification
+    GAMIFICATION_PROFILE: 'gamificationProfile',
+    USER_ACHIEVEMENTS: 'userAchievements',
     // Sidebar menu state (prefix)
     SIDEBAR_DETAILS_PREFIX: 'sidebar-details-', // e.g., 'sidebar-details-fisica'
 } as const;
