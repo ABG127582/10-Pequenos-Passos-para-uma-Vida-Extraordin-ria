@@ -16,6 +16,8 @@ export interface Task {
     dueDate: string; // YYYY-MM-DD
     startTime?: string; // HH:MM
     endTime?: string;   // HH:MM
+    reminder?: string; // in minutes: '5', '15', '30', '60'
+    reminderSent?: boolean;
 }
 
 // Re-declare the global window interface
@@ -83,6 +85,8 @@ const elements: { [key: string]: HTMLElement | null | any } = {
     modalEndTimeInput: null,
     modalPrioritySelect: null,
     modalCategorySelect: null,
+    modalReminderSelect: null,
+    reminderHelpText: null,
 
     categoryChartCanvas: null,
     chartNoData: null,
@@ -121,6 +125,8 @@ export function addTask(taskData: Partial<Task>): Task {
         dueDate: taskData.dueDate || '',
         startTime: taskData.startTime,
         endTime: taskData.endTime,
+        reminder: taskData.reminder,
+        reminderSent: false,
     };
     allTasks.unshift(newTask);
     saveData();
@@ -152,7 +158,7 @@ export async function deleteTask(taskId: string): Promise<boolean> {
 // --- MODAL HANDLING (to be used globally) ---
 
 export function openTaskModal(task?: Task, prefill?: Partial<Task>) {
-    if (!elements.taskModal || !elements.taskModalForm || !elements.taskModalTitle || !elements.modalCategorySelect) return;
+    if (!elements.taskModal || !elements.taskModalForm || !elements.taskModalTitle || !elements.modalCategorySelect || !elements.modalReminderSelect || !elements.reminderHelpText) return;
     elements.taskModalForm.reset();
     
     lastFocusedElement = document.activeElement as HTMLElement;
@@ -175,6 +181,7 @@ export function openTaskModal(task?: Task, prefill?: Partial<Task>) {
         elements.modalEndTimeInput!.value = task.endTime || '';
         elements.modalPrioritySelect!.value = task.priority;
         elements.modalCategorySelect.value = task.category;
+        elements.modalReminderSelect.value = task.reminder || '';
         elements.taskModalDeleteBtn.style.display = 'inline-flex';
     } else { // Adding
         editingTaskId = null;
@@ -187,9 +194,19 @@ export function openTaskModal(task?: Task, prefill?: Partial<Task>) {
             elements.modalEndTimeInput!.value = prefill.endTime || '';
             elements.modalPrioritySelect!.value = prefill.priority || 'medium';
             elements.modalCategorySelect!.value = prefill.category || '';
+            elements.modalReminderSelect.value = prefill.reminder || '';
         }
         elements.taskModalDeleteBtn.style.display = 'none';
     }
+
+    // Trigger the logic to enable/disable reminder field on open
+    const hasStartTime = !!(elements.modalStartTimeInput?.value);
+    elements.modalReminderSelect.disabled = !hasStartTime;
+    elements.reminderHelpText.style.display = hasStartTime ? 'none' : 'block';
+    if (!hasStartTime) {
+        elements.modalReminderSelect.value = '';
+    }
+
     elements.taskModal.style.display = 'flex';
     
     // Adjust textarea height after modal is displayed
@@ -230,6 +247,7 @@ const handleTaskFormSubmit = (e: Event) => {
         endTime: elements.modalEndTimeInput!.value || undefined,
         priority: elements.modalPrioritySelect!.value as 'low' | 'medium' | 'high',
         category: elements.modalCategorySelect!.value as Task['category'],
+        reminder: elements.modalReminderSelect!.value,
     };
 
     if (!taskData.title || taskData.title.trim() === '') {
@@ -238,6 +256,11 @@ const handleTaskFormSubmit = (e: Event) => {
     }
 
     if (editingTaskId) {
+        // Check if time/date/reminder has changed to reset notification status
+        const originalTask = allTasks.find(t => t.id === editingTaskId);
+        if (originalTask && (originalTask.dueDate !== taskData.dueDate || originalTask.startTime !== taskData.startTime || originalTask.reminder !== taskData.reminder)) {
+            taskData.reminderSent = false;
+        }
         updateTask(editingTaskId, taskData);
     } else {
         addTask(taskData);
@@ -508,14 +531,11 @@ const handleActionClick = async (e: Event) => {
             awardPoints(taskPoints, { targetRect });
             updateStreak({ targetRect });
             
-            const allTasks = getTasks();
             if (task.category && task.dueDate) {
-                const categoryTasksForDay = allTasks.filter(t => t.category === task.category && t.dueDate === task.dueDate);
-
-                if (categoryTasksForDay.every(t => t.completed)) {
-                    const categoryKey = task.category.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "");
-                    awardMedalForCategory(categoryKey, task.dueDate, { targetRect });
-                    window.showToast(`Parabéns! Você completou todas as tarefas de ${task.category} e ganhou uma medalha!`, 'success');
+                const categoryKey = task.category.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "");
+                const newlyAwarded = awardMedalForCategory(categoryKey, task.dueDate, { targetRect });
+                if (newlyAwarded) {
+                    window.showToast(`Medalha de ${task.category} conquistada para ${new Date(task.dueDate + 'T00:00:00').toLocaleDateString('pt-BR')}!`, 'success');
                 }
             }
         }
@@ -579,6 +599,19 @@ export function initTasks() {
         elements.modalEndTimeInput = document.getElementById('unified-task-end-time') as HTMLInputElement;
         elements.modalPrioritySelect = document.getElementById('unified-task-priority') as HTMLSelectElement;
         elements.modalCategorySelect = document.getElementById('unified-task-category') as HTMLSelectElement;
+        elements.modalReminderSelect = document.getElementById('unified-task-reminder') as HTMLSelectElement;
+        elements.reminderHelpText = document.getElementById('reminder-help-text') as HTMLElement;
+
+        if (elements.modalStartTimeInput) {
+            elements.modalStartTimeInput.addEventListener('input', () => {
+                const hasStartTime = !!elements.modalStartTimeInput.value;
+                elements.modalReminderSelect.disabled = !hasStartTime;
+                elements.reminderHelpText.style.display = hasStartTime ? 'none' : 'block';
+                if (!hasStartTime) {
+                    elements.modalReminderSelect.value = '';
+                }
+            });
+        }
 
         if (elements.modalDescriptionInput) {
             const adjustTextareaHeight = () => {

@@ -168,25 +168,28 @@ function createInlineTaskInput(container: HTMLElement, hour: string) {
     // Remove any other inline inputs that might exist elsewhere on the page
     const anyExistingWrapper = document.getElementById('inline-task-input-wrapper');
     if (anyExistingWrapper) {
-        (anyExistingWrapper.querySelector('input') as HTMLInputElement)?.blur(); // This will trigger save/cancel and removal
+        anyExistingWrapper.remove();
     }
 
     const wrapper = document.createElement('div');
     wrapper.id = 'inline-task-input-wrapper';
-    wrapper.className = 'inline-input-container';
+    wrapper.className = 'inline-input-container input-wrapper'; // Add input-wrapper here
 
-    const input = document.createElement('input');
-    input.type = 'text';
-    input.id = 'inline-task-input';
-    input.placeholder = 'Nova tarefa e Enter';
-    input.className = 'inline-task-input-field';
+    wrapper.innerHTML = `
+        <input type="text" id="inline-task-input" placeholder="Digite ou toque no microfone para adicionar..." class="inline-task-input-field input-minimal">
+        <button type="button" class="clear-input-btn" title="Limpar"><i class="fas fa-times-circle"></i></button>
+        <button type="button" class="speech-to-text-btn" title="Digitar por Voz"><i class="fas fa-microphone"></i></button>
+    `;
 
-    wrapper.appendChild(input);
     container.appendChild(wrapper);
-    input.focus();
+    const input = wrapper.querySelector('input') as HTMLInputElement;
+
+    // Auto-trigger microphone
+    (wrapper.querySelector('.speech-to-text-btn') as HTMLButtonElement)?.click();
+
 
     const saveAndRemove = () => {
-        // Prevent running twice if blur and keydown happen close together
+        // Prevent running twice
         if (!document.body.contains(wrapper)) return;
 
         const title = input.value.trim();
@@ -212,10 +215,7 @@ function createInlineTaskInput(container: HTMLElement, hour: string) {
 
     input.addEventListener('blur', saveAndRemove);
     input.addEventListener('keydown', (e) => {
-        if (e.key === 'Enter') {
-            e.preventDefault();
-            input.blur(); // Trigger the blur event handler to save and remove
-        } else if (e.key === 'Escape') {
+        if (e.key === 'Escape') {
             input.value = ''; // Ensure it doesn't save
             input.blur(); // Trigger the blur event handler to remove
         }
@@ -235,12 +235,14 @@ const handleScheduleClick = (e: Event) => {
 
     const taskBlock = target.closest<HTMLElement>('.task-block');
     if (taskBlock) {
+        // Clicks on task blocks are handled by the global click handler in index.tsx now
+        // to avoid duplicating logic. We just need to handle the completion logic here.
         const taskId = taskBlock.dataset.taskId;
         if (!taskId) return;
         
         const task = tasksForDate.find(t => t.id === taskId);
         if (!task) return;
-
+        
         if (target.closest('.complete-btn')) {
             const wasIncomplete = !task.completed;
             const targetRect = taskBlock.getBoundingClientRect();
@@ -254,22 +256,21 @@ const handleScheduleClick = (e: Event) => {
                 updateStreak({ targetRect }); // This will award its own bonus points
 
                 if (task.category) {
-                    const allTasks = getTasks(); // get new, updated state
-                    const categoryTasksForDay = allTasks.filter(t => t.category === task.category && t.dueDate === currentDate);
-                    
-                    if (categoryTasksForDay.every(t => t.completed)) {
-                       awardMedalForCategory(task.category.toLowerCase(), currentDate, { targetRect });
+                    const categoryKey = task.category.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "");
+                    const newlyAwarded = awardMedalForCategory(categoryKey, currentDate, { targetRect });
+                    if (newlyAwarded) {
                        window.showToast(`Medalha de ${task.category} conquistada para ${new Date(currentDate + 'T00:00:00').toLocaleDateString('pt-BR')}!`, 'success');
                    }
                 }
             }
         } else if (target.closest('.edit-btn') || target.closest('.task-content')) {
-            openTaskModal(task);
+             openTaskModal(task);
         }
         return;
     }
 
     if (target.closest('#inline-task-input-wrapper')) {
+        // Clicks inside the input wrapper are handled globally now.
         return;
     }
 

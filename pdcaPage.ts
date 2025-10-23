@@ -79,13 +79,13 @@ export function createPdcaPageHandler(category: string, pageId: string) {
                 awardPoints(taskPoints, { targetRect });
                 updateStreak({ targetRect });
                 
-                const allTasks = getTasks();
-                const todayStr = new Date().toISOString().split('T')[0];
-                const categoryTasksForDay = allTasks.filter(t => t.category === task.category && t.dueDate === todayStr);
-
-                if (task.category && categoryTasksForDay.every(t => t.completed)) {
-                    awardMedalForCategory(task.category.toLowerCase(), todayStr, { targetRect });
-                    window.showToast(`Medalha de ${task.category} conquistada para hoje!`, 'success');
+                if (task.category) {
+                    const todayStr = new Date().toISOString().split('T')[0];
+                    const categoryKey = task.category.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "");
+                    const newlyAwarded = awardMedalForCategory(categoryKey, todayStr, { targetRect });
+                    if (newlyAwarded) {
+                        window.showToast(`Medalha de ${task.category} conquistada para hoje!`, 'success');
+                    }
                 }
             }
             return;

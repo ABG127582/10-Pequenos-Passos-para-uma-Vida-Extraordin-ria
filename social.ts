@@ -1,109 +1,83 @@
-import DOMPurify from 'dompurify';
 import { createPdcaPageHandler } from './pdcaPage';
 import { ai } from './ai';
 import { loadingManager } from './loadingManager';
+import { errorHandler } from './errorHandler';
+import DOMPurify from 'dompurify';
 
-// Re-declare window interface
-declare global {
-    interface Window {
-        showToast: (message: string, type?: 'info' | 'success' | 'warning' | 'error') => void;
-    }
-}
-
-// --- Use the new PDCA page handler for common functionality ---
+// Use the base PDCA handler for task-related functionality
 const pdcaHandler = createPdcaPageHandler('Social', 'page-social');
 
-// --- DOM Elements for this specific page ---
-let pageElements = {
-    generateResourcesBtn: null as HTMLButtonElement | null,
-    topicInput: null as HTMLInputElement | null,
-    resultsContainer: null as HTMLElement | null,
-};
-
 async function handleGenerateResources() {
-    if (!pageElements.topicInput || !pageElements.resultsContainer || !pageElements.generateResourcesBtn) return;
+    const page = document.getElementById('page-social');
+    if (!page) return;
 
-    const topic = pageElements.topicInput.value.trim();
+    const generateBtn = page.querySelector('#generate-social-resources-btn') as HTMLButtonElement;
+    const topicInput = page.querySelector('#social-topic-input') as HTMLInputElement;
+    const resultsContainer = page.querySelector('#social-resources-results') as HTMLElement;
+
+    const topic = topicInput.value.trim();
     if (!topic) {
-        window.showToast('Por favor, descreva o desafio que você está enfrentando.', 'warning');
+        window.showToast('Por favor, descreva o desafio social que você está enfrentando.', 'info');
         return;
     }
 
-    loadingManager.start('gemini-social-search');
-    pageElements.generateResourcesBtn.classList.add('loading');
-    pageElements.resultsContainer.innerHTML = '<p>Buscando recursos...</p>';
+    loadingManager.start('social-ai');
+    generateBtn.classList.add('loading');
+    generateBtn.disabled = true;
+    resultsContainer.innerHTML = '<p>Buscando recursos... <i class="fas fa-spinner fa-spin"></i></p>';
+
+    const prompt = `Para o desafio social "${topic}", encontre 3 recursos online de alta qualidade (artigos, vídeos do YouTube, ou ferramentas) que possam ajudar. Para cada recurso, forneça o título, uma breve descrição (1-2 frases), e o link. Formate a resposta como uma lista HTML (<ul> e <li>) com links clicáveis.`;
 
     try {
-        const prompt = `Encontre recursos online úteis (artigos, guias, comunidades online) em português para uma pessoa que está lidando com o seguinte desafio social: "${topic}".`;
-        
         const response = await ai.models.generateContent({
-            model: "gemini-2.5-flash",
+            model: 'gemini-2.5-flash',
             contents: prompt,
-            config: {
-                tools: [{ googleSearch: {} }],
-            },
         });
-
-        const groundingChunks = response.candidates?.[0]?.groundingMetadata?.groundingChunks;
-
-        if (groundingChunks && groundingChunks.length > 0) {
-            let html = `<h4>Recursos Encontrados:</h4>`;
-            const uniqueResults: { [key: string]: { title: string, uri: string } } = {};
-            
-            groundingChunks.forEach((chunk: any) => {
-                if (chunk.web && chunk.web.uri && chunk.web.title) {
-                    uniqueResults[chunk.web.uri] = { title: chunk.web.title, uri: chunk.web.uri };
-                }
-            });
-
-            html += Object.values(uniqueResults).map(result => `
-                <div class="resource-item">
-                    <a href="${result.uri}" target="_blank" rel="noopener noreferrer">${DOMPurify.sanitize(result.title)}</a>
-                    <p>${new URL(result.uri).hostname}</p>
-                </div>
-            `).join('');
-
-            pageElements.resultsContainer.innerHTML = html;
-        } else {
-            pageElements.resultsContainer.innerHTML = '<p>Não foram encontrados recursos específicos. Tente refinar sua busca.</p>';
-        }
-
-    } catch (error) {
-        console.error("Error generating social resources:", error);
-        pageElements.resultsContainer.innerHTML = '<p>Ocorreu um erro ao buscar os recursos. Tente novamente mais tarde.</p>';
-        window.showToast('Erro ao contatar a IA.', 'error');
+        const htmlResult = response.text;
+        // Basic Markdown to HTML
+        let sanitizedHtml = DOMPurify.sanitize(htmlResult
+            .replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>')
+            .replace(/\* (.*?)(?=\n\*|\n\n|$)/g, '<li>$1</li>')
+            .replace(/(\r\n|\n|\r)/gm, "<br>")
+            .replace(/<br>\s*<br>/g, '')
+            .replace(/(<li>.*<\/li>)/g, '<ul>$1</ul>')
+            .replace(/<\/ul><br><ul>/g, '')
+        );
+        resultsContainer.innerHTML = sanitizedHtml;
+    } catch (err) {
+        errorHandler.handle(err as Error, 'generating social resources');
+        resultsContainer.innerHTML = '<p style="color: var(--color-error);">Ocorreu um erro ao buscar os recursos. Tente novamente.</p>';
     } finally {
-        loadingManager.stop('gemini-social-search');
-        pageElements.generateResourcesBtn.classList.remove('loading');
+        loadingManager.stop('social-ai');
+        generateBtn.classList.remove('loading');
+        generateBtn.disabled = false;
     }
 }
 
-
-// --- LIFECYCLE FUNCTIONS ---
 export function setup() {
-    // Run the common setup from the handler
+    // Run the base PDCA setup for tasks
     pdcaHandler.setup();
-
-    // Setup specific to this page
-    const page = document.getElementById('page-social');
-    if (!page) return;
     
-    pageElements.generateResourcesBtn = page.querySelector('#generate-social-resources-btn');
-    pageElements.topicInput = page.querySelector('#social-topic-input');
-    pageElements.resultsContainer = page.querySelector('#social-resources-results');
-
-    pageElements.generateResourcesBtn?.addEventListener('click', handleGenerateResources);
+    // Add specific setup for this page's AI feature
+    const page = document.getElementById('page-social');
+    page?.addEventListener('click', (e) => {
+        const target = e.target as HTMLElement;
+        if (target.closest('#generate-social-resources-btn')) {
+            handleGenerateResources();
+        }
+    });
 }
 
 export function show() {
-    // Run the common show from the handler
+    // Run the base PDCA show to render tasks
     pdcaHandler.show();
-
-    // Clear previous results on show
-    if (pageElements.resultsContainer) {
-        pageElements.resultsContainer.innerHTML = '';
-    }
-    if(pageElements.topicInput) {
-        pageElements.topicInput.value = '';
+    
+    // Additional logic for this page on show
+    const page = document.getElementById('page-social');
+    if (page) {
+        const topicInput = page.querySelector('#social-topic-input') as HTMLInputElement;
+        const resultsContainer = page.querySelector('#social-resources-results') as HTMLElement;
+        if (topicInput) topicInput.value = '';
+        if (resultsContainer) resultsContainer.innerHTML = '';
     }
 }

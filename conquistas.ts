@@ -19,32 +19,53 @@ const categoryDetails: { [key: string]: { icon: string, name: string, color: str
     'pessoal': { icon: 'fa-user', name: 'Pessoal', color: 'var(--color-pessoal)' },
 };
 
-// The `MILESTONE_DETAILS` constant was a faulty fix attempt and was removed.
-// The `STREAK_MILESTONES` object imported from `utils.ts` is now used as the single source of truth.
-
 function renderStreakMilestones() {
-    const grid = document.getElementById('streak-milestones-grid');
-    if (!grid) return;
+    const container = document.getElementById('streak-timeline-container');
+    if (!container) return;
 
     const streak = getStreak();
     const achievements = storageService.get<string[]>(STORAGE_KEYS.USER_ACHIEVEMENTS) || [];
 
-    // FIX: Correctly iterate over STREAK_MILESTONES. The `milestoneDetails` variable now correctly holds the milestone object,
-    // resolving the "cannot be used as an index type" error.
-    grid.innerHTML = Object.entries(STREAK_MILESTONES).map(([days, milestoneDetails]) => {
-        const isUnlocked = streak.current >= parseInt(days, 10) || achievements.includes(`streak-${days}`);
-        const icon = milestoneDetails.icon || 'fa-star';
+    const milestoneDays = Object.keys(STREAK_MILESTONES).map(d => parseInt(d, 10)).sort((a, b) => a - b);
+    
+    let nextMilestoneDays = milestoneDays.find(days => streak.current < days) || milestoneDays[milestoneDays.length - 1];
+    let prevMilestoneDays = [...milestoneDays].reverse().find(days => streak.current >= days) || 0;
+    
+    if (streak.current >= nextMilestoneDays) {
+         prevMilestoneDays = nextMilestoneDays;
+    }
+
+    const progressPercentage = prevMilestoneDays === nextMilestoneDays 
+        ? 100 
+        : ((streak.current - prevMilestoneDays) / (nextMilestoneDays - prevMilestoneDays)) * 100;
+
+    const milestonesHtml = milestoneDays.map(days => {
+        const milestone = STREAK_MILESTONES[days];
+        const isUnlocked = streak.current >= days || achievements.includes(`streak-${days}`);
+        const isNextGoal = days === nextMilestoneDays && !isUnlocked;
         
+        let statusClass = 'locked';
+        if (isUnlocked) statusClass = 'unlocked';
+        if (isNextGoal) statusClass = 'next-goal';
+
         return `
-            <div class="achievement-card ${isUnlocked ? 'unlocked' : ''}" style="border-left-color: ${isUnlocked ? milestoneDetails.color : 'transparent'};">
-                <div class="achievement-card-icon" style="color: ${milestoneDetails.color};">
-                    <i class="fas ${icon}"></i>
-                </div>
-                <h3>${milestoneDetails.name}</h3>
-                <p>${milestoneDetails.description}</p>
+            <div class="milestone-node ${statusClass}" style="left: ${((days / milestoneDays[milestoneDays.length-1]) * 100)}%" data-tooltip="${milestone.name}: ${milestone.description}">
+                <div class="milestone-icon"><i class="fas ${milestone.icon}"></i></div>
+                <div class="milestone-label">${days}d</div>
             </div>
         `;
     }).join('');
+
+    container.innerHTML = `
+        <div class="streak-timeline-header">
+            <h3>Sequência Atual: <strong>${streak.current}</strong> dias</h3>
+            <span>Faltam ${Math.max(0, nextMilestoneDays - streak.current)} dias para o próximo marco!</span>
+        </div>
+        <div class="streak-timeline">
+            <div class="streak-progress-bar" style="width: ${progressPercentage}%"></div>
+            ${milestonesHtml}
+        </div>
+    `;
 }
 
 
@@ -69,13 +90,16 @@ function renderDailyMedals() {
     grid.innerHTML = Object.entries(medalCounts).map(([categoryKey, count]) => {
         const details = categoryDetails[categoryKey.toLowerCase()] || { icon: 'fa-question-circle', name: categoryKey, color: 'var(--color-secondary)'};
         return `
-             <div class="achievement-card unlocked" style="border-left-color: ${details.color}; flex-direction: row; align-items: center; gap: 15px; text-align: left;">
-                <div class="achievement-card-icon" style="color: ${details.color}; margin-bottom: 0; font-size: 2rem;">
+             <div class="medal-badge" style="--badge-color: ${details.color};">
+                <div class="medal-badge-icon">
                     <i class="fas ${details.icon}"></i>
                 </div>
-                <div>
-                    <h3 style="font-size: 1rem;">${DOMPurify.sanitize(details.name)}</h3>
-                    <p style="font-size: 1.2rem; font-weight: bold; color: var(--text-color);">${count} Medalha(s)</p>
+                <div class="medal-badge-content">
+                    <h4>${DOMPurify.sanitize(details.name)}</h4>
+                    <p>
+                        <i class="fas fa-medal"></i>
+                        <span>${count} Conquistada(s)</span>
+                    </p>
                 </div>
             </div>
         `;

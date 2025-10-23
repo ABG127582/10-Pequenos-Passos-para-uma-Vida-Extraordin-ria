@@ -19,7 +19,6 @@ export const pageModuleImports: { [key: string]: () => Promise<any> } = {
     'social': () => import('./social'),
     'alongamento': () => import('./alongamento'),
     'sono': () => import('./sono'),
-    'reflexoes-diarias': () => import('./reflexoes-diarias'),
     'alimentacao-forte': () => import('./alimentacao-forte'),
     'jejum-verde': () => import('./jejum-verde'),
     'planejamento-diario': () => import('./planejamento-diario'),
@@ -29,8 +28,10 @@ export const pageModuleImports: { [key: string]: () => Promise<any> } = {
     'leitura-guia-financeira': () => import('./leitura-guia-financeira'),
     'leitura-guia-familiar': () => import('./leitura-guia-familiar'),
     'leitura-guia-espiritual': () => import('./leitura-guia-espiritual'),
-    'termometro-emocional': () => import('./termometro-emocional'),
-    'reflexao-estoica': () => import('./reflexao-estoica'),
+    // Use extension-less import to allow Vite's resolver to handle TSX compilation
+    // FIX: Explicitly import .tsx file to avoid ambiguity with an empty .ts file.
+    'termometro-emocional': () => import('./termometro-emocional.tsx'),
+    'reflexoes': () => import('./reflexoes'),
     'conquistas': () => import('./conquistas'),
     'food-gengibre': () => import('./food-gengibre'),
     'food-alho': () => import('./food-alho'),
@@ -103,7 +104,7 @@ const pageHierarchy: { [key: string]: { parent: string | null; title: string } }
     'espiritual': { parent: 'inicio', title: 'Saúde Espiritual' },
     'preventiva': { parent: 'inicio', title: 'Saúde Preventiva' },
     'leitura-guia-fisica': { parent: 'fisica', title: 'Guia de Leitura (Física)' },
-    'alongamento': { parent: 'fisica', title: 'Guia de Alongamento' },
+    'alongamento': { parent: 'fisica', title: 'Mobilidade e Alongamento' },
     'alimentacao-forte': { parent: 'fisica', title: 'Guia de Alimentação' },
     'jejum-verde': { parent: 'fisica', title: 'Jejum Verde' },
     'leitura-guia-mental': { parent: 'mental', title: 'Guia de Leitura (Mental)' },
@@ -114,8 +115,7 @@ const pageHierarchy: { [key: string]: { parent: string | null; title: string } }
     'leitura-guia-espiritual': { parent: 'espiritual', title: 'Guia de Leitura (Espiritual)' },
     'planejamento-diario': { parent: 'inicio', title: 'Planejamento Diário' },
     'tarefas': { parent: 'inicio', title: 'Caixa de Entrada' },
-    'reflexoes-diarias': { parent: 'inicio', title: 'Diário de Reflexões' },
-    'reflexao-estoica': { parent: 'inicio', title: 'Reflexão Estoica' },
+    'reflexoes': { parent: 'inicio', title: 'Reflexões' },
     'conquistas': { parent: 'inicio', title: 'Minhas Conquistas' },
     'food-gengibre': { parent: 'fisica', title: 'Gengibre' },
     'food-alho': { parent: 'fisica', title: 'Alho' },
@@ -177,10 +177,8 @@ const pageHierarchy: { [key: string]: { parent: string | null; title: string } }
     'pdca-social-novas-conexoes': { parent: 'social', title: 'Criar Novas Conexões' },
 };
 
-
 const pageModulesCache = new Map<string, any>();
 let currentPageKey: string | null = null;
-
 
 function updateNavigationState(pageKey: string) {
     const breadcrumbsNav = document.getElementById('breadcrumb-nav');
@@ -209,7 +207,6 @@ function updateNavigationState(pageKey: string) {
         const linkKey = link.dataset.page || link.dataset.pageParent;
         let isMatch = linkKey === pageKey;
         
-        // Check if the current page is a child of this parent link
         let current: string | null = pageKey;
         while(current && pageHierarchy[current]) {
             if (pageHierarchy[current].parent === linkKey) {
@@ -231,7 +228,6 @@ function updateNavigationState(pageKey: string) {
     });
 }
 
-
 async function loadPage(pageKey: string, tts: typeof ttsReader) {
     if (!pageKey) pageKey = 'inicio';
     if (pageKey === currentPageKey) return;
@@ -248,26 +244,52 @@ async function loadPage(pageKey: string, tts: typeof ttsReader) {
 
     try {
         await performanceMonitor.measureAsync(`load page: ${pageKey}`, async () => {
-            const response = await fetch(`/${pageKey}.html`);
-            if (!response.ok) {
-                throw new Error(`Failed to fetch page content: ${pageKey}.html (Status: ${response.status})`);
+            const moduleLoader = pageModuleImports[pageKey];
+            if (!moduleLoader) {
+                throw new Error(`Page module not found for key: ${pageKey}`);
             }
-            const html = await response.text();
             
-            pageContentWrapper.innerHTML = html;
+            const isReactComponent = pageKey === 'termometro-emocional';
 
-            if (pageModuleImports[pageKey]) {
+            if (isReactComponent) {
+                // Handle React component rendering
+                const ReactDOM = await import('react-dom/client');
+                const React = await import('react');
+                const module = await moduleLoader();
+                const Component = module.default;
+                
+                // Ensure a unique root container for React
+                const reactRootId = `react-root-${pageKey}`;
+                pageContentWrapper.innerHTML = `<div id="${reactRootId}" data-react-root></div>`;
+                const rootElement = document.getElementById(reactRootId);
+
+                if (rootElement) {
+                    const root = ReactDOM.createRoot(rootElement);
+                    root.render(React.createElement(Component));
+                } else {
+                    throw new Error(`React root element #${reactRootId} not found after injection.`);
+                }
+            } else {
+                // Handle standard HTML + TS module pages
+                const response = await fetch(`/${pageKey}.html`);
+                if (!response.ok) {
+                    throw new Error(`Failed to fetch page content: ${pageKey}.html (Status: ${response.status})`);
+                }
+                const html = await response.text();
+                pageContentWrapper.innerHTML = html;
+                
                 let module = pageModulesCache.get(pageKey);
                 if (!module) {
-                    module = await pageModuleImports[pageKey]();
+                    module = await moduleLoader();
                     pageModulesCache.set(pageKey, module);
                     if (module.setup) module.setup();
+                    // Keep compatibility with old task page setup
                     if (module.setupTarefasPage) module.setupTarefasPage();
                 }
                 if (module.show) module.show();
                 if (module.showTarefasPage) module.showTarefasPage();
             }
-
+            
             updateNavigationState(pageKey);
             currentPageKey = pageKey;
 
@@ -281,7 +303,6 @@ async function loadPage(pageKey: string, tts: typeof ttsReader) {
         loadingManager.stop('router');
     }
 }
-
 
 export function initRouter(pageModules: { [key: string]: () => Promise<any> }, tts: typeof ttsReader) {
     const handleRouteChange = () => {

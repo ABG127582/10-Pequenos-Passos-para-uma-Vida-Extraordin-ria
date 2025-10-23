@@ -71,13 +71,20 @@ export async function startSpeechRecognition(button: HTMLButtonElement): Promise
 
     recognition.onresult = (event) => {
         const speechResult = event.results[0][0].transcript;
-        const existingText = targetInput.value.trim();
-        if (existingText) {
-            targetInput.value = `${existingText} ${speechResult}`;
+        
+        // Append text if the input is not empty, otherwise replace.
+        if (targetInput.value && targetInput.value.trim() !== '') {
+            targetInput.value += (targetInput.value.endsWith(' ') ? '' : ' ') + speechResult;
         } else {
             targetInput.value = speechResult;
         }
+
         targetInput.dispatchEvent(new Event('input', { bubbles: true }));
+
+        // Special case for inline task input to auto-submit
+        if (targetInput.id === 'inline-task-input') {
+            targetInput.blur();
+        }
     };
 
     recognition.onspeechend = () => {
@@ -373,7 +380,7 @@ export function updateStreak(options?: { targetRect?: DOMRect }) {
     
     streak.lastActivityDate = today;
     if (streak.current > streak.longest) {
-        streak.longest = streak.current;
+        streak.longest = streak.longest;
     }
 
     storageService.set(STORAGE_KEYS.ACTIVITY_STREAK, streak);
@@ -393,22 +400,28 @@ export function updateStreak(options?: { targetRect?: DOMRect }) {
     }
 }
 
-export function awardMedalForCategory(category: string, date: string, options?: { targetRect?: DOMRect }) {
+export function awardMedalForCategory(category: string, date: string, options?: { targetRect?: DOMRect }): boolean {
     const dailyMedals = storageService.get<{ [key: string]: string[] }>(STORAGE_KEYS.DAILY_MEDALS) || {};
+
+    // Always show the animation for completing a task
+    if(options?.targetRect) {
+        showMedalAnimation(options.targetRect);
+    }
     
     if (!dailyMedals[date]) {
         dailyMedals[date] = [];
     }
 
+    // Only award points, save, and update UI if it's the first time for this category today
     if (!dailyMedals[date].includes(category)) {
         dailyMedals[date].push(category);
         storageService.set(STORAGE_KEYS.DAILY_MEDALS, dailyMedals);
         
         awardPoints(50, options); // Medal bonus
         
-        if(options?.targetRect) {
-            showMedalAnimation(options.targetRect);
-        }
         document.body.dispatchEvent(new CustomEvent('datachanged:tasks'));
+        return true; // Newly awarded
     }
+
+    return false; // Already awarded
 }

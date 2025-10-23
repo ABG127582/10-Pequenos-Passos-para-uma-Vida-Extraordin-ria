@@ -80,7 +80,7 @@
     --font-size-sm: 0.875rem;
     --font-weight-normal: 400;
     --font-weight-bold: 700;
-    --line-height-base: 1.6;
+    --line-height-base: 1.7;
 
     /* Outros */
     --sidebar-width: 250px;
@@ -149,7 +149,7 @@ body.is-loading .is-loading-cursor input {
 /* Tipografia Geral */
 h1, h2, h3, h4, h5, h6 {
     margin-top: 0;
-    margin-bottom: 0.75rem;
+    margin-bottom: 1rem;
     font-weight: var(--font-weight-bold);
     color: inherit; 
 }
@@ -157,7 +157,7 @@ h1 { font-size: 2.25rem; }
 h2 { font-size: 1.75rem; }
 h3 { font-size: 1.5rem; }
 h4 { font-size: 1.25rem; }
-p { margin-top: 0; margin-bottom: 1rem; }
+p { margin-top: 0; margin-bottom: 1.25rem; }
 a {
     color: var(--link-color);
     text-decoration: none;
@@ -169,7 +169,7 @@ a:hover {
 }
 ul, ol {
     padding-left: 20px;
-    margin-bottom: 1rem;
+    margin-bottom: 1.25rem;
 }
 
 /* --- Nova Tela de Login --- */
@@ -192,7 +192,7 @@ ul, ol {
 }
 
 .login-container {
-    max-width: 420px;
+    max-width: 450px;
     width: 90%;
     padding: 2.5rem;
     background: var(--card-background-color);
@@ -200,10 +200,16 @@ ul, ol {
     box-shadow: var(--card-shadow);
     text-align: center;
 }
+.login-icon {
+    font-size: 2.5rem;
+    color: var(--color-primary);
+    margin-bottom: 1rem;
+    transform: rotate(-15deg);
+}
+
 .login-container h1 {
     font-size: 2rem;
     margin-bottom: 0.5rem;
-    color: var(--color-primary);
 }
 .login-container p {
     color: var(--text-color-muted);
@@ -211,22 +217,54 @@ ul, ol {
 }
 .login-container .form-group {
     text-align: left;
-}
-.login-container .form-group label {
-    font-weight: 500;
+    margin-bottom: 1.5rem;
 }
 .login-container #existing-profiles-list {
-    max-height: 120px;
-    overflow-y: auto;
-    padding: 5px;
+    display: flex;
+    flex-direction: row;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 20px;
+    margin-top: 1rem;
+}
+
+.profile-avatar-btn {
+    background: none;
+    border: none;
+    cursor: pointer;
     display: flex;
     flex-direction: column;
+    align-items: center;
     gap: 8px;
-}
-.login-container .existing-profile-btn {
-    text-align: center;
-    border: 1px solid var(--border-color);
     padding: 10px;
+    border-radius: var(--card-border-radius);
+    transition: background-color var(--transition-speed) ease, transform var(--transition-speed) ease;
+    width: 100px;
+}
+.profile-avatar-btn:hover {
+    background-color: rgba(var(--color-primary-rgb), 0.1);
+    transform: translateY(-4px);
+}
+.profile-avatar {
+    width: 60px;
+    height: 60px;
+    border-radius: 50%;
+    background-color: var(--color-secondary);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.8rem;
+    font-weight: bold;
+    color: var(--text-color-light);
+}
+.profile-avatar-name {
+    font-size: 0.9rem;
+    font-weight: 500;
+    color: var(--text-color);
+    text-overflow: ellipsis;
+    overflow: hidden;
+    white-space: nowrap;
+    width: 100%;
 }
 
 
@@ -234,113 +272,30 @@ ul, ol {
 .container {
     width: 100%;
     margin: 0;
-    padding: 10px 20px 10px 0;
+    padding: 10px 20px;
 }
 
 /* Restringe a largura do conteúdo principal, mas não do header */
 .page-section > .container > main,
 .page-container > .container > main {
     max-width: 1200px;
-    margin: 0; /* Alinha o conteúdo principal à esquerda */
+    margin: 0 auto; /* Alinha o conteúdo principal centralizado */
 }
 
-
-/* --- New Dashboard Styles for Home Page --- */
-
-/* Make homepage container full-width */
-#page-inicio > .container {
-    max-width: none;
-    padding: 10px 10px 10px 0; /* Remove left padding to align with menu */
-}
-
-.dashboard-grid {
-    display: grid;
-    grid-template-columns: 1fr;
-    gap: 15px;
-    margin-bottom: 25px;
-}
-
-@media (min-width: 992px) {
-    .dashboard-grid {
-        grid-template-columns: 1fr 340px;
-        gap: 20px;
-    }
-}
-
-.dashboard-main-widget {
-    display: flex;
-    flex-direction: column;
-    gap: 15px;
-}
-
-.dashboard-main-widget .content-section {
-    height: 100%;
-    display: flex;
-    flex-direction: column;
-}
-
-.dashboard-main-widget .lista-planejamento {
-    flex-grow: 1; /* Allow list to take up space */
-}
-
-.dashboard-side-widgets {
-    display: flex;
-    flex-direction: column;
-    gap: 15px;
-}
-
-.saude-card-small {
-    padding: 20px;
-    border-radius: var(--card-border-radius);
-    color: var(--text-color-light);
-    display: flex;
-    flex-direction: column;
-    gap: 8px;
-    cursor: pointer;
-    transition: transform 0.2s, box-shadow 0.2s;
-    background: none;
-    border: none;
-    text-align: left;
-    width: 100%;
-}
-.saude-card-small:hover {
-    transform: translateY(-3px);
-    box-shadow: var(--card-shadow);
-}
-.saude-card-small .card-icon-title {
-    gap: 10px;
-    align-items: center;
-    display: flex;
-}
-.saude-card-small .card-icon-title i {
-    font-size: 1.5rem;
-    width: 25px;
-}
-.saude-card-small h3 {
-    font-size: 1.2rem;
-    margin: 0;
-    color: inherit;
-}
-.saude-card-small p {
-    font-size: 0.9rem;
-    opacity: 0.9;
-    margin: 0;
-    color: inherit;
-}
-.saude-card.avaliacao-card { --card-bg-color: var(--color-inicio); }
 
 /* Estilos da Página Inicial (Menu de Cartões) */
 .inicio {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    display: flex;
+    flex-direction: column;
     gap: 15px;
-    padding: 15px 0;
+    padding: 20px 0;
 }
+
 .saude-card {
     --card-bg-color: var(--color-primary); /* Fallback, será sobrescrito */
     background-color: var(--card-bg-color);
     color: var(--text-color-light); /* Texto branco para todos os cartões */
-    padding: 25px;
+    padding: 20px;
     border-radius: var(--card-border-radius);
     box-shadow: 0 2px 10px rgba(0,0,0,0.1);
     cursor: pointer;
@@ -349,11 +304,13 @@ ul, ol {
     flex-direction: column;
     justify-content: center;
     align-items: flex-start;
-    gap: 10px;
-    min-height: 160px;
+    gap: 8px;
     text-decoration: none;
     position: relative;
     overflow: hidden;
+    border: none;
+    text-align: left;
+    width: 100%;
 }
 
 .saude-card::before {
@@ -362,7 +319,7 @@ ul, ol {
     position: absolute;
     right: 15px;
     bottom: 5px;
-    font-size: 5rem;
+    font-size: 4.5rem;
     color: rgba(255, 255, 255, 0.1);
     z-index: 0;
     transform: rotate(-15deg);
@@ -379,8 +336,9 @@ ul, ol {
 .saude-card.espiritual::before { content: '\f679'; }
 .saude-card.preventiva::before { content: '\f3ed'; }
 .saude-card.video-livro::before { content: '\f144'; }
-.saude-card.planejamento::before { content: '\f783'; }
 .saude-card.avaliacao-card::before { content: '\f573'; }
+.saude-card.planejamento::before { content: '\f783'; } /* fa-calendar-day */
+.saude-card.reflexoes::before { content: '\f56b'; } /* fa-feather-alt */
 
 
 .saude-card:hover, .saude-card:focus-visible {
@@ -401,19 +359,19 @@ ul, ol {
     z-index: 1;
 }
 .saude-card .card-icon-title i {
-    font-size: 1.6rem;
+    font-size: 1.4rem;
     color: rgba(255, 255, 255, 0.8);
-    width: 30px;
+    width: 28px;
     text-align: center;
 }
 
 .saude-card h3 {
-    font-size: 1.5rem;
+    font-size: 1.3rem;
     color: var(--text-color-light);
     margin: 0;
 }
 .saude-card p {
-    font-size: 0.95rem;
+    font-size: 0.9rem;
     margin-bottom: 0;
     opacity: 0.9;
     position: relative;
@@ -421,38 +379,44 @@ ul, ol {
 }
 
 /* Cores específicas para os cartões */
-.saude-card.fisica, .saude-card-small.fisica { --card-bg-color: var(--color-fisica); background-color: var(--card-bg-color); }
-.saude-card.mental, .saude-card-small.mental { --card-bg-color: var(--color-mental); background-color: var(--card-bg-color); }
-.saude-card.financeira, .saude-card-small.financeira { --card-bg-color: var(--color-financeira); background-color: var(--card-bg-color); }
-.saude-card.familiar, .saude-card-small.familiar { --card-bg-color: var(--color-familiar); background-color: var(--card-bg-color); }
-.saude-card.profissional, .saude-card-small.profissional { --card-bg-color: var(--color-profissional); background-color: var(--card-bg-color); }
-.saude-card.social, .saude-card-small.social { --card-bg-color: var(--color-social); background-color: var(--card-bg-color); }
-.saude-card.espiritual, .saude-card-small.espiritual { --card-bg-color: var(--color-espiritual); background-color: var(--card-bg-color); }
-.saude-card.preventiva, .saude-card-small.preventiva { --card-bg-color: var(--color-preventiva); background-color: var(--card-bg-color); }
-.saude-card.video-livro { --card-bg-color: var(--color-video-livro); }
-.saude-card.planejamento, .saude-card-small.planejamento { --card-bg-color: var(--color-planejamento); background-color: var(--card-bg-color); }
-.saude-card.avaliacao-card, .saude-card-small.avaliacao-card { --card-bg-color: var(--color-inicio); background-color: var(--card-bg-color); }
-.saude-card-small.ranking { --card-bg-color: var(--color-ranking); background-color: var(--card-bg-color); cursor: default; }
+.saude-card.fisica { --card-bg-color: var(--color-fisica); background-color: var(--card-bg-color); }
+.saude-card.mental { --card-bg-color: var(--color-mental); background-color: var(--card-bg-color); }
+.saude-card.financeira { --card-bg-color: var(--color-financeira); background-color: var(--card-bg-color); }
+.saude-card.familiar { --card-bg-color: var(--color-familiar); background-color: var(--card-bg-color); }
+.saude-card.profissional { --card-bg-color: var(--color-profissional); background-color: var(--card-bg-color); }
+.saude-card.social { --card-bg-color: var(--color-social); background-color: var(--card-bg-color); }
+.saude-card.espiritual { --card-bg-color: var(--color-espiritual); background-color: var(--card-bg-color); }
+.saude-card.preventiva { --card-bg-color: var(--color-preventiva); background-color: var(--card-bg-color); }
+.saude-card.video-livro { --card-bg-color: var(--color-video-livro); background-color: var(--card-bg-color); }
+.saude-card.avaliacao-card { --card-bg-color: var(--color-inicio); background-color: var(--card-bg-color); }
+.saude-card.planejamento { --card-bg-color: var(--color-planejamento); background-color: var(--card-bg-color); }
+.saude-card.reflexoes { --card-bg-color: var(--color-espiritual); background-color: var(--card-bg-color); }
 
 
-html:not(.dark-mode) .saude-card.planejamento h3, 
-html:not(.dark-mode) .saude-card.planejamento p,
-html:not(.dark-mode) .saude-card-small.planejamento h3,
-html:not(.dark-mode) .saude-card-small.planejamento p {
-    color: #212529; /* Dark text for light yellow card */
+html:not(.dark-mode) .saude-card.financeira h3,
+html:not(.dark-mode) .saude-card.financeira p {
+    color: #212529; /* Dark text for light cards */
 }
-html.dark-mode .saude-card.planejamento h3, 
-html.dark-mode .saude-card.planejamento p,
-html.dark-mode .saude-card-small.planejamento h3,
-html.dark-mode .saude-card-small.planejamento p {
-    color: #212529; /* Dark text for yellow card also in dark mode */
+html.dark-mode .saude-card.financeira h3,
+html.dark-mode .saude-card.financeira p {
+    color: #212529; /* Dark text for light cards also in dark mode */
 }
 
-.saude-card.planejamento .card-icon-title i,
-.saude-card-small.planejamento .card-icon-title i {
+.saude-card.financeira .card-icon-title i {
     color: rgba(0,0,0,0.6);
 }
 
+.saude-card .card-medal-icon {
+    display: none; /* Hide by default */
+    position: absolute;
+    top: 10px;
+    right: 15px;
+    font-size: 2rem;
+    color: #ffd700; /* gold */
+    text-shadow: 1px 1px 3px rgba(0,0,0,0.5);
+    transform: rotate(15deg);
+    z-index: 2;
+}
 
 /* Estilos de Cabeçalho das Páginas */
 .page-container .container > header:first-child:not(.home-header),
@@ -476,10 +440,9 @@ html.dark-mode .saude-card-small.planejamento p {
 /* New styles for home page header */
 .home-header {
     display: flex;
-    justify-content: space-between;
+    flex-direction: column;
     align-items: center;
     margin-bottom: 25px; /* keep some space */
-    flex-wrap: wrap; /* Allow wrapping on small screens */
     gap: 15px;
 }
 .home-header h1 {
@@ -688,12 +651,11 @@ a[data-page*="financeira"].active, summary[data-page-parent="financeira"].active
 a[data-page*="familiar"].active, summary[data-page-parent="familiar"].active { --section-color: var(--color-familiar); --section-color-rgb: var(--color-familiar-rgb); }
 a[data-page*="profissional"].active { --section-color: var(--color-profissional); --section-color-rgb: var(--color-profissional-rgb); }
 a[data-page*="social"].active { --section-color: var(--color-social); --section-color-rgb: var(--color-social-rgb); }
-a[data-page*="espiritual"].active, summary[data-page-parent="espiritual"].active { --section-color: var(--color-espiritual); --section-color-rgb: var(--color-espiritual-rgb); }
+a[data-page*="espiritual"].active, summary[data-page-parent="espiritual"].active, a[data-page*="reflexoes"].active { --section-color: var(--color-espiritual); --section-color-rgb: var(--color-espiritual-rgb); }
 a[data-page*="preventiva"].active { --section-color: var(--color-preventiva); --section-color-rgb: var(--color-preventiva-rgb); }
 a[data-page*="inicio"].active { --section-color: var(--color-inicio); --section-color-rgb: var(--color-inicio-rgb); }
 a[data-page*="planejamento-diario"].active { --section-color: var(--color-planejamento); --section-color-rgb: var(--color-planejamento-rgb); }
 a[data-page*="tarefas"].active { --section-color: var(--color-tarefas); --section-color-rgb: var(--color-tarefas-rgb); } 
-a[data-page*="reflexao-estoica"].active { --section-color: var(--color-espiritual); --section-color-rgb: var(--color-espiritual-rgb); }
 a[data-page*="conquistas"].active { --section-color: var(--color-ranking); --section-color-rgb: var(--color-ranking-rgb); }
 
 
@@ -833,7 +795,8 @@ html.dark-mode .theme-toggle-button:hover {
 
 /* Page container and animation */
 #page-content-wrapper > .page-container,
-#page-content-wrapper > .page-section {
+#page-content-wrapper > .page-section,
+#page-content-wrapper > div[data-reac-root] > div {
     display: block; /* Pages are loaded one at a time, so they are always visible */
     animation: fadeIn 0.5s ease-in-out;
 }
@@ -848,7 +811,7 @@ html.dark-mode .theme-toggle-button:hover {
     margin-bottom: 20px;
     font-size: 0.9rem;
     color: var(--text-color-muted);
-    padding: 0 10px; /* Match container padding */
+    padding: 0 20px; /* Match container padding */
 }
 #breadcrumb-nav ol {
     list-style: none;
@@ -895,6 +858,39 @@ html.dark-mode .theme-toggle-button:hover {
     margin-bottom: 30px;
 }
 
+/* General content readability improvements */
+.content-section p,
+.content-section li {
+    line-height: var(--line-height-base);
+}
+
+/* Readability for text-heavy pages */
+.page-section[id*="leitura-guia-"] .content-section p,
+.page-section[id*="leitura-guia-"] .content-section ul,
+.page-section[id*="leitura-guia-"] .content-section ol,
+.page-section[id*="pdca-"] .content-section p,
+.page-section[id*="pdca-"] .content-section ul,
+.page-section[id*="pdca-"] .content-section ol,
+#page-sono .content-section p,
+#page-sono .content-section ul,
+#page-sono .content-section ol,
+#page-alimentacao-forte .content-section p,
+div[data-reac-root] .bg-slate-800 p {
+    max-width: 70ch;
+    margin-left: auto;
+    margin-right: auto;
+}
+
+.page-section[id*="leitura-guia-"] .content-section ul,
+.page-section[id*="leitura-guia-"] .content-section ol,
+.page-section[id*="pdca-"] .content-section ul,
+.page-section[id*="pdca-"] .content-section ol,
+#page-sono .content-section ul,
+#page-sono .content-section ol {
+    padding-left: 2rem; /* Give lists a bit more space when centered */
+}
+
+
 /* Thematic tinting for internal page cards */
 .page-section:not(#page-inicio) .content-section,
 .page-container .content-section {
@@ -905,14 +901,15 @@ html.dark-mode .theme-toggle-button:hover {
 .content-section .section-title {
     font-size: 1.7rem;
     color: var(--section-color, var(--text-color));
-    margin-bottom: 25px;
+    margin-bottom: 30px;
     padding-bottom: 0;
     border-bottom: none;
+    max-width: 100% !important; /* Override readability rule for titles */
 }
 /* Cores dinâmicas para títulos de seção */
 [data-page*="fisica"], [id*="fisica"], [id^="page-food-"] { --section-color: var(--color-fisica); --section-color-rgb: var(--color-fisica-rgb); }
 [data-page*="mental"], [id*="mental"], [id*="sono"] { --section-color: var(--color-mental); --section-color-rgb: var(--color-mental-rgb); }
-[data-page*="espiritual"], [id*="espiritual"], [id*="reflexao-estoica"] { --section-color: var(--color-espiritual); --section-color-rgb: var(--color-espiritual-rgb); }
+[data-page*="espiritual"], [id*="espiritual"], [data-page*="reflexoes"], [id*="reflexoes"] { --section-color: var(--color-espiritual); --section-color-rgb: var(--color-espiritual-rgb); }
 [data-page*="preventiva"], [id*="preventiva"] { --section-color: var(--color-preventiva); --section-color-rgb: var(--color-preventiva-rgb); }
 [data-page*="financeira"], [id*="financeira"] { --section-color: var(--color-financeira); --section-color-rgb: var(--color-financeira-rgb); }
 [data-page*="familiar"], [id*="familiar"] { --section-color: var(--color-familiar); --section-color-rgb: var(--color-familiar-rgb); }
@@ -1051,12 +1048,97 @@ html:not(.dark-mode) #page-planejamento-diario .standard-button {
     font-size: 0.875rem;
 }
 
+/* --- TABS --- */
+.tabs-container {
+    display: flex;
+    gap: 10px;
+    border-bottom: 1px solid var(--border-color);
+    margin-bottom: 25px;
+}
+.tab-link {
+    padding: 10px 20px;
+    cursor: pointer;
+    border: none;
+    background-color: transparent;
+    color: var(--text-color-muted);
+    border-bottom: 3px solid transparent;
+    font-size: 1.1rem;
+    font-weight: 500;
+    transition: color 0.2s, border-color 0.2s;
+}
+.tab-link:hover {
+    color: var(--text-color);
+}
+.tab-link.active {
+    color: var(--section-color, var(--color-primary));
+    border-bottom-color: var(--section-color, var(--color-primary));
+}
+.tab-content {
+    display: none;
+}
+.tab-content.active {
+    display: block;
+    animation: fadeIn 0.5s;
+}
+
+
 /* --- REFLEXÕES DIÁRIAS PAGE STYLES --- */
-#page-reflexoes-diarias .content-section {
-    --section-color: var(--color-planejamento);
-    --section-color-rgb: var(--color-planejamento-rgb);
+#page-reflexoes .content-section {
+    --section-color: var(--color-espiritual);
+    --section-color-rgb: var(--color-espiritual-rgb);
     background-color: var(--card-background-color);
 }
+
+/* New Reflection Schedule Styles */
+.reflection-schedule {
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+    margin-top: 20px;
+    border: 1px solid var(--border-color);
+    border-radius: var(--card-border-radius);
+    padding: 20px;
+}
+
+.reflection-schedule-item {
+    padding: 12px;
+    border-radius: 6px;
+    background-color: rgba(var(--section-color-rgb, var(--color-secondary-rgb)), 0.05);
+}
+
+.reflection-schedule-task-info {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    font-size: 0.9rem;
+    font-weight: 500;
+    margin-bottom: 8px;
+    color: var(--text-color);
+}
+
+.reflection-schedule-task-info .task-time {
+    font-size: 0.8rem;
+    color: var(--text-color-muted);
+}
+
+.reflection-schedule-input {
+    width: 100%;
+    background: transparent;
+    border: none;
+    border-bottom: 1px dashed var(--text-color-muted);
+    padding: 8px 0;
+    font-size: 0.95rem;
+    color: var(--text-color);
+    resize: none;
+    overflow-y: hidden;
+    transition: border-color 0.2s, height 0.2s;
+}
+
+.reflection-schedule-input:focus {
+    outline: none;
+    border-bottom: 1px solid var(--section-color, var(--color-primary));
+}
+
 
 .reflexoes-controls {
     display: flex;
@@ -1447,7 +1529,6 @@ html:not(.dark-mode) .reflection-card-category[style*="var(--color-financeira)"]
 .mind-map-section ul,
 .mind-map-section li {
     padding: 0;
-    margin: 0;
     list-style-type: none;
 }
 
@@ -1455,15 +1536,15 @@ html:not(.dark-mode) .reflection-card-category[style*="var(--color-financeira)"]
 .mind-map-section ul {
     position: relative;
     padding-left: 20px; /* Space for the lines */
+    margin: 0; /* Ensure no default margin pushes the list down */
 }
 .mind-map-section li {
     position: relative;
-    padding: 2px 0; /* Vertical spacing only. Left padding removed. */
+    padding: 2px 0; /* Vertical spacing */
+    padding-left: 20px; /* Push all content (text, details, a) to create space for the line */
+    margin: 0;
 }
-.mind-map-section li > details,
-.mind-map-section li > a {
-    margin-left: 15px; /* Apply margin to content to create space for the line. */
-}
+
 /* Vertical line for each LI */
 .mind-map-section li::before {
     content: "";
@@ -1478,7 +1559,7 @@ html:not(.dark-mode) .reflection-card-category[style*="var(--color-financeira)"]
 .mind-map-section li::after {
     content: "";
     position: absolute;
-    top: 1.2em; /* Vertically align with text */
+    top: 0.9em; /* Vertically align with text - moved up slightly */
     left: 1px;
     width: 15px; /* Length of the horizontal part */
     height: 1px;
@@ -1486,14 +1567,7 @@ html:not(.dark-mode) .reflection-card-category[style*="var(--color-financeira)"]
 }
 /* Remove bottom part of vertical line for the last child */
 .mind-map-section li:last-child::before {
-    height: 1.2em; /* Match the top of the horizontal line */
-}
-/* For top-level list, the vertical line should start from the text */
-.mind-map-section > details > ul > li::before {
-    top: -0.8em;
-}
-.mind-map-section > details > ul > li:first-child::before {
-    top: 1.2em;
+    height: 0.9em; /* Match the top of the horizontal line */
 }
 
 /* Animation for opening details */
@@ -1606,6 +1680,11 @@ html:not(.dark-mode) .reflection-card-category[style*="var(--color-financeira)"]
     left: 0;
     top: 7px;
     border: 1px solid rgba(0,0,0,0.1);
+}
+
+/* Prevent mind map horizontal line from appearing in this list */
+.sleep-effects-list li::after {
+    content: none;
 }
 
 .sleep-effects-list li:nth-child(1)::before { background-color: var(--color-error); }
@@ -1732,15 +1811,21 @@ body.tts-selection-mode #main-content li:hover {
 
 .stretching-guide-image-container {
     text-align: center;
+    display: flex;
+    flex-direction: column;
+    gap: 4px; /* Small gap between images */
 }
 
 .stretching-guide-image-container img {
     width: 100%; /* Make image full width of the container */
     height: auto;
     display: block;
-    border-radius: var(--card-border-radius) var(--card-border-radius) 0 0; /* Rounded top corners to match card */
     cursor: pointer;
     transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.stretching-guide-image-container img:first-child {
+    border-radius: var(--card-border-radius) var(--card-border-radius) 0 0; /* Rounded top corners for the first image */
 }
 
 .stretching-guide-image-container img:hover {
@@ -1982,12 +2067,36 @@ body.tts-selection-mode #main-content li:hover {
     display: flex;
     width: 100%;
     align-items: center;
+    /* Let child elements define cursor */
 }
 
 .input-wrapper input,
 .input-wrapper textarea {
     flex-grow: 1;
-    padding-right: 45px !important; /* Space for a single button */
+    padding-right: 80px !important; /* Space for two buttons */
+}
+
+/* Minimalist input styles (formerly voice-only) */
+.input-wrapper input.input-minimal,
+.input-wrapper textarea.input-minimal {
+    background-color: transparent !important;
+    border: none;
+    border-bottom: 1px dashed var(--border-color);
+    cursor: text;
+    padding-left: 5px;
+    color: var(--text-color);
+    min-height: 45px;
+}
+
+.input-wrapper textarea.input-minimal {
+    padding-top: 12px;
+}
+
+.input-wrapper input.input-minimal:focus,
+.input-wrapper textarea.input-minimal:focus {
+    box-shadow: none;
+    outline: none;
+    border-bottom: 1px solid var(--section-color, var(--color-primary));
 }
 
 .input-wrapper.textarea-wrapper {
@@ -2033,6 +2142,37 @@ body.tts-selection-mode #main-content li:hover {
   0%, 100% { transform: scale(1); }
   50% { transform: scale(1.2); }
 }
+
+.clear-input-btn {
+    display: none; /* Hidden by default, shown via JS .has-content class */
+    position: absolute;
+    top: 50%;
+    right: 40px; /* Next to the mic button */
+    transform: translateY(-50%);
+    background: none;
+    border: none;
+    font-size: 1.1rem;
+    cursor: pointer;
+    padding: 8px;
+    line-height: 1;
+    color: var(--text-color-muted);
+    transition: color 0.2s;
+    z-index: 5;
+}
+
+.input-wrapper.textarea-wrapper .clear-input-btn {
+    top: 12px;
+    transform: translateY(0);
+}
+
+.clear-input-btn:hover {
+    color: var(--color-error);
+}
+
+.input-wrapper.has-content .clear-input-btn {
+    display: block;
+}
+
 
 /* --- AI Button styles --- */
 .ai-suggestion-btn {
@@ -2123,8 +2263,8 @@ body.tts-selection-mode #main-content li:hover {
     flex-grow: 1;
     border: none;
     border-bottom: 1px solid var(--text-color);
-    font-family: 'Caveat', cursive;
-    font-size: 1.5rem;
+    font-family: inherit;
+    font-size: 1rem;
     padding: 5px 0;
     background-color: transparent;
     color: var(--text-color);
@@ -2208,7 +2348,7 @@ body.tts-selection-mode #main-content li:hover {
 
 #schedule-container {
     margin-top: 20px;
-    max-height: 70vh;
+    height: 972px; /* Roughly 12 hours * (80px height + 1px border) */
     overflow-y: auto;
     border: 1px solid var(--border-color);
     border-radius: var(--card-border-radius);
@@ -2430,9 +2570,12 @@ body.tts-selection-mode #main-content li:hover {
 }
 .form-grid-asset {
     display: grid;
-    grid-template-columns: 2fr 1fr;
+    grid-template-columns: 1fr;
     gap: 15px;
     margin-bottom: 15px;
+}
+.form-grid-asset > .form-group {
+    margin-bottom: 0;
 }
 @media (max-width: 768px) {
     .form-grid-asset {
@@ -2795,96 +2938,7 @@ body.tts-selection-mode #main-content li:hover {
     z-index: 10;
 }
 
-/* --- Homepage Task Widget (NEW) --- */
-.section-header-interactive {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    margin-bottom: 25px;
-    gap: 15px;
-}
-.header-actions {
-    display: flex;
-    align-items: center;
-    gap: 15px;
-}
-.section-header-interactive .section-title {
-    margin-bottom: 0;
-}
-.section-header-interactive .action-btn {
-    color: var(--text-color-muted);
-}
-.section-header-interactive .action-btn:hover {
-    color: var(--color-primary);
-    background-color: rgba(var(--color-primary-rgb), 0.1);
-}
-
-#today-schedule-container {
-    border: 1px solid var(--border-color);
-    border-radius: var(--card-border-radius);
-    max-height: 180px;
-    overflow-y: auto;
-    position: relative;
-    transition: max-height 0.4s ease-in-out;
-}
-
-#today-schedule-container.is-expanded {
-    max-height: 1500px; /* Large value to simulate 'none' with transition */
-}
-
-/* Specific styles for homepage widget grid */
-#daily-tasks-widget .hour-slot {
-    min-height: 36px;
-    transition: background-color 0.2s ease;
-    cursor: pointer;
-}
-#daily-tasks-widget .hour-slot:hover {
-    background-color: rgba(var(--color-primary-rgb), 0.05);
-}
-
-
-#daily-tasks-widget .hour-slot.is-empty {
-    min-height: 20px;
-}
-
-#daily-tasks-widget .hour-slot.is-empty .hour-label {
-    opacity: 0.7;
-}
-
-#daily-tasks-widget .task-block.completed {
-    opacity: 0.6;
-    background-color: rgba(var(--color-secondary-rgb), 0.1);
-    border-color: var(--color-secondary);
-}
-#daily-tasks-widget .task-block.completed .task-description {
-    text-decoration: line-through;
-}
-
-
-#today-schedule-container .task-block {
-    cursor: default;
-}
-#today-schedule-container .task-block:hover {
-    background-color: rgba(var(--section-color-rgb, var(--color-primary-rgb)), 0.1);
-}
-
-#today-schedule-hours-list {
-    list-style: none;
-    padding: 0;
-    margin: 0;
-}
-
-.all-day-slot {
-    background-color: rgba(var(--color-secondary-rgb), 0.05);
-    border-bottom: 1px solid var(--border-color) !important; /* A stronger separator */
-}
-
-.all-day-slot .hour-label {
-    font-weight: 600;
-    color: var(--text-color);
-}
-
-/* UPDATED LISTA PLANEJAMENTO (TASK LISTS ON HEALTH PAGES) */
+/* --- UPDATED LISTA PLANEJAMENTO (TASK LISTS ON HEALTH PAGES) --- */
 .lista-planejamento {
     list-style: none;
     padding: 0;
@@ -3281,151 +3335,6 @@ body.tts-selection-mode #main-content li:hover {
     .sleep-header-title { font-size: 2.25rem; }
 }
 
-/* --- Gamification: Medal Animation --- */
-.medal-animation {
-    position: fixed;
-    z-index: 9999;
-    font-size: 4rem;
-    color: #ffd700; /* Gold */
-    text-shadow: 0 0 10px rgba(0,0,0,0.5);
-    pointer-events: none;
-    transform: translate(-50%, -50%) scale(0);
-    animation: medal-pop-and-fade 2s ease-out forwards;
-}
-
-@keyframes medal-pop-and-fade {
-    0% {
-        transform: translate(-50%, -50%) scale(0) rotate(-90deg);
-        opacity: 0;
-    }
-    40% {
-        transform: translate(-50%, -120%) scale(1.3) rotate(10deg);
-        opacity: 1;
-    }
-    60% {
-        transform: translate(-50%, -120%) scale(1.1) rotate(-8deg);
-        opacity: 1;
-    }
-    100% {
-        transform: translate(-50%, -300%) scale(0.5) rotate(0deg);
-        opacity: 0;
-    }
-}
-
-
-/* --- Gamification: Medal on Home Card --- */
-.saude-card-small {
-    position: relative;
-}
-
-.card-medal-icon {
-    position: absolute;
-    top: 5px;
-    right: 5px;
-    font-size: 1.5rem;
-    color: #ffd700;
-    text-shadow: 1px 1px 3px rgba(0,0,0,0.4);
-    transition: transform 0.3s ease;
-}
-
-.saude-card-small:hover .card-medal-icon {
-    transform: scale(1.1);
-}
-
-/* --- Social Page AI Resource Finder --- */
-.ai-resource-finder {
-    margin-top: 2rem;
-    padding-top: 1.5rem;
-    border-top: 1px solid var(--border-color);
-}
-.ai-resource-finder .form-group {
-    margin-bottom: 1rem;
-}
-#social-resources-results {
-    margin-top: 1.5rem;
-    display: flex;
-    flex-direction: column;
-    gap: 1rem;
-}
-.resource-item {
-    padding: 1rem;
-    border-radius: var(--card-border-radius);
-    background-color: rgba(var(--section-color-rgb, var(--color-primary-rgb)), 0.05);
-    border: 1px solid rgba(var(--section-color-rgb, var(--color-primary-rgb)), 0.1);
-    transition: background-color 0.2s;
-}
-.resource-item:hover {
-     background-color: rgba(var(--section-color-rgb, var(--color-primary-rgb)), 0.1);
-}
-.resource-item a {
-    font-weight: bold;
-    text-decoration: none;
-    color: var(--section-color, var(--color-primary));
-}
-.resource-item a:hover {
-    text-decoration: underline;
-}
-.resource-item p {
-    font-size: 0.9rem;
-    color: var(--text-color-muted);
-    margin: 0.25rem 0 0 0;
-}
-
-/* --- NEW: Ranking Widget --- */
-.ranking-widget {
-    padding: 20px;
-    color: var(--text-color-light);
-}
-.ranking-list {
-    list-style: none;
-    padding: 0;
-    margin: 0;
-    display: flex;
-    flex-direction: column;
-    gap: 12px;
-}
-.ranking-item {
-    display: flex;
-    align-items: center;
-    gap: 15px;
-    font-size: 0.95rem;
-}
-.ranking-position {
-    font-weight: bold;
-    width: 25px;
-    text-align: center;
-    flex-shrink: 0;
-    font-size: 1.1rem;
-}
-.ranking-item:nth-child(1) .ranking-position { color: #ffd700; }
-.ranking-item:nth-child(2) .ranking-position { color: #c0c0c0; }
-.ranking-item:nth-child(3) .ranking-position { color: #cd7f32; }
-
-.ranking-name {
-    flex-grow: 1;
-    font-weight: 500;
-    white-space: nowrap;
-    overflow: hidden;
-    text-overflow: ellipsis;
-}
-.ranking-medals {
-    display: flex;
-    align-items: center;
-    gap: 5px;
-    font-weight: bold;
-}
-.ranking-medals .fa-medal {
-    color: #ffd700;
-}
-.ranking-empty {
-    text-align: center;
-    font-style: italic;
-    opacity: 0.8;
-}
-.ranking-item .fa-trophy {
-    color: #ffd700;
-}
-
 /* --- Gamification: PS Animation --- */
 .ps-animation {
     position: fixed;
@@ -3446,6 +3355,35 @@ body.tts-selection-mode #main-content li:hover {
     }
     100% {
         transform: translate(20%, -300%) scale(1.3) rotate(15deg);
+        opacity: 0;
+    }
+}
+
+.medal-animation {
+    position: fixed;
+    z-index: 10000;
+    font-size: 3.5rem;
+    color: #ffd700;
+    text-shadow: 2px 2px 4px rgba(0,0,0,0.5);
+    pointer-events: none;
+    transform: translate(-50%, -50%);
+    animation: medal-pop-and-fade 2s cubic-bezier(0.1, 0.9, 0.2, 1) forwards;
+}
+
+@keyframes medal-pop-and-fade {
+    0% {
+        transform: translate(-50%, -50%) scale(0.3);
+        opacity: 1;
+    }
+    20% {
+        transform: translate(-50%, -150%) scale(1.3) rotate(-10deg);
+    }
+    80% {
+        transform: translate(-50%, -350%) scale(1.6) rotate(10deg);
+        opacity: 1;
+    }
+    100% {
+        transform: translate(-50%, -400%) scale(1.6) rotate(10deg);
         opacity: 0;
     }
 }
@@ -3545,320 +3483,144 @@ body.tts-selection-mode #main-content li:hover {
     animation: level-up-bounce 1s ease-in-out;
 }
 
-/* Styles for the new Achievements page */
-.achievements-grid {
+/* --- New Styles for Achievements page --- */
+
+/* Streak Timeline */
+.streak-timeline-container {
+    padding: 20px 0;
+}
+.streak-timeline-header {
+    text-align: center;
+    margin-bottom: 20px;
+}
+.streak-timeline-header h3 {
+    margin: 0;
+    font-size: 1.3rem;
+}
+.streak-timeline-header h3 strong {
+    color: var(--color-ranking);
+    font-size: 1.5em;
+}
+.streak-timeline-header span {
+    color: var(--text-color-muted);
+    font-size: 0.9rem;
+}
+.streak-timeline {
+    position: relative;
+    height: 10px;
+    background-color: var(--border-color);
+    border-radius: 5px;
+    margin: 50px 0;
+}
+.streak-progress-bar {
+    position: absolute;
+    height: 100%;
+    background: linear-gradient(90deg, var(--color-success), var(--color-ranking));
+    border-radius: 5px;
+    transition: width 1s ease-out;
+    animation: progressBar-load 1s ease-out forwards;
+}
+@keyframes progressBar-load {
+    from { width: 0% !important; }
+    to { width: var(--final-width); }
+}
+
+.milestone-node {
+    position: absolute;
+    top: 50%;
+    transform: translate(-50%, -50%);
+    cursor: pointer;
+}
+.milestone-icon {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.2rem;
+    transition: all 0.3s ease;
+    border: 4px solid var(--background-color);
+}
+.milestone-label {
+    position: absolute;
+    bottom: -25px;
+    left: 50%;
+    transform: translateX(-50%);
+    font-size: 0.8rem;
+    font-weight: bold;
+    color: var(--text-color-muted);
+}
+.milestone-node.locked .milestone-icon {
+    background-color: var(--border-color);
+    color: var(--text-color-muted);
+    filter: grayscale(80%);
+}
+.milestone-node.unlocked .milestone-icon {
+    background-color: var(--color-ranking);
+    color: white;
+    box-shadow: 0 0 15px rgba(var(--color-ranking-rgb), 0.7);
+}
+.milestone-node.next-goal .milestone-icon {
+    background-color: var(--color-success);
+    color: white;
+    animation: pulse-goal 2s infinite;
+}
+@keyframes pulse-goal {
+    0% { box-shadow: 0 0 0 0 rgba(var(--color-success-rgb), 0.7); }
+    70% { box-shadow: 0 0 10px 10px rgba(var(--color-success-rgb), 0); }
+    100% { box-shadow: 0 0 0 0 rgba(var(--color-success-rgb), 0); }
+}
+
+/* Medal Badges Grid */
+.medal-badges-grid {
     display: grid;
     grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
     gap: 20px;
-    margin-top: 20px;
 }
-
-.achievement-card {
-    background-color: var(--card-background-color);
-    border: 1px solid var(--border-color);
-    border-radius: var(--card-border-radius);
-    padding: 25px;
-    text-align: center;
-    transition: transform 0.2s, box-shadow 0.2s;
-    opacity: 0.5; /* Default for locked */
-    filter: grayscale(80%);
-}
-
-.achievement-card.unlocked {
-    opacity: 1;
-    filter: none;
-    border-left: 5px solid; /* color set by style attribute */
-}
-
-.achievement-card.unlocked:hover {
-    transform: translateY(-5px);
-    box-shadow: var(--card-shadow);
-}
-
-.achievement-card-icon {
-    font-size: 3rem;
-    margin-bottom: 15px;
-}
-
-.achievement-card h3 {
-    margin: 0 0 10px 0;
-    font-size: 1.2rem;
-    color: var(--text-color);
-}
-
-.achievement-card p {
-    margin: 0;
-    font-size: 0.9rem;
-    color: var(--text-color-muted);
-}
-
-/* --- Termômetro Emocional Page Styles --- */
-#page-termometro-emocional .content-section {
-    --section-color: var(--color-mental);
-    --section-color-rgb: var(--color-mental-rgb);
-}
-
-.emotion-selector {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 10px;
-    justify-content: center;
-    margin-bottom: 2rem;
-}
-
-.emotion-selector-btn {
-    padding: 10px 15px;
-    font-size: 1rem;
-    font-weight: 500;
-    border: 1px solid var(--border-color);
-    border-radius: 20px;
-    cursor: pointer;
-    background-color: transparent;
-    color: var(--text-color-muted);
-    transition: all 0.2s ease;
-    display: inline-flex;
-    align-items: center;
-    gap: 8px;
-}
-
-.emotion-selector-btn:hover {
-    background-color: rgba(var(--section-color-rgb), 0.1);
-    color: var(--section-color);
-    border-color: var(--section-color);
-}
-
-.emotion-selector-btn.active {
-    background-color: var(--section-color);
-    color: var(--text-color-light);
-    border-color: var(--section-color);
-    box-shadow: 0 2px 8px rgba(var(--section-color-rgb), 0.3);
-}
-
-.thermometer-header {
-    display: flex;
-    justify-content: space-between;
-    align-items: flex-start;
-    gap: 20px;
-    margin-bottom: 1rem;
-    padding-bottom: 1rem;
-    border-bottom: 1px solid var(--border-color);
-}
-
-.thermometer-title {
+.medal-badge {
+    --badge-color: var(--color-secondary);
     display: flex;
     align-items: center;
     gap: 15px;
+    background-color: var(--card-background-color);
+    border: 1px solid var(--border-color);
+    border-left: 5px solid var(--badge-color);
+    padding: 15px;
+    border-radius: var(--card-border-radius);
+    transition: transform 0.2s, box-shadow 0.2s;
 }
-
-.thermometer-title i {
-    font-size: 2.5rem;
-    color: var(--section-color);
+.medal-badge:hover {
+    transform: translateY(-3px);
+    box-shadow: var(--card-shadow);
 }
-
-.thermometer-title h2 {
-    margin: 0;
-    font-size: 1.8rem;
-    color: var(--text-color);
-}
-
-.thermometer-title p {
-    margin: 0;
-    font-size: 0.9rem;
-    color: var(--text-color-muted);
-}
-
-.thermometer-stats {
-    text-align: right;
-    font-size: 0.9rem;
-    color: var(--text-color-muted);
+.medal-badge-icon {
+    font-size: 2rem;
+    color: var(--badge-color);
     flex-shrink: 0;
 }
-
-.thermometer-stats p {
+.medal-badge-content h4 {
+    margin: 0 0 5px 0;
+    font-size: 1.1rem;
+    color: var(--text-color);
+}
+.medal-badge-content p {
     margin: 0;
-}
-
-.thermometer-neural-info {
-    font-size: 0.85rem;
-    color: var(--text-color-muted);
-    margin-bottom: 2.5rem;
-    text-align: center;
-    font-style: italic;
-}
-.thermometer-neural-info p {
-    margin: 0;
-}
-
-.thermometer-bar-container {
-    position: relative;
-    padding: 20px 0;
-    margin-bottom: 2rem;
-}
-
-.thermometer-gradient-bar {
-    height: 12px;
-    border-radius: 6px;
-    width: 100%;
-}
-
-.thermometer-markers {
-    position: relative;
-    height: 60px;
-    margin-top: -36px; /* (60/2) + (12/2) */
-}
-
-.level-marker-wrapper {
-    position: absolute;
-    transform: translateX(-50%);
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-}
-
-.level-marker {
-    width: 28px;
-    height: 28px;
-    border-radius: 50%;
-    border: 3px solid var(--card-background-color);
-    background-color: var(--border-color);
-    cursor: pointer;
-    transition: all 0.2s ease;
-    display: flex;
-    align-items: center;
-    justify-content: center;
+    font-size: 1.2rem;
     font-weight: bold;
-    color: var(--text-color-muted);
-    box-shadow: 0 1px 3px rgba(0,0,0,0.2);
-}
-
-.level-marker:hover, .level-marker.hovered {
-    transform: scale(1.2);
-    background-color: var(--section-color);
-    color: var(--text-color-light);
-}
-
-.level-marker.selected {
-    transform: scale(1.3);
-    background-color: var(--section-color);
-    color: var(--text-color-light);
-    box-shadow: 0 0 0 4px rgba(var(--section-color-rgb), 0.3);
-}
-
-.level-marker-line {
-    width: 1px;
-    height: 15px;
-    background-color: var(--border-color);
-}
-
-.level-marker-label {
-    margin-top: 5px;
-    font-size: 0.8rem;
-    font-weight: 500;
-    color: var(--text-color-muted);
-    white-space: nowrap;
-}
-
-#thermometer-info-display {
-    min-height: 200px;
-    margin-top: 1rem;
-    transition: all 0.3s ease;
-}
-
-.thermometer-info-placeholder {
+    color: var(--badge-color);
     display: flex;
-    flex-direction: column;
     align-items: center;
-    justify-content: center;
-    height: 100%;
-    min-height: 200px;
-    color: var(--text-color-muted);
-    border: 2px dashed var(--border-color);
-    border-radius: var(--card-border-radius);
-    padding: 2rem;
+    gap: 5px;
 }
-
-.thermometer-info-placeholder i {
-    font-size: 2.5rem;
-    margin-bottom: 1rem;
+.medal-badge-content p .fas {
+    font-size: 1em;
+    color: #ffd700;
 }
-
-.thermometer-info-card {
-    background-color: rgba(var(--section-color-rgb), 0.05);
-    border: 1px solid rgba(var(--section-color-rgb), 0.2);
-    border-radius: var(--card-border-radius);
-    padding: 1.5rem;
-    animation: fadeIn 0.4s ease;
-    display: flex;
-    flex-direction: column;
-    gap: 1rem; /* Consistent spacing between child elements */
+html:not(.dark-mode) .medal-badge[style*="var(--color-financeira)"] .medal-badge-content h4,
+html:not(.dark-mode) .medal-badge[style*="var(--color-financeira)"] .medal-badge-content p {
+    color: #333;
 }
-
-.info-card-header {
-    display: flex;
-    justify-content: space-between;
-    align-items: flex-start; /* Align items to the top */
-    gap: 1rem;
-    flex-wrap: wrap; /* Allow tags to wrap on small screens */
-}
-
-.info-card-header h3 {
-    margin: 0;
-    font-size: 1.5rem;
-    color: var(--section-color);
-}
-
-.info-card-tags {
-    display: flex;
-    gap: 0.5rem;
-    flex-shrink: 0; /* Prevent tags from wrapping on small screens if possible */
-}
-
-.info-card-tags span {
-    background-color: rgba(var(--section-color-rgb), 0.1);
-    padding: 0.25rem 0.75rem;
-    border-radius: 12px;
-    font-size: 0.8rem;
-    font-weight: 500;
-    color: var(--section-color);
-}
-
-.info-card-desc {
-    margin: 0;
-    line-height: 1.7; /* Better readability */
-    color: var(--text-color);
-}
-
-.info-card-neuro {
-    margin-top: 0.5rem; /* Small separation */
-    padding-top: 1rem;
-    border-top: 1px solid rgba(var(--section-color-rgb), 0.2);
-    font-size: 0.85rem;
-}
-
-.info-card-neuro p {
-    margin: 0;
-    color: var(--text-color-muted);
-}
-
-.info-card-neuro strong {
-    color: var(--text-color);
-    font-weight: 600;
-}
-
-
-/* References and Theory Section */
-.references-list {
-    font-size: 0.85rem;
-    color: var(--text-color-muted);
-    padding-left: 1.2rem;
-}
-.references-list li {
-    margin-bottom: 0.5rem;
-}
-#theory-section {
-    background-color: rgba(var(--section-color-rgb), 0.05);
-    padding: 1.5rem;
-    border-radius: var(--card-border-radius);
-    margin-bottom: 2rem;
-    border: 1px solid rgba(var(--section-color-rgb), 0.1);
+html:not(.dark-mode) .medal-badge[style*="var(--color-financeira)"] .medal-badge-icon {
+    color: #333;
 }

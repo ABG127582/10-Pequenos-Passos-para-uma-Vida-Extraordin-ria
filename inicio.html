@@ -9,100 +9,91 @@
             </div>
         </header>
 
-        <div class="dashboard-grid">
-            <div class="dashboard-main-widget">
-                <section id="daily-tasks-widget" class="content-section">
-                    <div class="section-header-interactive">
-                         <h2 class="section-title">Planejamento do Dia</h2>
-                         <div class="header-actions">
-                             <button id="toggle-expand-tasks-btn" class="action-btn" title="Expandir/Recolher"><i class="fas fa-expand-alt"></i></button>
-                             <a href="#planejamento-diario" data-page="planejamento-diario" class="action-btn" title="Ver planejamento completo"><i class="fas fa-arrow-right"></i></a>
-                         </div>
+        <main>
+            <div class="inicio">
+                <button class="saude-card planejamento" data-page="planejamento-diario">
+                    <div class="card-icon-title">
+                        <i class="fas fa-calendar-day"></i>
+                        <h3>Planejamento Diário</h3>
                     </div>
-                    <div id="today-schedule-container">
-                        <ul id="today-schedule-hours-list">
-                            <!-- Daily schedule will be rendered here by JS -->
-                        </ul>
+                    <p>Organize suas tarefas e visualize seu dia.</p>
+                </button>
+                <button class="saude-card reflexoes" data-page="reflexoes">
+                    <div class="card-icon-title">
+                        <i class="fas fa-feather-alt"></i>
+                        <h3>Reflexões do Dia</h3>
                     </div>
-                </section>
-                 <section class="content-section">
-                    <h2 class="section-title">Check Reflexão estoica</h2>
-                    <div class="action-hub-grid">
-                        <div class="routine-block" style="--section-color: var(--color-espiritual); --section-color-rgb: var(--color-espiritual-rgb);">
-                            <h3>Reflexão Estoica Diária</h3>
-                            <p>Faça uma pausa para refletir sobre seu dia, seus sentimentos e seu progresso com base nos princípios estoicos de autoconsciência e melhoria contínua.</p>
-                            <button class="standard-button" data-page="reflexao-estoica"><i class="fas fa-pen-nib"></i> Iniciar Reflexão</button>
-                        </div>
-                    </div>
-                </section>
-            </div>
-            <div class="dashboard-side-widgets">
-                 <button class="saude-card-small fisica" data-page="fisica">
-                    <div class="card-medal-icon" style="display: none;"><i class="fas fa-medal"></i></div>
+                    <p>Registre seus pensamentos e insights.</p>
+                </button>
+                <button class="saude-card fisica" data-page="fisica">
+                    <i class="fas fa-medal card-medal-icon" title="Todas as tarefas de hoje concluídas!"></i>
                     <div class="card-icon-title">
                         <i class="fas fa-heart-pulse"></i>
                         <h3>Saúde Física</h3>
                     </div>
                     <p>Exercício, dieta e descanso.</p>
                 </button>
-                 <button class="saude-card-small mental" data-page="mental">
-                    <div class="card-medal-icon" style="display: none;"><i class="fas fa-medal"></i></div>
+                 <button class="saude-card mental" data-page="mental">
+                    <i class="fas fa-medal card-medal-icon" title="Todas as tarefas de hoje concluídas!"></i>
                     <div class="card-icon-title">
                         <i class="fas fa-brain"></i>
                         <h3>Saúde Mental</h3>
                     </div>
                     <p>Clareza e resiliência emocional.</p>
                 </button>
-                 <button class="saude-card-small financeira" data-page="financeira">
-                    <div class="card-medal-icon" style="display: none;"><i class="fas fa-medal"></i></div>
+                 <button class="saude-card financeira" data-page="financeira">
+                    <i class="fas fa-medal card-medal-icon" title="Todas as tarefas de hoje concluídas!"></i>
                     <div class="card-icon-title">
                         <i class="fas fa-hand-holding-dollar"></i>
                         <h3>Saúde Financeira</h3>
                     </div>
                     <p>Orçamento e investimentos.</p>
                 </button>
-                 <button class="saude-card-small familiar" data-page="familiar">
-                    <div class="card-medal-icon" style="display: none;"><i class="fas fa-medal"></i></div>
+                 <button class="saude-card familiar" data-page="familiar">
+                    <i class="fas fa-medal card-medal-icon" title="Todas as tarefas de hoje concluídas!"></i>
                     <div class="card-icon-title">
                         <i class="fas fa-users"></i>
                         <h3>Saúde Familiar</h3>
                     </div>
                     <p>Fortaleça laços e comunicação.</p>
                 </button>
-                <button class="saude-card-small profissional" data-page="profissional">
-                    <div class="card-medal-icon" style="display: none;"><i class="fas fa-medal"></i></div>
-                    <div class="card-icon-title"><i class="fas fa-briefcase"></i><h3>Profissional</h3></div>
+                <button class="saude-card profissional" data-page="profissional">
+                    <i class="fas fa-medal card-medal-icon" title="Todas as tarefas de hoje concluídas!"></i>
+                    <div class="card-icon-title">
+                        <i class="fas fa-briefcase"></i>
+                        <h3>Profissional</h3>
+                    </div>
                     <p>Carreira, propósito e equilíbrio.</p>
                 </button>
-                <button class="saude-card-small social" data-page="social">
-                    <div class="card-medal-icon" style="display: none;"><i class="fas fa-medal"></i></div>
-                    <div class="card-icon-title"><i class="fas fa-comments"></i><h3>Social</h3></div>
+                <button class="saude-card social" data-page="social">
+                    <i class="fas fa-medal card-medal-icon" title="Todas as tarefas de hoje concluídas!"></i>
+                    <div class="card-icon-title">
+                        <i class="fas fa-comments"></i>
+                        <h3>Social</h3>
+                    </div>
                     <p>Cultive relacionamentos.</p>
                 </button>
-                <button class="saude-card-small espiritual" data-page="espiritual">
-                    <div class="card-medal-icon" style="display: none;"><i class="fas fa-medal"></i></div>
-                    <div class="card-icon-title"><i class="fas fa-om"></i><h3>Espiritual</h3></div>
+                <button class="saude-card espiritual" data-page="espiritual">
+                    <i class="fas fa-medal card-medal-icon" title="Todas as tarefas de hoje concluídas!"></i>
+                    <div class="card-icon-title">
+                        <i class="fas fa-om"></i>
+                        <h3>Espiritual</h3>
+                    </div>
                     <p>Explore seu propósito e valores.</p>
                 </button>
-                <button class="saude-card-small preventiva" data-page="preventiva">
-                    <div class="card-medal-icon" style="display: none;"><i class="fas fa-medal"></i></div>
-                    <div class="card-icon-title"><i class="fas fa-shield-alt"></i><h3>Preventiva</h3></div>
+                <button class="saude-card preventiva" data-page="preventiva">
+                    <i class="fas fa-medal card-medal-icon" title="Todas as tarefas de hoje concluídas!"></i>
+                    <div class="card-icon-title">
+                        <i class="fas fa-shield-alt"></i>
+                        <h3>Preventiva</h3>
+                    </div>
                     <p>Acompanhe sua saúde.</p>
                 </button>
-                <div class="saude-card-small ranking ranking-widget">
-                    <div class="card-icon-title">
-                        <i class="fas fa-trophy"></i>
-                        <h3>Ranking da Comunidade</h3>
-                    </div>
-                    <ul id="medal-leaderboard" class="ranking-list">
-                        <!-- Leaderboard will be rendered here by JS -->
-                    </ul>
-                </div>
-                <button class="saude-card-small avaliacao-card" id="open-contract-home">
+                <button class="saude-card avaliacao-card" id="open-contract-home">
                     <div class="card-icon-title"><i class="fas fa-file-signature"></i><h3>Contrato</h3></div>
                     <p>Reveja seu compromisso.</p>
                 </button>
             </div>
-        </div>
+        </main>
     </div>
 </div>

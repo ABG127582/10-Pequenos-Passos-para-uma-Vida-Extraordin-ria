@@ -10,7 +10,7 @@ import { storageService } from './storage';
 import { errorHandler } from './errorHandler';
 import { loadingManager } from './loadingManager';
 import { performanceMonitor } from './performance';
-import { initTasks, addTask, getTasks } from './tarefas';
+import { initTasks, addTask, getTasks, updateTask, Task } from './tarefas';
 
 // --- Type definitions for the global window object ---
 // This ensures TypeScript knows about the functions we're attaching globally.
@@ -67,10 +67,20 @@ function initProfileManager() {
         if (profiles.length > 0) {
             existingProfilesList.innerHTML = '';
             profiles.forEach(profile => {
+                const name = profile.split('@')[0];
+                const initial = name.charAt(0).toUpperCase();
+
                 const btn = document.createElement('button');
-                btn.className = 'existing-profile-btn btn';
-                btn.textContent = profile.split('@')[0]; // Show user-friendly name
+                btn.className = 'profile-avatar-btn';
                 btn.dataset.profile = profile;
+                btn.title = `Acessar perfil de ${name}`;
+
+                btn.innerHTML = `
+                    <div class="profile-avatar">
+                        <span class="profile-avatar-letter">${initial}</span>
+                    </div>
+                    <span class="profile-avatar-name">${name}</span>
+                `;
                 existingProfilesList.appendChild(btn);
             });
             if (existingProfilesContainer) existingProfilesContainer.style.display = 'block';
@@ -252,7 +262,7 @@ function initProfileManager() {
     if (existingProfilesList) {
         existingProfilesList.addEventListener('click', (e) => {
             const target = e.target as HTMLElement;
-            const profileBtn = target.closest('.existing-profile-btn') as HTMLButtonElement;
+            const profileBtn = target.closest('.profile-avatar-btn') as HTMLButtonElement;
             if (profileBtn && profileBtn.dataset.profile) {
                 loadAppForProfile(profileBtn.dataset.profile);
             }
@@ -289,12 +299,90 @@ function initProfileManager() {
 }
 
 
+// --- NOTIFICATION SERVICE ---
+
+function sendNotification(task: Task) {
+    if (!('Notification' in window)) {
+        console.warn('Este navegador não suporta notificações de desktop.');
+        return;
+    }
+
+    const permissionCallback = (permission: NotificationPermission) => {
+        if (permission === 'granted') {
+            const reminderMinutes = parseInt(task.reminder!, 10);
+            const notification = new Notification(`Lembrete: ${task.title}`, {
+                body: `Sua tarefa começa em ${reminderMinutes} minutos às ${task.startTime}.`,
+                icon: '/favicon.ico', // You can use a more specific icon if available
+            });
+
+            notification.onclick = () => {
+                window.focus();
+                window.location.hash = 'planejamento-diario';
+            };
+            
+            // Mark as sent after creating the notification to prevent duplicates
+            updateTask(task.id, { reminderSent: true });
+
+        } else if (permission === 'denied') {
+            // If denied, we mark it as sent to not ask again for this specific task reminder.
+             updateTask(task.id, { reminderSent: true });
+        }
+    };
+
+    if (Notification.permission === 'granted') {
+        permissionCallback('granted');
+    } else if (Notification.permission !== 'denied') {
+        Notification.requestPermission().then(permissionCallback);
+    } else {
+        // If permission is already denied, mark as sent to avoid re-checking.
+        updateTask(task.id, { reminderSent: true });
+    }
+}
+
+
+function checkReminders() {
+    const now = new Date();
+    const allTasks = getTasks();
+    const todayStr = now.toISOString().split('T')[0];
+
+    const tasksToCheck = allTasks.filter(task => 
+        task.dueDate === todayStr &&
+        task.startTime &&
+        task.reminder &&
+        !task.reminderSent
+    );
+
+    tasksToCheck.forEach(task => {
+        const reminderMinutes = parseInt(task.reminder!, 10);
+        
+        const [hour, minute] = task.startTime!.split(':').map(Number);
+        const startTime = new Date(now.getFullYear(), now.getMonth(), now.getDate(), hour, minute);
+
+        const reminderTime = new Date(startTime.getTime() - reminderMinutes * 60 * 1000);
+
+        // Check if it's time to send the notification
+        // and also ensure we don't send it after the task has already started
+        if (now >= reminderTime && now < startTime) {
+            sendNotification(task);
+        }
+    });
+}
+
+function initNotificationService() {
+    // Check for reminders every minute
+    setInterval(checkReminders, 60 * 1000);
+    // Initial check on load, with a small delay to ensure tasks are loaded
+    setTimeout(checkReminders, 2000); 
+}
+
+
 // --- CORE APP INITIALIZATION ---
 function initializeApp() {
     // 2. Initialize core application modules
     ttsReader.init();
     setupModals();
     initTasks(); // Initialize the unified task modal system globally
+    initNotificationService(); // Initialize the reminder checker
     initRouter(pageModuleImports, ttsReader);
 
     // 3. Setup main UI elements and global event listeners
@@ -344,6 +432,19 @@ function initializeApp() {
         // Remove it after a short delay to handle non-async actions smoothly
         setTimeout(() => document.body.classList.remove('is-loading-cursor'), 300);
 
+        // Handle clear input button
+        const clearBtn = target.closest<HTMLButtonElement>('.clear-input-btn');
+        if (clearBtn) {
+            e.preventDefault();
+            const wrapper = clearBtn.closest('.input-wrapper');
+            const input = wrapper?.querySelector('input, textarea') as HTMLInputElement | HTMLTextAreaElement | null;
+            if (input) {
+                input.value = '';
+                input.dispatchEvent(new Event('input', { bubbles: true }));
+            }
+            return;
+        }
+
         // Handle speech-to-text buttons
         const speechBtn = target.closest<HTMLButtonElement>('button.speech-to-text-btn');
         if (speechBtn) {
@@ -351,6 +452,23 @@ function initializeApp() {
             window.startSpeechRecognition(speechBtn);
             return;
         }
+
+        // Handle voice input on wrapper click (triggers speechBtn)
+        const voiceInputWrapper = target.closest<HTMLElement>('.input-wrapper');
+        if (voiceInputWrapper) {
+            // If the click was on the input/textarea itself, let the default focus behavior happen.
+            if (target.matches('input, textarea')) {
+                // Do nothing to allow editing.
+            } else {
+                // If click was on wrapper padding, trigger the speech button.
+                const micButton = voiceInputWrapper.querySelector<HTMLButtonElement>('.speech-to-text-btn');
+                if (micButton) {
+                    micButton.click();
+                }
+            }
+            return; // Don't process other link clicks if inside a voice wrapper
+        }
+
 
         // Handle contract modal links
         if (target.closest('#open-contract-sidebar') || target.closest('#open-contract-home')) {
@@ -367,6 +485,18 @@ function initializeApp() {
             window.location.hash = pageLink.dataset.page;
         }
     });
+
+    // Global input handler for clear button visibility
+    document.body.addEventListener('input', (e) => {
+        const input = e.target as HTMLInputElement | HTMLTextAreaElement;
+        if (input.matches && input.matches('input, textarea')) {
+            const wrapper = input.closest('.input-wrapper');
+            if (wrapper) {
+                wrapper.classList.toggle('has-content', !!input.value);
+            }
+        }
+    }, true);
+
 
     // --- Sidebar State Persistence & Logic ---
     const restoreMenuState = () => {

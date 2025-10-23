@@ -21,7 +21,11 @@
     "dompurify": "https://aistudiocdn.com/dompurify@^3.2.7",
     "path": "https://aistudiocdn.com/path@^0.12.7",
     "vite": "https://aistudiocdn.com/vite@^7.1.7",
-    "@vitejs/plugin-basic-ssl": "https://aistudiocdn.com/@vitejs/plugin-basic-ssl@^2.1.0"
+    "@vitejs/plugin-basic-ssl": "https://aistudiocdn.com/@vitejs/plugin-basic-ssl@^2.1.0",
+    "react": "https://esm.sh/react@18.3.1",
+    "react-dom/client": "https://esm.sh/react-dom@18.3.1/client",
+    "lucide-react": "https://esm.sh/lucide-react@0.400.0",
+    "react-dom/": "https://aistudiocdn.com/react-dom@^19.2.0/"
   }
 }
 </script>
@@ -31,20 +35,16 @@
     <!-- Nova Tela de Login -->
     <div id="login-page">
         <div class="login-container">
+            <i class="fas fa-shoe-prints login-icon"></i>
             <h1>Pequenos Passos</h1>
             <p>Seu assistente para uma vida extraordinária.</p>
             
             <form id="login-form">
                 <div class="form-group">
-                    <label for="profile-email-input">Email (Seu Perfil)</label>
+                    <label for="profile-email-input">Acesse ou crie seu perfil</label>
                     <input type="email" id="profile-email-input" placeholder="seu-email@exemplo.com" required>
                 </div>
-                <div class="form-group">
-                    <label for="profile-password-input">Senha</label>
-                    <input type="password" id="profile-password-input" placeholder="••••••••">
-                     <small style="font-size: 0.75rem; color: var(--text-color-muted);">A senha é um campo visual e não é armazenada.</small>
-                </div>
-                <button type="submit" id="login-btn" class="standard-button" style="width: 100%; margin-top: 1rem;">Entrar</button>
+                <button type="submit" id="login-btn" class="standard-button" style="width: 100%; margin-top: 1rem;">Entrar <i class="fas fa-arrow-right"></i></button>
             </form>
 
             <div id="existing-profiles-container" style="display: none; margin-top: 1.5rem;">
@@ -72,7 +72,7 @@
                             <ul>
                                 <li><a href="#fisica" class="sidebar-link sub-link" data-page="fisica">Visão Geral</a></li>
                                 <li><a href="#leitura-guia-fisica" class="sidebar-link sub-link" data-page="leitura-guia-fisica">Guia de Leitura</a></li>
-                                <li><a href="#alongamento" class="sidebar-link sub-link" data-page="alongamento">Guia de Alongamento</a></li>
+                                <li><a href="#alongamento" class="sidebar-link sub-link" data-page="alongamento">Mobilidade e Alongamento</a></li>
                                 <li><a href="#alimentacao-forte" class="sidebar-link sub-link" data-page="alimentacao-forte">Guia de Alimentação</a></li>
                             </ul>
                         </details>
@@ -126,8 +126,7 @@
                     <li><a href="#" id="open-contract-sidebar" title="Contrato de Compromisso" class="sidebar-link" data-tooltip="Contrato"><i class="fas fa-file-signature fa-fw"></i><span class="sidebar-text">Contrato</span></a></li>
                     <li><a href="#planejamento-diario" title="Planejamento Diário" class="sidebar-link" data-page="planejamento-diario" data-tooltip="Planejamento"><i class="fas fa-calendar-day fa-fw"></i><span class="sidebar-text">Planejamento Diário</span></a></li>
                     <li><a href="#tarefas" title="Caixa de Entrada" class="sidebar-link" data-page="tarefas" data-tooltip="Tarefas"><i class="fas fa-inbox fa-fw"></i><span class="sidebar-text">Tarefas</span></a></li>
-                    <li><a href="#reflexoes-diarias" title="Reflexões Diárias" class="sidebar-link" data-page="reflexoes-diarias" data-tooltip="Reflexões"><i class="fas fa-lightbulb fa-fw"></i><span class="sidebar-text">Reflexões</span></a></li>
-                    <li><a href="#reflexao-estoica" title="Reflexão Estoica" class="sidebar-link" data-page="reflexao-estoica" data-tooltip="Reflexão Estoica"><i class="fas fa-pen-nib fa-fw"></i><span class="sidebar-text">Reflexão Estoica</span></a></li>
+                    <li><a href="#reflexoes" title="Reflexões" class="sidebar-link" data-page="reflexoes" data-tooltip="Reflexões"><i class="fas fa-feather-alt fa-fw"></i><span class="sidebar-text">Reflexões</span></a></li>
                     <li><a href="#conquistas" title="Minhas Conquistas" class="sidebar-link" data-page="conquistas" data-tooltip="Conquistas"><i class="fas fa-trophy fa-fw"></i><span class="sidebar-text">Conquistas</span></a></li>
                 </ul>
             </div>
@@ -305,6 +304,17 @@
                             <label for="unified-task-end-time">Fim (Opcional):</label>
                             <input type="time" id="unified-task-end-time" name="endTime" step="300">
                         </div>
+                    </div>
+                    <div class="form-group">
+                        <label for="unified-task-reminder">Lembrete:</label>
+                        <select id="unified-task-reminder" name="reminder" disabled>
+                            <option value="">Sem lembrete</option>
+                            <option value="5">5 minutos antes</option>
+                            <option value="15">15 minutos antes</option>
+                            <option value="30">30 minutos antes</option>
+                            <option value="60">1 hora antes</option>
+                        </select>
+                        <small id="reminder-help-text" style="font-size: 0.75rem; color: var(--text-color-muted); display: block; margin-top: 4px;">É necessário definir uma hora de início.</small>
                     </div>
                     <div class="form-group">
                         <label for="unified-task-category">Categoria:</label>

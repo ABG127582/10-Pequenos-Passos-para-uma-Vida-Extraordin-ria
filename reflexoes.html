@@ -1,0 +1,158 @@
+<div class="page-section" id="page-reflexoes">
+    <div class="container">
+        <header>
+            <h1><i class="fas fa-feather-alt" style="margin-right: 10px;"></i> Minhas Reflexões</h1>
+        </header>
+        <main>
+            <div class="tabs-container">
+                <button class="tab-link active" data-tab="diaria">Reflexão do Dia</button>
+                <button class="tab-link" data-tab="historico">Histórico de Reflexões</button>
+            </div>
+
+            <div id="tab-diaria" class="tab-content active">
+                <section class="content-section">
+                    <h2 class="section-title">Reflexão da Grade Horária</h2>
+                    <p>Reflita sobre como foi cada tarefa ou bloco de tempo do seu dia. Suas anotações aqui serão salvas junto com sua reflexão principal abaixo.</p>
+                    <div id="reflection-schedule-container" class="reflection-schedule">
+                        <!-- Tarefas do dia com campo para reflexão serão inseridas aqui pelo JS -->
+                    </div>
+                </section>
+
+                <section class="content-section reflection-section">
+                    <h2 class="section-title">Diário de Bordo</h2>
+                    <p>Use este espaço para refletir sobre seu dia. Dê um título à sua entrada, escolha uma categoria e escreva livremente. Use os botões de inspiração se precisar de um guia.</p>
+                    <form id="central-reflection-form">
+                        <div class="form-group">
+                            <label for="reflection-category">Categoria da Reflexão:</label>
+                            <select id="reflection-category">
+                                <!-- Options will be populated by JS -->
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label for="reflection-title">Título da Reflexão:</label>
+                            <div class="input-wrapper">
+                                <input type="text" id="reflection-title" placeholder="Ex: Um dia produtivo, Desafio superado, etc.">
+                                <button type="button" class="speech-to-text-btn" title="Digitar por Voz"><i class="fas fa-microphone"></i></button>
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="reflection-text">Sua Reflexão:</label>
+                             <div class="inspiration-prompts">
+                                <button type="button" class="prompt-chip" data-prompt="O que correu bem hoje? O que poderia ter feito melhor?">Análise do Dia</button>
+                                <button type="button" class="prompt-chip" data-prompt="Pelo que você é grato(a) hoje?">Gratidão</button>
+                                <button type="button" class="prompt-chip" data-prompt="Que pensamentos ou emoções estão presentes?">Check-in Mental</button>
+                            </div>
+                            <div class="input-wrapper textarea-wrapper">
+                                <textarea id="reflection-text" rows="8" placeholder="Escreva livremente sobre seu dia, seus pensamentos e sentimentos..."></textarea>
+                                <button type="button" class="speech-to-text-btn" title="Digitar por Voz"><i class="fas fa-microphone"></i></button>
+                            </div>
+                        </div>
+                        <button type="submit" class="standard-button"><i class="fas fa-save"></i> Salvar Reflexão</button>
+                    </form>
+                </section>
+            </div>
+
+            <div id="tab-historico" class="tab-content">
+                <section class="content-section">
+                    <div class="reflexoes-controls">
+                        <div class="reflexoes-filter-bar">
+                            <div class="reflexoes-filter-group">
+                                <label for="reflexoes-search-input">Buscar:</label>
+                                <input type="search" id="reflexoes-search-input" placeholder="Filtrar por palavra-chave...">
+                            </div>
+                            <div class="reflexoes-filter-group">
+                                <label for="reflexoes-category-filter-history">Categoria:</label>
+                                <select id="reflexoes-category-filter-history">
+                                    <option value="all">Todas</option>
+                                    <!-- Options will be populated by JS -->
+                                </select>
+                            </div>
+                            <div class="reflexoes-filter-group">
+                                <label for="reflexoes-date-filter">Período:</label>
+                                <select id="reflexoes-date-filter">
+                                    <option value="all">Todo o período</option>
+                                    <option value="today">Hoje</option>
+                                    <option value="week">Últimos 7 dias</option>
+                                    <option value="month">Últimos 30 dias</option>
+                                </select>
+                            </div>
+                            <div class="reflexoes-filter-group">
+                                <label for="reflexoes-sort-filter">Ordenar por:</label>
+                                <select id="reflexoes-sort-filter">
+                                    <option value="desc">Mais recentes</option>
+                                    <option value="asc">Mais antigas</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="reflexoes-action-bar">
+                             <button id="generate-insights-btn" class="standard-button">
+                                <i class="fas fa-wand-magic-sparkles"></i>
+                                <span class="btn-text">Gerar Insights</span>
+                                <i class="fas fa-spinner fa-spin"></i>
+                            </button>
+                            <div class="reflexoes-view-toggle">
+                                <button id="list-view-btn" class="view-btn active" aria-pressed="true" title="Visualização em Lista"><i class="fas fa-bars"></i></button>
+                                <button id="grid-view-btn" class="view-btn" aria-pressed="false" title="Visualização em Grade"><i class="fas fa-grip"></i></button>
+                            </div>
+                        </div>
+                    </div>
+    
+                    <div id="reflexoes-list-container">
+                        <!-- Reflections will be rendered here by JS -->
+                    </div>
+    
+                    <div id="reflexoes-empty-state" class="empty-list-placeholder" style="display: none;">
+                        <p>Nenhuma reflexão encontrada. Comece a registrar seus pensamentos na aba "Reflexão do Dia"!</p>
+                    </div>
+                </section>
+            </div>
+
+        </main>
+        <div class="back-button-wrapper">
+            <button class="standard-button back-button" data-page="inicio"><i class="fas fa-arrow-left"></i> Voltar ao Início</button>
+        </div>
+    </div>
+</div>
+
+<style>
+.inspiration-prompts {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    margin-bottom: 10px;
+}
+.prompt-chip {
+    background-color: rgba(var(--color-secondary-rgb), 0.1);
+    border: 1px solid var(--border-color);
+    border-radius: 16px;
+    padding: 6px 12px;
+    font-size: 0.85rem;
+    cursor: pointer;
+    transition: background-color 0.2s;
+    color: var(--text-color);
+}
+.prompt-chip:hover {
+    background-color: rgba(var(--color-secondary-rgb), 0.2);
+}
+/* Styles for expandable reflection cards */
+.reflection-card-body p {
+    max-height: 7.5em; /* approx 5 lines */
+    overflow: hidden;
+    text-overflow: ellipsis;
+    position: relative;
+    transition: max-height 0.4s ease-in-out;
+}
+.reflection-card-body p.expanded {
+    max-height: 1000px; /* Large enough for content */
+}
+.expand-reflection-btn {
+    background: none;
+    border: none;
+    color: var(--link-color);
+    cursor: pointer;
+    padding: 5px 0;
+    margin-top: 5px;
+    font-weight: bold;
+}
+</style>
