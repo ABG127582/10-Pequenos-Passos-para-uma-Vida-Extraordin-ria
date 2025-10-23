@@ -3,6 +3,7 @@ import { ai } from './ai';
 import { loadingManager } from './loadingManager';
 import { errorHandler } from './errorHandler';
 import { Type } from '@google/genai';
+import DOMPurify from 'dompurify';
 
 // Use the base PDCA handler for task-related functionality
 const pdcaHandler = createPdcaPageHandler('Social', 'page-social');
@@ -20,6 +21,7 @@ async function handleGenerateResources() {
     const generateBtn = page.querySelector('#generate-social-resources-btn') as HTMLButtonElement;
     const topicInput = page.querySelector('#social-topic-input') as HTMLInputElement;
     const resultsContainer = page.querySelector('#social-resources-results') as HTMLElement;
+    const btnText = generateBtn.querySelector('.btn-text') as HTMLElement;
 
     const topic = topicInput.value.trim();
     if (!topic) {
@@ -30,9 +32,10 @@ async function handleGenerateResources() {
     loadingManager.start('social-ai');
     generateBtn.classList.add('loading');
     generateBtn.disabled = true;
+    if (btnText) btnText.textContent = 'Gerando...';
     resultsContainer.innerHTML = '<p>Buscando recursos... <i class="fas fa-spinner fa-spin"></i></p>';
 
-    const prompt = `Para o desafio social "${topic}", encontre 3 recursos online de alta qualidade (artigos, vídeos do YouTube, ou ferramentas) que possam ajudar.`;
+    const prompt = `Para o desafio social "${topic}", encontre 3 recursos online de alta qualidade (artigos, vídeos do YouTube, ou ferramentas) que possam ajudar. Forneça o título, uma breve descrição e o link para cada um.`;
 
     try {
         const response = await ai.models.generateContent({
@@ -55,6 +58,7 @@ async function handleGenerateResources() {
             }
         });
 
+        // The response text is a JSON string, parse it.
         const resources: SocialResource[] = JSON.parse(response.text);
         
         if (!resources || resources.length === 0) {
@@ -62,6 +66,8 @@ async function handleGenerateResources() {
             return;
         }
 
+        // Safely build the DOM instead of using innerHTML
+        resultsContainer.innerHTML = ''; // Clear loading message
         const ul = document.createElement('ul');
         ul.style.listStyle = 'disc';
         ul.style.paddingLeft = '20px';
@@ -89,7 +95,6 @@ async function handleGenerateResources() {
             ul.appendChild(li);
         });
 
-        resultsContainer.innerHTML = '';
         resultsContainer.appendChild(ul);
 
     } catch (err) {
@@ -97,6 +102,7 @@ async function handleGenerateResources() {
         resultsContainer.innerHTML = '<p style="color: var(--color-error);">Ocorreu um erro ao buscar os recursos. Tente novamente.</p>';
     } finally {
         loadingManager.stop('social-ai');
+        if (btnText) btnText.textContent = 'Gerar Recursos';
         generateBtn.classList.remove('loading');
         generateBtn.disabled = false;
     }

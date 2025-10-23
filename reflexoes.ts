@@ -7,6 +7,7 @@ import { confirmAction, debounce } from './utils';
 import { getCategories, getTasks, Task } from './tarefas';
 import { ai } from './ai';
 import { loadingManager } from './loadingManager';
+import { errorHandler } from './errorHandler';
 
 // --- TYPE DEFINITIONS ---
 interface Reflection {
@@ -301,9 +302,13 @@ async function handleGenerateInsights() {
         window.showToast('Não há reflexões para analisar.', 'info');
         return;
     }
+    const generateBtn = elements.generateInsightsBtn as HTMLButtonElement;
+    const btnText = generateBtn.querySelector('.btn-text') as HTMLElement;
+
     loadingManager.start('ai-insights');
-    (elements.generateInsightsBtn as HTMLElement).classList.add('loading');
-    (elements.generateInsightsBtn as HTMLButtonElement).disabled = true;
+    generateBtn.classList.add('loading');
+    generateBtn.disabled = true;
+    if (btnText) btnText.textContent = 'Gerando...';
 
     const combinedReflections = filteredReflections.map(r => `Data: ${r.date}\nTítulo: ${r.title}\nCategoria: ${r.category}\nReflexão: ${r.text}`).join('\n\n---\n\n');
     const prompt = `Aja como um psicólogo compassivo e analista de padrões. Analise as seguintes entradas de diário. Identifique temas recorrentes, padrões emocionais e áreas de força. Apresente suas percepções em uma lista de marcadores ('*'). As entradas são:\n\n${combinedReflections}`;
@@ -313,12 +318,12 @@ async function handleGenerateInsights() {
         const insights = response.text;
         openInsightsModal(insights);
     } catch (error) {
-        console.error("Gemini API error:", error);
-        window.showToast('Erro ao gerar insights.', 'error');
+        errorHandler.handle(error as Error, 'generating AI insights');
     } finally {
         loadingManager.stop('ai-insights');
-        (elements.generateInsightsBtn as HTMLElement).classList.remove('loading');
-        (elements.generateInsightsBtn as HTMLButtonElement).disabled = false;
+        if (btnText) btnText.textContent = 'Gerar Insights';
+        generateBtn.classList.remove('loading');
+        generateBtn.disabled = false;
     }
 }
 

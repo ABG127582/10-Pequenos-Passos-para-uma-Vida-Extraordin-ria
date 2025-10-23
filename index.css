@@ -84,7 +84,7 @@
 
     /* Outros */
     --sidebar-width: 250px;
-    --sidebar-width-collapsed: 65px;
+    --sidebar-width-collapsed: 80px;
     --transition-speed: 0.3s;
     --card-border-radius: 12px;
 }
@@ -503,7 +503,6 @@ html:not(.dark-mode) .streak-widget.milestone-365 .fa-fire {
     left: 0;
     bottom: 0;
     z-index: 1010; 
-    overflow-y: auto;
     overflow-x: hidden;
     box-shadow: 2px 0 5px rgba(0,0,0,0.1);
     transition: width var(--transition-speed) ease;
@@ -535,30 +534,55 @@ html:not(.dark-mode) .sidebar {
     display: none;
 }
 
-.sidebar-toggle-button {
+/* New Sidebar Header */
+.sidebar-header {
+    display: flex;
+    align-items: center;
+    flex-wrap: wrap;
+    justify-content: flex-start;
+    padding: 10px;
+    border-bottom: 1px solid var(--border-color);
+    gap: 8px;
+}
+.sidebar.collapsed .sidebar-header {
+    justify-content: center;
+    padding: 10px 5px;
+}
+.header-action-btn {
     background: none;
     border: none;
     color: inherit;
     font-size: 1.2rem;
-    padding: 15px 24px;
     cursor: pointer;
+    width: 40px;
+    height: 40px;
     display: flex;
     align-items: center;
-    width: 100%;
-    margin-bottom: 10px;
-    transition: background-color var(--transition-speed) ease;
+    justify-content: center;
+    border-radius: 50%;
+    transition: background-color var(--transition-speed) ease, transform var(--transition-speed) ease;
+    flex-shrink: 0;
 }
-.sidebar-toggle-button:hover {
-    background-color: rgba(0,0,0,0.05);
+.header-action-btn:hover {
+    background-color: rgba(0, 0, 0, 0.05);
 }
-html.dark-mode .sidebar-toggle-button:hover {
-    background-color: rgba(255,255,255,0.1);
+html.dark-mode .header-action-btn:hover {
+    background-color: rgba(255, 255, 255, 0.1);
 }
-.sidebar-toggle-button i {
+#sidebar-toggle i {
      transition: transform var(--transition-speed) ease;
 }
-.sidebar:not(.collapsed) .sidebar-toggle-button i {
+.sidebar:not(.collapsed) #sidebar-toggle i {
     transform: rotate(180deg);
+}
+#rain-sound-toggle.playing {
+    background-color: var(--color-primary);
+    animation: pulse 2s infinite;
+}
+
+.sidebar-links-container {
+    overflow-y: auto;
+    overflow-x: hidden;
 }
 
 .sidebar-links {
@@ -598,8 +622,7 @@ html.dark-mode .sidebar-links summary:hover {
     font-size: 1.2rem;
 }
 
-.sidebar.collapsed .sidebar-toggle-button,
-.sidebar.collapsed .theme-toggle-button {
+.sidebar.collapsed .header-action-btn {
     padding-left: 0;
     padding-right: 0;
     justify-content: center;
@@ -716,25 +739,6 @@ html.dark-mode .sidebar-links details ul {
     display: flex;
     flex-direction: column;
     gap: 10px;
-}
-.theme-toggle-button {
-    background: none;
-    border: none;
-    color: inherit;
-    width: 100%;
-    padding: 15px;
-    font-size: 1.2rem;
-    cursor: pointer;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    transition: background-color var(--transition-speed) ease;
-}
-.theme-toggle-button:hover {
-    background-color: rgba(0,0,0,0.05);
-}
-html.dark-mode .theme-toggle-button:hover {
-    background-color: rgba(255,255,255,0.1);
 }
 
 .user-profile-widget {
@@ -1171,8 +1175,7 @@ html:not(.dark-mode) #page-planejamento-diario .standard-button {
     display: inline-block;
     animation: fa-spin 1s infinite linear;
 }
-#generate-insights-btn.loading .fa-wand-magic-sparkles,
-#generate-insights-btn.loading .btn-text {
+#generate-insights-btn.loading .fa-wand-magic-sparkles {
     display: none;
 }
 
@@ -1697,43 +1700,6 @@ html:not(.dark-mode) .reflection-card-category[style*="var(--color-financeira)"]
 
 
 /* --- Floating Action Buttons (FABs) --- */
-.fab-container {
-    position: fixed;
-    bottom: 20px;
-    right: 20px;
-    display: flex;
-    flex-direction: column-reverse; /* Stack from bottom-up */
-    gap: 15px;
-    z-index: 1000;
-}
-
-.fab-button {
-    position: relative; /* No longer needs individual positioning */
-    width: 50px;
-    height: 50px;
-    border-radius: 50%;
-    color: white;
-    border: none;
-    box-shadow: 0 2px 10px rgba(0,0,0,0.2);
-    font-size: 1.5rem;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    cursor: pointer;
-    transition: background-color var(--transition-speed) ease, transform var(--transition-speed) ease, box-shadow var(--transition-speed) ease;
-}
-.fab-button:hover {
-    transform: scale(1.1);
-}
-
-.rain-sound-button {
-    background-color: var(--color-mental);
-}
-.rain-sound-button.playing {
-    background-color: var(--color-primary);
-    animation: pulse 2s infinite;
-}
-
 @keyframes pulse {
     0% {
         box-shadow: 0 0 0 0 rgba(var(--color-primary-rgb), 0.4);
@@ -1748,15 +1714,6 @@ html:not(.dark-mode) .reflection-card-category[style*="var(--color-financeira)"]
 
 
 /* --- Text-to-Speech Reader --- */
-.tts-fab-play {
-    background-color: var(--color-info);
-    font-size: 1.4rem;
-}
-.tts-fab-stop {
-    background-color: var(--color-error);
-    font-size: 1.4rem;
-}
-
 /* TTS Selection Mode & Highlighting */
 body.tts-selection-mode #main-content p,
 body.tts-selection-mode #main-content h1,
@@ -2227,8 +2184,7 @@ body.tts-selection-mode #main-content li:hover {
 #generate-social-resources-btn.loading .fa-spinner {
     display: inline-block;
 }
-#generate-social-resources-btn.loading .fa-wand-magic-sparkles,
-#generate-social-resources-btn.loading .btn-text {
+#generate-social-resources-btn.loading .fa-wand-magic-sparkles {
     display: none;
 }
 
