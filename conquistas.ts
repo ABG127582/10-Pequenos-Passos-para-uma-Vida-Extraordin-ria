@@ -1,5 +1,3 @@
-
-
 // conquistas.ts
 
 import { storageService } from './storage';
@@ -48,8 +46,10 @@ function renderStreakMilestones() {
         if (isUnlocked) statusClass = 'unlocked';
         if (isNextGoal) statusClass = 'next-goal';
 
+        const finalWidth = ((days / milestoneDays[milestoneDays.length - 1]) * 100);
+
         return `
-            <div class="milestone-node ${statusClass}" style="left: ${((days / milestoneDays[milestoneDays.length-1]) * 100)}%" data-tooltip="${milestone.name}: ${milestone.description}">
+            <div class="milestone-node ${statusClass}" style="left: ${finalWidth}%" data-tooltip="${milestone.name}: ${milestone.description}">
                 <div class="milestone-icon"><i class="fas ${milestone.icon}"></i></div>
                 <div class="milestone-label">${days}d</div>
             </div>
@@ -62,7 +62,7 @@ function renderStreakMilestones() {
             <span>Faltam ${Math.max(0, nextMilestoneDays - streak.current)} dias para o próximo marco!</span>
         </div>
         <div class="streak-timeline">
-            <div class="streak-progress-bar" style="width: ${progressPercentage}%"></div>
+            <div class="streak-progress-bar" style="--final-width: ${progressPercentage}%"></div>
             ${milestonesHtml}
         </div>
     `;
@@ -87,8 +87,8 @@ function renderDailyMedals() {
         return;
     }
 
-    grid.innerHTML = Object.entries(medalCounts).map(([categoryKey, count]) => {
-        const details = categoryDetails[categoryKey.toLowerCase()] || { icon: 'fa-question-circle', name: categoryKey, color: 'var(--color-secondary)'};
+    grid.innerHTML = Object.entries(categoryDetails).map(([categoryKey, details]) => {
+        const count = medalCounts[categoryKey] || 0;
         return `
              <div class="medal-badge" style="--badge-color: ${details.color};">
                 <div class="medal-badge-icon">
