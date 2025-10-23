@@ -252,9 +252,19 @@ function initProfileManager() {
             }
 
         } else {
-            // If app is already initialized, just reload the router to reflect new user data
-            window.location.hash = 'inicio';
-            window.location.reload(); // Simple way to force all data to reload for the new profile
+            // If app is already initialized, just reload data for new profile without full page reload.
+            // 1. Re-init data-dependent services for the new profile
+            initTasks(); // This re-runs loadData() for the new profile
+            updateProfileWidget(); // Update the sidebar widget
+
+            // 2. Navigate home and trigger router to load the initial page content
+            // This ensures the correct page is displayed with the new profile's data.
+            if (window.location.hash !== '#inicio' && window.location.hash !== '') {
+                 window.location.hash = 'inicio';
+            } else {
+                // If already on home, manually trigger the hash change to force a reload of the page module
+                 window.dispatchEvent(new HashChangeEvent('hashchange'));
+            }
         }
     };
     
@@ -285,7 +295,8 @@ function initProfileManager() {
     if (switchProfileBtn) {
         switchProfileBtn.addEventListener('click', () => {
             storageService.setCurrentProfile(null);
-            window.location.reload();
+            // Instead of reloading the page, just show the login screen
+            showLoginPage();
         });
     }
 

@@ -2,10 +2,16 @@ import { createPdcaPageHandler } from './pdcaPage';
 import { ai } from './ai';
 import { loadingManager } from './loadingManager';
 import { errorHandler } from './errorHandler';
-import DOMPurify from 'dompurify';
+import { Type } from '@google/genai';
 
 // Use the base PDCA handler for task-related functionality
 const pdcaHandler = createPdcaPageHandler('Social', 'page-social');
+
+interface SocialResource {
+    title: string;
+    description: string;
+    link: string;
+}
 
 async function handleGenerateResources() {
     const page = document.getElementById('page-social');
@@ -26,24 +32,66 @@ async function handleGenerateResources() {
     generateBtn.disabled = true;
     resultsContainer.innerHTML = '<p>Buscando recursos... <i class="fas fa-spinner fa-spin"></i></p>';
 
-    const prompt = `Para o desafio social "${topic}", encontre 3 recursos online de alta qualidade (artigos, vídeos do YouTube, ou ferramentas) que possam ajudar. Para cada recurso, forneça o título, uma breve descrição (1-2 frases), e o link. Formate a resposta como uma lista HTML (<ul> e <li>) com links clicáveis.`;
+    const prompt = `Para o desafio social "${topic}", encontre 3 recursos online de alta qualidade (artigos, vídeos do YouTube, ou ferramentas) que possam ajudar.`;
 
     try {
         const response = await ai.models.generateContent({
             model: 'gemini-2.5-flash',
             contents: prompt,
+            config: {
+                responseMimeType: 'application/json',
+                responseSchema: {
+                    type: Type.ARRAY,
+                    items: {
+                        type: Type.OBJECT,
+                        properties: {
+                            title: { type: Type.STRING, description: 'O título do recurso.' },
+                            description: { type: Type.STRING, description: 'Uma breve descrição (1-2 frases) do recurso.' },
+                            link: { type: Type.STRING, description: 'O URL completo e clicável do recurso.' },
+                        },
+                        required: ['title', 'description', 'link'],
+                    },
+                },
+            }
         });
-        const htmlResult = response.text;
-        // Basic Markdown to HTML
-        let sanitizedHtml = DOMPurify.sanitize(htmlResult
-            .replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>')
-            .replace(/\* (.*?)(?=\n\*|\n\n|$)/g, '<li>$1</li>')
-            .replace(/(\r\n|\n|\r)/gm, "<br>")
-            .replace(/<br>\s*<br>/g, '')
-            .replace(/(<li>.*<\/li>)/g, '<ul>$1</ul>')
-            .replace(/<\/ul><br><ul>/g, '')
-        );
-        resultsContainer.innerHTML = sanitizedHtml;
+
+        const resources: SocialResource[] = JSON.parse(response.text);
+        
+        if (!resources || resources.length === 0) {
+            resultsContainer.innerHTML = '<p>Nenhum recurso encontrado. Tente reformular sua busca.</p>';
+            return;
+        }
+
+        const ul = document.createElement('ul');
+        ul.style.listStyle = 'disc';
+        ul.style.paddingLeft = '20px';
+        
+        resources.forEach(resource => {
+            const li = document.createElement('li');
+            li.style.marginBottom = '1rem';
+
+            const strong = document.createElement('strong');
+            strong.textContent = resource.title;
+
+            const p = document.createElement('p');
+            p.style.margin = '0.25rem 0';
+            p.textContent = resource.description;
+
+            const a = document.createElement('a');
+            a.href = resource.link;
+            a.target = '_blank';
+            a.rel = 'noopener noreferrer';
+            a.textContent = resource.link;
+
+            li.appendChild(strong);
+            li.appendChild(p);
+            li.appendChild(a);
+            ul.appendChild(li);
+        });
+
+        resultsContainer.innerHTML = '';
+        resultsContainer.appendChild(ul);
+
     } catch (err) {
         errorHandler.handle(err as Error, 'generating social resources');
         resultsContainer.innerHTML = '<p style="color: var(--color-error);">Ocorreu um erro ao buscar os recursos. Tente novamente.</p>';
