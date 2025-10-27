@@ -2,6 +2,8 @@
 // This module contains globally shared helper functions.
 import { storageService } from './storage';
 import { STORAGE_KEYS } from './constants';
+import { eventBus } from './event-bus';
+import { GamificationProfile, Streak } from './types';
 
 /**
  * Displays a toast notification.
@@ -209,18 +211,6 @@ export function trapFocus(element: HTMLElement): () => void {
 }
 
 // --- GAMIFICATION LOGIC ---
-interface GamificationProfile {
-    level: number;
-    ps: number;
-    nextLevelPs: number;
-}
-
-interface Streak {
-    current: number;
-    longest: number;
-    lastActivityDate: string; // YYYY-MM-DD
-}
-
 export const STREAK_MILESTONES: { [key: number]: { name: string, description: string, icon: string, color: string, bonus: number } } = {
     7: { name: "Semana Consistente", description: "Você manteve o foco por 7 dias!", icon: 'fa-award', color: '#cd7f32', bonus: 100 },
     14: { name: "Hábito em Formação", description: "Duas semanas de dedicação!", icon: 'fa-medal', color: '#c0c0c0', bonus: 250 },
@@ -240,7 +230,7 @@ function getGamificationProfile(): GamificationProfile {
 
 function saveGamificationProfile(profile: GamificationProfile) {
     storageService.set(STORAGE_KEYS.GAMIFICATION_PROFILE, profile);
-    document.body.dispatchEvent(new CustomEvent('gamification:update'));
+    eventBus.emit('gamification:update');
 }
 
 export function updateProfileWidget() {
@@ -419,7 +409,7 @@ export function awardMedalForCategory(category: string, date: string, options?: 
         
         awardPoints(50, options); // Medal bonus
         
-        document.body.dispatchEvent(new CustomEvent('datachanged:tasks'));
+        eventBus.emit('datachanged:tasks');
         return true; // Newly awarded
     }
 

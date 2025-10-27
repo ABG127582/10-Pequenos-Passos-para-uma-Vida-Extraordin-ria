@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="pt-BR">
+<html lang="pt-BR" class="dark-mode">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -42,9 +42,14 @@
             <form id="login-form">
                 <div class="form-group">
                     <label for="profile-email-input">Acesse ou crie seu perfil</label>
-                    <input type="email" id="profile-email-input" placeholder="seu-email@exemplo.com" required>
+                    <div class="input-wrapper">
+                        <input type="email" id="profile-email-input" placeholder="seu-email@exemplo.com" required>
+                        <i class="fas fa-user input-icon"></i>
+                    </div>
                 </div>
-                <button type="submit" id="login-btn" class="standard-button" style="width: 100%; margin-top: 1rem;">Entrar <i class="fas fa-arrow-right"></i></button>
+                <button type="submit" id="login-btn" class="standard-button" style="width: 100%; margin-top: 1rem;">
+                    Entrar <i class="fas fa-arrow-right"></i>
+                </button>
             </form>
 
             <div id="existing-profiles-container" style="display: none; margin-top: 1.5rem;">
@@ -62,11 +67,11 @@
                 <button id="sidebar-toggle" class="header-action-btn" aria-label="Alternar menu lateral" aria-expanded="false">
                     <i class="fas fa-bars"></i>
                 </button>
-                <button id="theme-toggle" class="header-action-btn" aria-label="Ativar modo escuro">
-                    <i class="fas fa-sun"></i>
-                </button>
                 <button id="rain-sound-toggle" class="header-action-btn" aria-label="Tocar som de chuva">
                     <i class="fas fa-cloud-rain"></i>
+                </button>
+                <button id="theme-toggle" class="header-action-btn" aria-label="Alternar para modo claro">
+                    <i class="fas fa-sun"></i>
                 </button>
                 <button id="tts-play-btn" class="header-action-btn" aria-label="Ler página em voz alta"><i class="fas fa-volume-up"></i></button>
                 <button id="tts-stop-btn" class="header-action-btn" aria-label="Parar leitura" style="display: none;"><i class="fas fa-stop"></i></button>
@@ -157,6 +162,8 @@
                 </div>
             </div>
         </nav>
+
+        <div id="sidebar-overlay"></div>
 
         <main id="main-content">
             <nav id="breadcrumb-nav" aria-label="breadcrumb"></nav>
@@ -307,7 +314,7 @@
                     </div>
                     <div class="form-group">
                         <label for="unified-task-reminder">Lembrete:</label>
-                        <select id="unified-task-reminder" name="reminder" disabled>
+                        <select id="unified-task-reminder" name="reminder">
                             <option value="">Sem lembrete</option>
                             <option value="5">5 minutos antes</option>
                             <option value="15">15 minutos antes</option>

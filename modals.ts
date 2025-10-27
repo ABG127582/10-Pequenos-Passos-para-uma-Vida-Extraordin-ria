@@ -4,18 +4,9 @@
 import { storageService } from './storage';
 import { showToast, trapFocus } from './utils';
 import { STORAGE_KEYS } from './constants';
+import { ContractData } from './types';
 
 // --- Contract Modal Logic ---
-interface ContractData {
-    name: string;
-    birthdate: string;
-    commitment: string;
-    period: string;
-    goals: string;
-    signature: string;
-    date: string;
-}
-
 let removeContractFocusTrap: (() => void) | null = null;
 let lastFocusedElement: HTMLElement | null = null;
 

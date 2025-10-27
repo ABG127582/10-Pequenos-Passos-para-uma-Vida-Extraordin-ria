@@ -2,7 +2,9 @@ import DOMPurify from 'dompurify';
 import { storageService } from './storage';
 import { STORAGE_KEYS } from './constants';
 import { confirmAction, awardMedalForCategory, updateStreak, showMedalAnimation, awardPoints } from './utils';
-import { Task, getTasks, openTaskModal, updateTask, deleteTask, addTask } from './tarefas';
+import { getTasks, openTaskModal, updateTask, deleteTask, addTask } from './tarefas';
+import { eventBus } from './event-bus';
+import { Task } from './types';
 
 
 // Re-declare global functions from index.tsx
@@ -235,8 +237,6 @@ const handleScheduleClick = (e: Event) => {
 
     const taskBlock = target.closest<HTMLElement>('.task-block');
     if (taskBlock) {
-        // Clicks on task blocks are handled by the global click handler in index.tsx now
-        // to avoid duplicating logic. We just need to handle the completion logic here.
         const taskId = taskBlock.dataset.taskId;
         if (!taskId) return;
         
@@ -247,21 +247,13 @@ const handleScheduleClick = (e: Event) => {
             const wasIncomplete = !task.completed;
             const targetRect = taskBlock.getBoundingClientRect();
 
-            updateTask(task.id, { completed: !task.completed });
+            updateTask(task.id, { completed: !task.completed }, { targetRect });
 
             if (wasIncomplete) {
                 // Award points for task completion
                 const taskPoints = task.priority === 'high' ? 20 : 10;
                 awardPoints(taskPoints, { targetRect });
                 updateStreak({ targetRect }); // This will award its own bonus points
-
-                if (task.category) {
-                    const categoryKey = task.category.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "");
-                    const newlyAwarded = awardMedalForCategory(categoryKey, currentDate, { targetRect });
-                    if (newlyAwarded) {
-                       window.showToast(`Medalha de ${task.category} conquistada para ${new Date(currentDate + 'T00:00:00').toLocaleDateString('pt-BR')}!`, 'success');
-                   }
-                }
             }
         } else if (target.closest('.edit-btn') || target.closest('.task-content')) {
              openTaskModal(task);
@@ -287,7 +279,7 @@ const handleScheduleClick = (e: Event) => {
 
 // --- LIFECYCLE FUNCTIONS ---
 export function setup() {
-    document.body.addEventListener('datachanged:tasks', () => {
+    eventBus.on('datachanged:tasks', () => {
         if (window.location.hash.includes('planejamento-diario')) {
             renderPage();
         }

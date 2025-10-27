@@ -1,9 +1,9 @@
 <div class="page-container" id="page-planejamento-diario">
     <div class="container">
         <header class="daily-plan-header">
-            <h1>Planejamento Diário</h1>
-            <input type="date" id="daily-plan-date" style="grid-column: 1 / 2; justify-self: start;">
-            <div class="daily-plan-controls" style="grid-column: 3 / 4; justify-self: end;">
+            <h1 id="daily-plan-title">Planejamento Diário</h1>
+            <input type="date" id="daily-plan-date">
+            <div class="daily-plan-controls">
                 <div id="daily-progress-container" class="progress-ring-container" title="Progresso das tarefas concluídas">
                     <svg id="daily-progress-ring" width="50" height="50" viewBox="0 0 120 120">
                         <circle class="progress-ring-bg" cx="60" cy="60" r="54"/>
@@ -11,7 +11,10 @@
                         <text id="progress-ring-text" x="50%" y="50%" dominant-baseline="middle" text-anchor="middle">0%</text>
                     </svg>
                 </div>
-                <button id="add-event-btn" class="standard-button"><i class="fas fa-plus"></i> Adicionar Evento</button>
+                <button id="add-event-btn" class="standard-button">
+                    <i class="fas fa-plus"></i>
+                    <span class="btn-text-desktop">Adicionar Evento</span>
+                </button>
             </div>
         </header>
 

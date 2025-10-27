@@ -5,12 +5,7 @@ import DOMPurify from 'dompurify';
 import { storageService } from './storage';
 import { showToast, trapFocus } from './utils';
 import { STORAGE_KEYS } from './constants';
-
-interface TTSSettings {
-    voiceURI: string | null;
-    rate: number;
-    pitch: number;
-}
+import { TTSSettings } from './types';
 
 export const ttsReader = {
     isSelectionMode: false,

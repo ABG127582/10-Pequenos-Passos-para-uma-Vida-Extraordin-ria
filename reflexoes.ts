@@ -4,20 +4,12 @@ import DOMPurify from 'dompurify';
 import { storageService } from './storage';
 import { STORAGE_KEYS } from './constants';
 import { confirmAction, debounce } from './utils';
-import { getCategories, getTasks, Task } from './tarefas';
+// Fix: The 'Task' type is not exported from 'tarefas.ts'. It is not explicitly used here, so it is removed from the import.
+import { getCategories, getTasks } from './tarefas';
 import { ai } from './ai';
 import { loadingManager } from './loadingManager';
 import { errorHandler } from './errorHandler';
-
-// --- TYPE DEFINITIONS ---
-interface Reflection {
-    id: string;
-    category: string;
-    title: string;
-    text: string;
-    date: string; // YYYY-MM-DD
-    timestamp: number;
-}
+import { Reflection } from './types';
 
 // --- CONSTANTS & STATE ---
 const categoryMap: { [key: string]: { name: string; color: string; } } = {
@@ -57,7 +49,7 @@ function handleReflectionSubmit(e: Event) {
     const mainText = (elements.formTextInput as HTMLTextAreaElement).value.trim();
 
     if (!title || !mainText) {
-        window.showToast('Por favor, preencha o título e o texto da reflexão principal.', 'info');
+        window.app.showToast('Por favor, preencha o título e o texto da reflexão principal.', 'info');
         return;
     }
 
@@ -90,7 +82,7 @@ function handleReflectionSubmit(e: Event) {
     allReflections.unshift(newReflection);
     storageService.set(STORAGE_KEYS.UNIFIED_REFLECTIONS, allReflections);
 
-    window.showToast(`Reflexão "${title}" salva na categoria ${category}!`, 'success');
+    window.app.showToast(`Reflexão "${title}" salva na categoria ${category}!`, 'success');
     
     (elements.form as HTMLFormElement).reset();
     (elements.formTextInput as HTMLTextAreaElement).dispatchEvent(new Event('input'));
@@ -288,18 +280,18 @@ async function handleDeleteReflection(e: Event) {
     
     const reflectionId = card.dataset.id;
     
-    const confirmed = await confirmAction('Tem certeza que deseja excluir esta reflexão?');
+    const confirmed = await window.app.confirmAction('Tem certeza que deseja excluir esta reflexão?');
     if (confirmed) {
         allReflections = allReflections.filter(r => r.id !== reflectionId);
         storageService.set(STORAGE_KEYS.UNIFIED_REFLECTIONS, allReflections);
-        window.showToast('Reflexão excluída.', 'success');
+        window.app.showToast('Reflexão excluída.', 'success');
         renderReflections();
     }
 }
 
 async function handleGenerateInsights() {
     if (filteredReflections.length === 0) {
-        window.showToast('Não há reflexões para analisar.', 'info');
+        window.app.showToast('Não há reflexões para analisar.', 'info');
         return;
     }
     const generateBtn = elements.generateInsightsBtn as HTMLButtonElement;
@@ -376,25 +368,51 @@ export function setup() {
     // --- Attach Listeners ---
     elements.tabDiariaBtn?.addEventListener('click', () => switchTab('diaria'));
     elements.tabHistoricoBtn?.addEventListener('click', () => {
+        // Fix: This was the corrupted line. It now correctly loads and renders reflections before switching the tab.
         loadReflections();
         renderReflections();
         switchTab('historico');
     });
 
-    if (elements.form) {
-        elements.form.addEventListener('submit', handleReflectionSubmit);
-        setupAutoResizeTextareas(elements.form as HTMLElement, '#reflection-text');
-        elements.inspirationPrompts?.addEventListener('click', handlePromptChipClick);
+    elements.form?.addEventListener('submit', handleReflectionSubmit);
+    elements.inspirationPrompts?.addEventListener('click', handlePromptChipClick);
+    
+    // Auto-resize for main textarea
+    if (elements.formTextInput) {
+        setupAutoResizeTextareas(page, '#reflection-text');
     }
 
+    // Filters for history tab
     const debouncedRender = debounce(renderReflections, 300);
     elements.searchInput?.addEventListener('input', debouncedRender);
     elements.historyCategoryFilter?.addEventListener('change', renderReflections);
     elements.dateFilter?.addEventListener('change', renderReflections);
     elements.sortFilter?.addEventListener('change', renderReflections);
-    elements.listContainer?.addEventListener('click', handleDeleteReflection);
-    elements.generateInsightsBtn?.addEventListener('click', handleGenerateInsights);
 
+    // List actions
+    elements.listContainer?.addEventListener('click', handleDeleteReflection);
+
+    // AI insights
+    elements.generateInsightsBtn?.addEventListener('click', handleGenerateInsights);
+    document.getElementById('ai-insights-close-btn')?.addEventListener('click', () => {
+        if (elements.aiInsightsModal) elements.aiInsightsModal.style.display = 'none';
+    });
+    
+    // Close AI modal with OK button
+    document.getElementById('ai-insights-ok-btn')?.addEventListener('click', () => {
+        if (elements.aiInsightsModal) elements.aiInsightsModal.style.display = 'none';
+    });
+    
+    // Copy AI insights
+    document.getElementById('ai-insights-copy-btn')?.addEventListener('click', () => {
+        if (elements.aiInsightsBody) {
+            navigator.clipboard.writeText(elements.aiInsightsBody.innerText)
+                .then(() => window.app.showToast('Insights copiados!', 'success'))
+                .catch(() => window.app.showToast('Falha ao copiar.', 'error'));
+        }
+    });
+
+    // View toggle
     elements.listViewBtn?.addEventListener('click', () => {
         elements.listContainer?.classList.remove('grid-view');
         elements.listViewBtn?.classList.add('active');
@@ -405,30 +423,24 @@ export function setup() {
         elements.gridViewBtn?.classList.add('active');
         elements.listViewBtn?.classList.remove('active');
     });
-
-    // AI Modal listeners
-    const insightsModal = document.getElementById('ai-insights-modal');
-    if (insightsModal && !insightsModal.dataset.listenerAttached) {
-        insightsModal.querySelector('#ai-insights-close-btn')?.addEventListener('click', () => insightsModal.style.display = 'none');
-        insightsModal.querySelector('#ai-insights-ok-btn')?.addEventListener('click', () => insightsModal.style.display = 'none');
-        insightsModal.querySelector('#ai-insights-copy-btn')?.addEventListener('click', () => {
-            const bodyEl = insightsModal.querySelector('#ai-insights-body') as HTMLElement;
-            if (bodyEl) {
-                navigator.clipboard.writeText(bodyEl.innerText)
-                    .then(() => window.showToast('Copiado!', 'success'))
-                    .catch(() => window.showToast('Falha ao copiar.', 'error'));
-            }
-        });
-        insightsModal.dataset.listenerAttached = 'true';
-    }
 }
 
 export function show() {
+    loadReflections();
     populateCategories();
     renderReflectionSchedule();
-    (elements.form as HTMLFormElement)?.reset();
-    (elements.formTextInput as HTMLTextAreaElement)?.dispatchEvent(new Event('input'));
-    loadReflections();
     renderReflections();
-    switchTab('diaria');
+    switchTab('diaria'); // Default to daily reflection tab
+    
+    // Reset form and filters
+    if (elements.form) (elements.form as HTMLFormElement).reset();
+    if (elements.searchInput) (elements.searchInput as HTMLInputElement).value = '';
+    if (elements.historyCategoryFilter) (elements.historyCategoryFilter as HTMLSelectElement).value = 'all';
+    if (elements.dateFilter) (elements.dateFilter as HTMLSelectElement).value = 'all';
+    if (elements.sortFilter) (elements.sortFilter as HTMLSelectElement).value = 'desc';
+
+    // Reset view to list
+    elements.listContainer?.classList.remove('grid-view');
+    elements.listViewBtn?.classList.add('active');
+    elements.gridViewBtn?.classList.remove('active');
 }

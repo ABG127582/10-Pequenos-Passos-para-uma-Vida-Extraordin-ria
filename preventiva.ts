@@ -1,21 +1,8 @@
 import DOMPurify from 'dompurify';
-import { confirmAction } from './utils';
+import { confirmAction, showToast } from './utils';
 import { STORAGE_KEYS } from './constants';
 import { storageService } from './storage';
-
-// Re-declare window interface for global functions
-declare global {
-    interface Window {
-        showToast: (message: string, type?: 'info' | 'success' | 'warning' | 'error') => void;
-        Chart: any;
-    }
-}
-
-// --- TYPE DEFINITIONS ---
-interface Supplement { id: string; name: string; dosage: string; frequency: string; time: string; notes: string; }
-interface Diagnostic { id: string; enabled: boolean; date: string; type: string; medication: string; notes: string; severity: string; }
-interface UserProfile { birthDate: string; sex: 'male' | 'female'; }
-interface IndicatorEntry { value: number; date: string; }
+import { Supplement, Diagnostic, UserProfile, IndicatorEntry } from './types';
 
 // --- MODULE-SCOPED VARIABLES ---
 let supplements: Supplement[] = [];
@@ -161,7 +148,7 @@ function updateIndicator(indicatorId: string) {
     const dateInput = card.querySelector('.indicator-date') as HTMLInputElement;
     
     if (!valueInput.value || !dateInput.value) {
-        window.showToast('Por favor, insira o valor e a data.', 'warning');
+        showToast('Por favor, insira o valor e a data.', 'warning');
         return;
     }
     const newEntry: IndicatorEntry = {
@@ -174,7 +161,7 @@ function updateIndicator(indicatorId: string) {
     history.sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime());
     storageService.set(`${STORAGE_KEYS.PREVENTIVA_INDICATOR_PREFIX}${indicatorId}`, history);
     
-    window.showToast(`${getIndicatorConfig(indicatorId, userProfile).name} atualizado!`, 'success');
+    showToast(`${getIndicatorConfig(indicatorId, userProfile).name} atualizado!`, 'success');
     renderIndicatorCard(indicatorId);
     updateDashboard();
 }
@@ -285,7 +272,7 @@ export function setup() {
             sex: (document.getElementById('user-sex') as HTMLSelectElement).value as 'male' | 'female',
         };
         storageService.set(STORAGE_KEYS.PREVENTIVA_PROFILE, userProfile);
-        window.showToast('Perfil salvo!', 'success');
+        showToast('Perfil salvo!', 'success');
         // Re-render indicators with new profile info
         Object.keys(getIndicatorConfig('',null)).forEach(renderIndicatorCard);
     });

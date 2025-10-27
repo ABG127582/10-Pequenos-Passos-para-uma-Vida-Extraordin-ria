@@ -4,17 +4,11 @@
 import DOMPurify from 'dompurify';
 import { storageService } from './storage';
 import { STORAGE_KEYS } from './constants';
-import { showMedalAnimation, awardMedalForCategory, updateStreak, awardPoints } from './utils';
+import { showMedalAnimation, awardMedalForCategory, updateStreak, awardPoints, showToast } from './utils';
 import { ai } from './ai';
 import { errorHandler } from './errorHandler';
 import { getTasks, openTaskModal, updateTask, deleteTask } from './tarefas';
-
-// Re-declare window interface
-declare global {
-    interface Window {
-        showToast: (message: string, type?: 'info' | 'success' | 'warning' | 'error') => void;
-    }
-}
+import { eventBus } from './event-bus';
 
 // A factory function that creates and returns setup and show methods for a given PDCA page category.
 export function createPdcaPageHandler(category: string, pageId: string) {
@@ -72,21 +66,12 @@ export function createPdcaPageHandler(category: string, pageId: string) {
             const wasIncomplete = !task.completed;
             const targetRect = taskItem.getBoundingClientRect();
             
-            updateTask(taskId, { completed: !task.completed });
+            updateTask(taskId, { completed: !task.completed }, { targetRect });
 
             if (wasIncomplete) {
                 const taskPoints = task.priority === 'high' ? 20 : 10;
                 awardPoints(taskPoints, { targetRect });
                 updateStreak({ targetRect });
-                
-                if (task.category) {
-                    const todayStr = new Date().toISOString().split('T')[0];
-                    const categoryKey = task.category.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "");
-                    const newlyAwarded = awardMedalForCategory(categoryKey, todayStr, { targetRect });
-                    if (newlyAwarded) {
-                        window.showToast(`Medalha de ${task.category} conquistada para hoje!`, 'success');
-                    }
-                }
             }
             return;
         }
@@ -109,7 +94,7 @@ export function createPdcaPageHandler(category: string, pageId: string) {
             return;
         }
         
-        document.body.addEventListener('datachanged:tasks', () => {
+        eventBus.on('datachanged:tasks', () => {
             if (window.location.hash.includes(pageId) || (window.location.hash === '' && pageId === 'page-inicio')) {
                  const currentPageEl = document.getElementById(pageId);
                  if (currentPageEl) renderTasks(currentPageEl);

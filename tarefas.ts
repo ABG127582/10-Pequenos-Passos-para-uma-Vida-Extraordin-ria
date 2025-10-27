@@ -2,23 +2,8 @@ import DOMPurify from 'dompurify';
 import { debounce, confirmAction, trapFocus, updateStreak, awardMedalForCategory, showMedalAnimation, awardPoints } from './utils';
 import { STORAGE_KEYS } from './constants';
 import { storageService } from './storage';
-
-// --- TYPE DEFINITIONS ---
-export type TaskCategory = 'Física' | 'Mental' | 'Financeira' | 'Familiar' | 'Profissional' | 'Social' | 'Espiritual' | 'Preventiva' | 'Pessoal';
-
-export interface Task {
-    id: string;
-    title: string;
-    description: string;
-    completed: boolean;
-    category: TaskCategory | '';
-    priority: 'low' | 'medium' | 'high';
-    dueDate: string; // YYYY-MM-DD
-    startTime?: string; // HH:MM
-    endTime?: string;   // HH:MM
-    reminder?: string; // in minutes: '5', '15', '30', '60'
-    reminderSent?: boolean;
-}
+import { eventBus } from './event-bus';
+import { Task, TaskCategory } from './types';
 
 // Re-declare the global window interface
 declare global {
@@ -98,7 +83,7 @@ const elements: { [key: string]: HTMLElement | null | any } = {
 function saveData() {
     storageService.set(STORAGE_KEYS.TASKS_DATA, allTasks);
     storageService.set(STORAGE_KEYS.TASKS_CATEGORIES, allCategories);
-    document.body.dispatchEvent(new CustomEvent('datachanged:tasks'));
+    eventBus.emit('datachanged:tasks');
 }
 
 function loadData() {
@@ -133,11 +118,31 @@ export function addTask(taskData: Partial<Task>): Task {
     return newTask;
 }
 
-export function updateTask(taskId: string, updates: Partial<Task>) {
+export function updateTask(taskId: string, updates: Partial<Task>, options?: { targetRect?: DOMRect }) {
     const task = allTasks.find(t => t.id === taskId);
     if (task) {
-        Object.assign(task, updates); // Mutate the object directly
-        saveData();
+        const wasIncomplete = !task.completed;
+        Object.assign(task, updates);
+
+        // Check for medal award only when a task is marked as complete
+        if (wasIncomplete && task.completed) {
+            if (task.category && task.dueDate) {
+                // Check if all tasks for this category on this day are now complete
+                const tasksForCategoryDay = allTasks.filter(t => t.category === task.category && t.dueDate === task.dueDate);
+                const allComplete = tasksForCategoryDay.every(t => t.completed);
+
+                if (allComplete) {
+                    const categoryKey = task.category.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "");
+                    // The awardMedalForCategory function will show the animation if options are passed
+                    const newlyAwarded = awardMedalForCategory(categoryKey, task.dueDate, options);
+                    if (newlyAwarded) {
+                        window.showToast(`Medalha de ${task.category} conquistada para ${new Date(task.dueDate + 'T00:00:00').toLocaleDateString('pt-BR')}!`, 'success');
+                    }
+                }
+            }
+        }
+        
+        saveData(); // This will trigger the UI update on the home page
     }
 }
 
@@ -524,20 +529,15 @@ const handleActionClick = async (e: Event) => {
         const wasIncomplete = !task.completed;
         const targetRect = taskEl.getBoundingClientRect();
         
-        updateTask(taskId, { completed: !task.completed });
+        // The updateTask function will now handle the medal logic.
+        updateTask(taskId, { completed: !task.completed }, { targetRect });
 
         if (wasIncomplete) {
+            // Award points for simple completion
             const taskPoints = task.priority === 'high' ? 20 : 10;
             awardPoints(taskPoints, { targetRect });
+            // Update streak for daily activity
             updateStreak({ targetRect });
-            
-            if (task.category && task.dueDate) {
-                const categoryKey = task.category.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "");
-                const newlyAwarded = awardMedalForCategory(categoryKey, task.dueDate, { targetRect });
-                if (newlyAwarded) {
-                    window.showToast(`Medalha de ${task.category} conquistada para ${new Date(task.dueDate + 'T00:00:00').toLocaleDateString('pt-BR')}!`, 'success');
-                }
-            }
         }
     }
 };
@@ -685,7 +685,7 @@ export function setupTarefasPage() {
     elements.checklistViewBtn?.addEventListener('click', () => { currentView = 'checklist'; elements.checklistViewBtn?.classList.add('active'); elements.tableViewBtn?.classList.remove('active'); renderTarefasPage(); });
     elements.tableViewBtn?.addEventListener('click', () => { currentView = 'table'; elements.tableViewBtn?.classList.add('active'); elements.checklistViewBtn?.classList.remove('active'); renderTarefasPage(); });
 
-    document.body.addEventListener('datachanged:tasks', () => {
+    eventBus.on('datachanged:tasks', () => {
         if (window.location.hash === '#tarefas') {
             renderTarefasPage();
         }

@@ -1,4 +1,5 @@
 import { createPdcaPageHandler } from './pdcaPage';
+import { debounce } from './utils';
 
 // --- Use the new PDCA page handler for common functionality ---
 const pdcaHandler = createPdcaPageHandler('Física', 'page-fisica');
@@ -6,7 +7,6 @@ const pdcaHandler = createPdcaPageHandler('Física', 'page-fisica');
 // --- DOM Elements ---
 const elements = {
     hydrationInput: null as HTMLInputElement | null,
-    hydrationBtn: null as HTMLButtonElement | null,
     hydrationResult: null as HTMLSpanElement | null,
 };
 
@@ -32,11 +32,10 @@ export function setup() {
     if (!page) return;
 
     elements.hydrationInput = page.querySelector('#weight-input');
-    elements.hydrationBtn = page.querySelector('#calculate-hydration-btn');
     elements.hydrationResult = page.querySelector('#hydration-result');
     
-    elements.hydrationBtn?.addEventListener('click', handleHydrationCalculation);
-    elements.hydrationInput?.addEventListener('input', handleHydrationCalculation);
+    const debouncedCalc = debounce(handleHydrationCalculation, 300);
+    elements.hydrationInput?.addEventListener('input', debouncedCalc);
 }
 
 export function show() {

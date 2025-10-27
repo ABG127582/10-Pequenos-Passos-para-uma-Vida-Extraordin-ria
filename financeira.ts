@@ -1,24 +1,10 @@
 import DOMPurify from 'dompurify';
-import { confirmAction } from './utils';
+import { confirmAction, showToast } from './utils';
 import { STORAGE_KEYS } from './constants';
 import { storageService } from './storage';
 import { openTaskModal } from './tarefas';
 import { createPdcaPageHandler } from './pdcaPage';
-
-
-// Type definitions
-interface Asset {
-    id: string;
-    name: string;
-    purchaseDate: string; // YYYY-MM-DD
-}
-
-// Re-declare window interface
-declare global {
-    interface Window {
-        showToast: (message: string, type?: 'info' | 'success' | 'warning' | 'error') => void;
-    }
-}
+import { Asset } from './types';
 
 // --- Module-scoped state ---
 let assets: Asset[] = [];
@@ -93,7 +79,7 @@ const handleAddAsset = (e: Event) => {
         renderAssets();
         elements.assetForm?.reset();
     } else {
-        window.showToast('Por favor, preencha o nome e a data de compra do item.', 'warning');
+        showToast('Por favor, preencha o nome e a data de compra do item.', 'warning');
     }
 };
 
@@ -127,7 +113,7 @@ const handleSaveAssetEdit = (e: Event) => {
             closeAssetModal();
         }
     } else {
-        window.showToast('O nome e a data são obrigatórios.', 'warning');
+        showToast('O nome e a data são obrigatórios.', 'warning');
     }
 };
 
@@ -147,7 +133,7 @@ const handleAssetListClick = async (e: Event) => {
             assets = assets.filter(a => a.id !== assetId);
             storageService.set(STORAGE_KEYS.FINANCE_ASSETS, assets);
             renderAssets();
-            window.showToast('Item apagado com sucesso.', 'success');
+            showToast('Item apagado com sucesso.', 'success');
         }
     }
 };
