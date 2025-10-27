@@ -5,7 +5,7 @@ import { showToast } from './utils';
 import { CONFIG, STORAGE_KEYS } from './constants';
 
 class StorageService {
-    private cache = new Map<string, any>();
+    private cache = new Map<string, unknown>();
     private readonly MAX_CACHE_SIZE = CONFIG.STORAGE_CACHE_SIZE;
     private currentProfile: string | null = null;
 
@@ -193,11 +193,11 @@ class StorageService {
      * @param key The key to add/update.
      * @param value The value to cache.
      */
-    private updateCache(key: string, value: any) {
+    private updateCache<T>(key: string, value: T) {
         if (this.cache.has(key)) {
             this.cache.delete(key); // Delete and re-add to move it to the end (most recent)
         }
-        
+
         if (this.cache.size >= this.MAX_CACHE_SIZE) {
             // Evict the least recently used item (the first one in the Map's insertion order)
             const firstKey = this.cache.keys().next().value;
