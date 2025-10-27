@@ -6,6 +6,7 @@ export default defineConfig(({ mode }: ConfigEnv): UserConfig => {
     const env = loadEnv(mode, '.', '');
 
     return {
+      base: '/pequenospassos/',
       plugins: [basicSsl()],
       define: {
         // Standardize on using API_KEY from the environment.
