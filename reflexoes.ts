@@ -5,7 +5,7 @@ import { storageService } from './storage';
 import { STORAGE_KEYS } from './constants';
 import { confirmAction, debounce } from './utils';
 // Fix: The 'Task' type is not exported from 'tarefas.ts'. It is not explicitly used here, so it is removed from the import.
-import { getCategories, getTasks } from './tarefas';
+import { getCategories, getTasks } from './task-core';
 import { ai } from './ai';
 import { loadingManager } from './loadingManager';
 import { errorHandler } from './errorHandler';

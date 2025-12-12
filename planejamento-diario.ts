@@ -2,7 +2,8 @@ import DOMPurify from 'dompurify';
 import { storageService } from './storage';
 import { STORAGE_KEYS } from './constants';
 import { confirmAction, awardMedalForCategory, updateStreak, showMedalAnimation, awardPoints } from './utils';
-import { getTasks, openTaskModal, updateTask, deleteTask, addTask } from './tarefas';
+import { getTasks, updateTask, deleteTask, addTask } from './task-core';
+import { openTaskModal } from './tarefas-modal';
 import { eventBus } from './event-bus';
 import { Task } from './types';
 
@@ -31,7 +32,11 @@ const elements = {
 // --- DATA HANDLING ---
 const loadTasksForDate = () => {
     if (!currentDate) {
-        currentDate = new Date().toISOString().split('T')[0];
+        const now = new Date();
+        const year = now.getFullYear();
+        const month = String(now.getMonth() + 1).padStart(2, '0');
+        const day = String(now.getDate()).padStart(2, '0');
+        currentDate = `${year}-${month}-${day}`;
     }
     const allTasks = getTasks();
     tasksForDate = allTasks.filter(task => task.dueDate === currentDate);
@@ -303,7 +308,11 @@ export function show() {
     }));
     elements.scheduleList?.addEventListener('click', handleScheduleClick);
 
-    currentDate = new Date().toISOString().split('T')[0];
+    const now = new Date();
+    const year = now.getFullYear();
+    const month = String(now.getMonth() + 1).padStart(2, '0');
+    const day = String(now.getDate()).padStart(2, '0');
+    currentDate = `${year}-${month}-${day}`;
     if(elements.dateInput) {
         elements.dateInput.value = currentDate;
     }

@@ -7,7 +7,8 @@ import { ttsReader } from './tts';
 import { setupModals, openContractModal } from './modals';
 import { updateProfileWidget, showMedalAnimation, showToast } from './utils';
 import { storageService } from './storage';
-import { initTasks, addTask, getTasks } from './tarefas';
+import { initTasks } from './tarefas-modal';
+import { addTask, getTasks } from './task-core';
 import { eventBus } from './event-bus';
 import { dom } from './ui-elements';
 import { Task } from './types';
@@ -275,7 +276,13 @@ function initProfileManager() {
                 // For new profiles, add default tasks
                 const existingTasks = getTasks();
                 if (existingTasks.length === 0) {
-                    const today = new Date().toISOString().split('T')[0];
+                    // Fix: Use local time for default tasks to avoid "yesterday" bugs
+                    // This constructs YYYY-MM-DD in local time
+                    const now = new Date();
+                    const year = now.getFullYear();
+                    const month = String(now.getMonth() + 1).padStart(2, '0');
+                    const day = String(now.getDate()).padStart(2, '0');
+                    const today = `${year}-${month}-${day}`;
                     
                     // --- Saúde Física ---
                     addTask({ title: "Sono Qualitativo", description: "Garantir de 7 a 9 horas de sono para recuperação física e mental.", category: "Física", startTime: "22:00", endTime: "06:00", dueDate: today, priority: 'high' });
