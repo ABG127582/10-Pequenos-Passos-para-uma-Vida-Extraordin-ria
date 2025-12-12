@@ -1,5 +1,5 @@
 import { trapFocus } from './utils';
-import { getCategories, getTasks, addTask, updateTask, deleteTask } from './task-core';
+import { getCategories, getTasks, addTask, updateTask, deleteTask, loadData } from './task-core';
 import { Task } from './types';
 
 // --- Module-scoped state and elements ---
@@ -147,6 +147,7 @@ const handleTaskFormSubmit = (e: Event) => {
  * This should be called once when the application starts.
  */
 export function initTasks() {
+    loadData();
     elements.taskModal = document.getElementById('unified-task-modal');
     if (elements.taskModal && !elements.taskModal.dataset.handlerAttached) {
         elements.taskModalTitle = document.getElementById('unified-task-modal-title');
