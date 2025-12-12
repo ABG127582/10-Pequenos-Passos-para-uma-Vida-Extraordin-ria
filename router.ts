@@ -22,7 +22,7 @@ export const pageModuleImports: { [key: string]: () => Promise<any> } = {
     'alimentacao-forte': () => import('./alimentacao-forte'),
     'jejum-verde': () => import('./jejum-verde'),
     'planejamento-diario': () => import('./planejamento-diario'),
-    'tarefas': () => import('./tarefas'),
+    'tarefas': () => import('./tarefas-page'),
     'leitura-guia-fisica': () => import('./leitura-guia-fisica'),
     'leitura-guia-mental': () => import('./leitura-guia-mental'),
     'leitura-guia-financeira': () => import('./leitura-guia-financeira'),
@@ -273,7 +273,7 @@ async function loadPage(pageKey: string, tts: typeof ttsReader) {
                 }
             } else {
                 // Handle standard HTML + TS module pages
-                const response = await fetch(`/${pageKey}.html`);
+                const response = await fetch(`${pageKey}.html`);
                 if (!response.ok) {
                     throw new Error(`Failed to fetch page content: ${pageKey}.html (Status: ${response.status})`);
                 }

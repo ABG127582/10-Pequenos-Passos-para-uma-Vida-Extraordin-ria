@@ -7,7 +7,8 @@ import { STORAGE_KEYS } from './constants';
 import { showMedalAnimation, awardMedalForCategory, updateStreak, awardPoints, showToast } from './utils';
 import { ai } from './ai';
 import { errorHandler } from './errorHandler';
-import { getTasks, openTaskModal, updateTask, deleteTask } from './tarefas';
+import { getTasks, updateTask, deleteTask } from './task-core';
+import { openTaskModal } from './tarefas-modal';
 import { eventBus } from './event-bus';
 
 // A factory function that creates and returns setup and show methods for a given PDCA page category.

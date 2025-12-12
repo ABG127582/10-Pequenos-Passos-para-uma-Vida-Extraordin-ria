@@ -2,7 +2,7 @@ import DOMPurify from 'dompurify';
 import { confirmAction, showToast } from './utils';
 import { STORAGE_KEYS } from './constants';
 import { storageService } from './storage';
-import { openTaskModal } from './tarefas';
+import { openTaskModal } from './tarefas-modal';
 import { createPdcaPageHandler } from './pdcaPage';
 import { Asset } from './types';
 
