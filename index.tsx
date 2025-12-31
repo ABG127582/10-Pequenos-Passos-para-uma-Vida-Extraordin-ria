@@ -134,7 +134,9 @@ const initApp = () => {
 
     // Function to handle Sidebar Expansion/Collapse
     const toggleSidebar = (forceState?: boolean) => {
-        const isCollapsed = forceState !== undefined ? !forceState : sidebar?.classList.toggle('collapsed');
+        if (forceState === undefined) {
+             sidebar?.classList.toggle('collapsed');
+        }
         
         if (sidebar) {
             if (forceState !== undefined) {

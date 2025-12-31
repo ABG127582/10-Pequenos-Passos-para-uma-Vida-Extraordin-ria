@@ -1,7 +1,3 @@
-import DOMPurify from 'dompurify';
-import { storageService } from './storage';
-import { STORAGE_KEYS } from './constants';
-
 // Re-declare window interface
 declare global {
     interface Window {
