@@ -69,7 +69,7 @@ export async function startSpeechRecognition(button: HTMLButtonElement): Promise
 
     recognition.start();
 
-    recognition.onresult = (event) => {
+    recognition.onresult = (event: any) => {
         const speechResult = event.results[0][0].transcript;
         targetInput.value = speechResult;
         targetInput.dispatchEvent(new Event('input', { bubbles: true }));
@@ -84,7 +84,7 @@ export async function startSpeechRecognition(button: HTMLButtonElement): Promise
         button.classList.remove('listening');
     };
 
-    recognition.onerror = (event) => {
+    recognition.onerror = (event: any) => {
         console.error("Speech recognition error", event.error);
         let message = 'Ocorreu um erro no reconhecimento de voz.';
         if (event.error === 'not-allowed' || event.error === 'service-not-allowed') {

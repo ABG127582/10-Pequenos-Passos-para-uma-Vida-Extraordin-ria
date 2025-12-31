@@ -79,7 +79,9 @@ class StorageService {
         if (this.cache.size >= this.MAX_CACHE_SIZE) {
             // Evict the least recently used item (the first one in the Map's insertion order)
             const firstKey = this.cache.keys().next().value;
-            this.cache.delete(firstKey);
+            if (firstKey !== undefined) {
+                this.cache.delete(firstKey);
+            }
         }
         this.cache.set(key, value);
     }

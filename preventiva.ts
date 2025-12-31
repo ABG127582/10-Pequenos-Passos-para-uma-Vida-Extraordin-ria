@@ -44,6 +44,8 @@ const vaccineInfo: { [key: string]: { name: string; scheduleType: 'booster' | 'a
 
 // --- BIOMARKER DATA ---
 const getIndicatorConfig = (id: string, profile: UserProfile | null): any => {
+    // If no profile provided, use default or return empty if needed.
+    // Here we proceed with undefined values being handled by default logic.
     const configs: { [key: string]: any } = {
         'glicemia': { name: 'Glicemia em Jejum', unit: 'mg/dL', min: 50, max: 150, zones: [{ to: 69, status: 'Atenção', tip: 'Possível hipoglicemia.' }, { to: 99, status: 'Normal', tip: 'Valor ótimo.' }, { to: 125, status: 'Atenção', tip: 'Risco de pré-diabetes.' }, { to: 150, status: 'Alerta', tip: 'Sugestivo de diabetes.' }] },
         'hdl': { name: 'HDL', unit: 'mg/dL', min: 20, max: 100, reversed: true, zones: [{ to: profile?.sex === 'male' ? 39 : 49, status: 'Alerta', tip: 'Nível baixo.' }, { to: 59, status: 'Normal', tip: 'Nível aceitável.' }, { to: 100, status: 'Ótimo', tip: 'Nível protetor.' }] },
@@ -67,8 +69,8 @@ const getIndicatorConfig = (id: string, profile: UserProfile | null): any => {
 };
 
 // --- HELPER FUNCTIONS ---
-function calculateAge(birthDate: string): number {
-    if (!birthDate) return 0;
+function calculateAge(birthDate: string | undefined): number {
+    if (!birthDate || birthDate === '') return 0;
     const birth = new Date(birthDate);
     const today = new Date();
     let age = today.getFullYear() - birth.getFullYear();
@@ -108,9 +110,9 @@ function updateDashboard() {
         }
     });
 
-    const totalBiomarkers = Object.keys(getIndicatorConfig('', null)).length;
+    const totalBiomarkers = Object.keys(getIndicatorConfig('', userProfile)).length;
     let biomarkersUpdated = 0;
-    Object.keys(getIndicatorConfig('', null)).forEach(id => {
+    Object.keys(getIndicatorConfig('', userProfile)).forEach(id => {
         const history = storageService.get<IndicatorEntry[]>(`${STORAGE_KEYS.PREVENTIVA_INDICATOR_PREFIX}${id}`) || [];
         if (history.length > 0) {
             const lastDate = new Date(history[history.length - 1].date);
@@ -169,7 +171,7 @@ function calculateAndDisplayVaccineStatus(id: string) {
 
     const info = vaccineInfo[id];
     const lastDoseDate = lastDoseInput.value ? new Date(lastDoseInput.value) : null;
-    const userAge = userProfile ? calculateAge(userProfile.birthDate) : 30; // Default to 30 if no profile
+    const userAge = userProfile ? calculateAge(userProfile.birthDate || '') : 30; // Default to 30 if no profile
     
     let status = 'Pendente';
     let statusClass = 'status-pending';
@@ -460,12 +462,12 @@ async function handleAnalyzeBiomarkers() {
     if (!button) return;
 
     // Collect data
-    const age = userProfile ? calculateAge(userProfile.birthDate) : 'Desconhecida';
+    const age = userProfile ? calculateAge(userProfile.birthDate || '') : 'Desconhecida';
     const sex = userProfile ? (userProfile.sex === 'male' ? 'Masculino' : 'Feminino') : 'Desconhecido';
     
     // Collect biomarkers
     const biomarkers: string[] = [];
-    Object.keys(getIndicatorConfig('', null)).forEach(id => {
+    Object.keys(getIndicatorConfig('', userProfile)).forEach(id => {
         const history = storageService.get<IndicatorEntry[]>(`${STORAGE_KEYS.PREVENTIVA_INDICATOR_PREFIX}${id}`) || [];
         if (history.length > 0) {
             const latest = history[history.length - 1];
@@ -523,7 +525,12 @@ async function handleAnalyzeBiomarkers() {
             model: 'gemini-3-flash-preview',
             contents: prompt,
         });
-        openAiInsightsModal(response.text);
+
+        if (response.text) {
+            openAiInsightsModal(response.text);
+        } else {
+            throw new Error('No content generated');
+        }
     } catch (error) {
         console.error('AI Error:', error);
         window.showToast('Erro ao analisar dados. Tente novamente.', 'error');
@@ -583,7 +590,7 @@ export function setup() {
         storageService.set(STORAGE_KEYS.PREVENTIVA_PROFILE, userProfile);
         window.showToast('Perfil salvo!', 'success');
         // Re-render indicators with new profile info
-        Object.keys(getIndicatorConfig('',null)).forEach(renderIndicatorCard);
+        Object.keys(getIndicatorConfig('',userProfile)).forEach(renderIndicatorCard);
         
         // Update vaccines based on new age
         Object.keys(vaccineInfo).forEach(id => calculateAndDisplayVaccineStatus(id));
@@ -595,7 +602,7 @@ export function setup() {
         });
         
         // Refresh biomarkers that depend on sex (like HDL)
-        Object.keys(getIndicatorConfig('', null)).forEach(renderIndicatorCard);
+        Object.keys(getIndicatorConfig('', userProfile)).forEach(renderIndicatorCard);
     });
     
     // Supplement Form
@@ -634,7 +641,7 @@ export function show() {
     
     // Initialize Data
     Object.keys(vaccineInfo).forEach(id => calculateAndDisplayVaccineStatus(id));
-    Object.keys(getIndicatorConfig('', null)).forEach(renderIndicatorCard);
+    Object.keys(getIndicatorConfig('', userProfile)).forEach(renderIndicatorCard);
     
     supplements = storageService.get<Supplement[]>(STORAGE_KEYS.PREVENTIVA_SUPPLEMENTS) || [];
     renderSupplements();
