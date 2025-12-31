@@ -1,99 +1,135 @@
 <div class="page-section active" id="page-inicio">
     <div class="container">
-        <header class="home-header">
-            <h1>Pequenos Passos</h1>
-            <div class="streak-widget">
-                <i class="fas fa-fire"></i>
-                <span id="streak-count">0</span>
-                <span>dias</span>
+        <!-- New Dashboard Header -->
+        <section class="dashboard-header">
+            <div class="dashboard-welcome">
+                <h1 id="dashboard-greeting">Olá!</h1>
+                <p id="dashboard-date" class="date-display"></p>
+                <p id="dashboard-quote" class="daily-quote">"O progresso é feito de pequenos passos."</p>
             </div>
-        </header>
+            <div class="dashboard-stats-row">
+                <div class="stat-widget">
+                    <div class="progress-ring-container small">
+                        <svg class="dashboard-ring" width="60" height="60">
+                            <circle class="bg" cx="30" cy="30" r="26"/>
+                            <circle class="fg" cx="30" cy="30" r="26" id="dash-plan-ring"/>
+                        </svg>
+                        <i class="fas fa-calendar-day centered-icon"></i>
+                    </div>
+                    <div class="stat-info">
+                        <span class="stat-value" id="dash-plan-text">0%</span>
+                        <span class="stat-label">Planejamento</span>
+                    </div>
+                </div>
+                <div class="stat-widget">
+                    <div class="progress-ring-container small">
+                        <svg class="dashboard-ring" width="60" height="60">
+                            <circle class="bg" cx="30" cy="30" r="26"/>
+                            <circle class="fg" cx="30" cy="30" r="26" id="dash-task-ring"/>
+                        </svg>
+                        <i class="fas fa-check-double centered-icon"></i>
+                    </div>
+                    <div class="stat-info">
+                        <span class="stat-value" id="dash-task-text">0%</span>
+                        <span class="stat-label">Tarefas</span>
+                    </div>
+                </div>
+            </div>
+        </section>
 
-        <main>
-            <div class="inicio">
-                <button class="saude-card planejamento" data-page="planejamento-diario">
-                    <div class="card-icon-title">
-                        <i class="fas fa-calendar-day"></i>
-                        <h3>Planejamento Diário</h3>
-                    </div>
-                    <p>Organize suas tarefas e visualize seu dia.</p>
-                </button>
-                <button class="saude-card reflexoes" data-page="reflexoes">
-                    <div class="card-icon-title">
-                        <i class="fas fa-feather-alt"></i>
-                        <h3>Reflexões do Dia</h3>
-                    </div>
-                    <p>Registre seus pensamentos e insights.</p>
-                </button>
-                <button class="saude-card fisica" data-page="fisica">
-                    <i class="fas fa-medal card-medal-icon" title="Em busca de melhorias!"></i>
-                    <div class="card-icon-title">
-                        <i class="fas fa-heart-pulse"></i>
-                        <h3>Saúde Física</h3>
-                    </div>
-                    <p>Exercício, dieta e descanso.</p>
-                </button>
-                 <button class="saude-card mental" data-page="mental">
-                    <i class="fas fa-medal card-medal-icon" title="Em busca de melhorias!"></i>
-                    <div class="card-icon-title">
-                        <i class="fas fa-brain"></i>
-                        <h3>Saúde Mental</h3>
-                    </div>
-                    <p>Clareza e resiliência emocional.</p>
-                </button>
-                 <button class="saude-card financeira" data-page="financeira">
-                    <i class="fas fa-medal card-medal-icon" title="Em busca de melhorias!"></i>
-                    <div class="card-icon-title">
-                        <i class="fas fa-hand-holding-dollar"></i>
-                        <h3>Saúde Financeira</h3>
-                    </div>
-                    <p>Orçamento e investimentos.</p>
-                </button>
-                 <button class="saude-card familiar" data-page="familiar">
-                    <i class="fas fa-medal card-medal-icon" title="Em busca de melhorias!"></i>
-                    <div class="card-icon-title">
-                        <i class="fas fa-users"></i>
-                        <h3>Saúde Familiar</h3>
-                    </div>
-                    <p>Fortaleça laços e comunicação.</p>
-                </button>
-                <button class="saude-card profissional" data-page="profissional">
-                    <i class="fas fa-medal card-medal-icon" title="Em busca de melhorias!"></i>
-                    <div class="card-icon-title">
-                        <i class="fas fa-briefcase"></i>
-                        <h3>Profissional</h3>
-                    </div>
-                    <p>Carreira, propósito e equilíbrio.</p>
-                </button>
-                <button class="saude-card social" data-page="social">
-                    <i class="fas fa-medal card-medal-icon" title="Em busca de melhorias!"></i>
-                    <div class="card-icon-title">
-                        <i class="fas fa-comments"></i>
-                        <h3>Social</h3>
-                    </div>
-                    <p>Cultive relacionamentos.</p>
-                </button>
-                <button class="saude-card espiritual" data-page="espiritual">
-                    <i class="fas fa-medal card-medal-icon" title="Em busca de melhorias!"></i>
-                    <div class="card-icon-title">
-                        <i class="fas fa-om"></i>
-                        <h3>Espiritual</h3>
-                    </div>
-                    <p>Explore seu propósito e valores.</p>
-                </button>
-                <button class="saude-card preventiva" data-page="preventiva">
-                    <i class="fas fa-medal card-medal-icon" title="Em busca de melhorias!"></i>
-                    <div class="card-icon-title">
-                        <i class="fas fa-shield-alt"></i>
-                        <h3>Preventiva</h3>
-                    </div>
-                    <p>Acompanhe sua saúde.</p>
-                </button>
-                <button class="saude-card avaliacao-card" id="open-contract-home">
-                    <div class="card-icon-title"><i class="fas fa-file-signature"></i><h3>Contrato</h3></div>
-                    <p>Reveja seu compromisso.</p>
-                </button>
-            </div>
-        </main>
+        <div class="inicio">
+            <a href="#" class="saude-card fisica" data-page="fisica" aria-labelledby="title-fisica" aria-describedby="desc-fisica">
+                <div class="card-medal-icon" style="display: none;"><i class="fas fa-medal"></i></div>
+                <div class="card-icon-title">
+                    <i class="fas fa-heart-pulse"></i>
+                    <h3 id="title-fisica">Saúde Física</h3>
+                </div>
+                <p id="desc-fisica">Gerencie seus exercícios, dieta e descanso para um corpo mais forte e saudável.</p>
+            </a>
+            <a href="#" class="saude-card mental" data-page="mental" aria-labelledby="title-mental" aria-describedby="desc-mental">
+                 <div class="card-medal-icon" style="display: none;"><i class="fas fa-medal"></i></div>
+                 <div class="card-icon-title">
+                    <i class="fas fa-brain"></i>
+                    <h3 id="title-mental">Saúde Mental</h3>
+                </div>
+                <p id="desc-mental">Ferramentas para cultivar clareza, resiliência emocional e bem-estar psicológico.</p>
+            </a>
+            <a href="#" class="saude-card financeira" data-page="financeira" aria-labelledby="title-financeira" aria-describedby="desc-financeira">
+                 <div class="card-medal-icon" style="display: none;"><i class="fas fa-medal"></i></div>
+                 <div class="card-icon-title">
+                    <i class="fas fa-hand-holding-dollar"></i>
+                    <h3 id="title-financeira">Saúde Financeira</h3>
+                </div>
+                <p id="desc-financeira">Planeje seu orçamento, investimentos e metas para alcançar a tranquilidade financeira.</p>
+            </a>
+            <a href="#" class="saude-card familiar" data-page="familiar" aria-labelledby="title-familiar" aria-describedby="desc-familiar">
+                 <div class="card-medal-icon" style="display: none;"><i class="fas fa-medal"></i></div>
+                 <div class="card-icon-title">
+                    <i class="fas fa-users"></i>
+                    <h3 id="title-familiar">Saúde Familiar</h3>
+                </div>
+                <p id="desc-familiar">Fortaleça os laços e a comunicação para um ambiente familiar harmonioso.</p>
+            </a>
+            <a href="#" class="saude-card profissional" data-page="profissional" aria-labelledby="title-profissional" aria-describedby="desc-profissional">
+                 <div class="card-medal-icon" style="display: none;"><i class="fas fa-medal"></i></div>
+                 <div class="card-icon-title">
+                    <i class="fas fa-briefcase"></i>
+                    <h3 id="title-profissional">Saúde Profissional</h3>
+                </div>
+                <p id="desc-profissional">Desenvolva sua carreira, encontre propósito e equilibre vida profissional e pessoal.</p>
+            </a>
+            <a href="#" class="saude-card social" data-page="social" aria-labelledby="title-social" aria-describedby="desc-social">
+                 <div class="card-medal-icon" style="display: none;"><i class="fas fa-medal"></i></div>
+                 <div class="card-icon-title">
+                    <i class="fas fa-comments"></i>
+                    <h3 id="title-social">Saúde Social</h3>
+                </div>
+                <p id="desc-social">Cultive relacionamentos significativos e expanda sua rede de apoio.</p>
+            </a>
+            <a href="#" class="saude-card espiritual" data-page="espiritual" aria-labelledby="title-espiritual" aria-describedby="desc-espiritual">
+                 <div class="card-medal-icon" style="display: none;"><i class="fas fa-medal"></i></div>
+                 <div class="card-icon-title">
+                    <i class="fas fa-om"></i>
+                    <h3 id="title-espiritual">Saúde Espiritual</h3>
+                </div>
+                <p id="desc-social">Explore seu propósito, valores e práticas que trazem sentido à vida.</p>
+            </a>
+            <a href="#" class="saude-card preventiva" data-page="preventiva" aria-labelledby="title-preventiva" aria-describedby="desc-preventiva">
+                 <div class="card-medal-icon" style="display: none;"><i class="fas fa-medal"></i></div>
+                 <div class="card-icon-title">
+                    <i class="fas fa-shield-alt"></i>
+                    <h3 id="title-preventiva">Saúde Preventiva</h3>
+                </div>
+                <p id="desc-preventiva">Acompanhe vacinas, exames e biomarcadores para uma vida longa e saudável.</p>
+            </a>
+            <a href="https://youtu.be/qgbV-ynGt8Y" target="_blank" rel="noopener noreferrer" class="saude-card video-livro" aria-labelledby="title-video-livro" aria-describedby="desc-video-livro">
+                 <div class="card-icon-title">
+                    <i class="fas fa-play-circle"></i>
+                    <h3 id="title-video-livro">Vídeo Livro</h3>
+                </div>
+                <p id="desc-video-livro">Acesse o conteúdo em vídeo para um aprendizado dinâmico e aprofundado.</p>
+            </a>
+            <button id="open-contract-home" class="saude-card avaliacao-card" aria-labelledby="title-contrato" aria-describedby="desc-contrato">
+                 <div class="card-icon-title">
+                    <i class="fas fa-file-signature"></i>
+                    <h3 id="title-contrato">Contrato</h3>
+                </div>
+                <p id="desc-contrato">Firme um compromisso com você mesmo para o seu desenvolvimento pessoal.</p>
+            </button>
+            <a href="https://ai.studio/apps/drive/1unOD0S9HgmT7-HOrKPzB3qfXrgXXI3mL" target="_blank" rel="noopener noreferrer" class="saude-card planejamento" aria-labelledby="title-planejamento" aria-describedby="desc-planejamento">
+                 <div class="card-icon-title">
+                    <i class="fas fa-calendar-day"></i>
+                    <h3 id="title-planejamento">Planejamento Diário</h3>
+                </div>
+                <p id="desc-planejamento">Organize suas tarefas, horários e prioridades para um dia produtivo.</p>
+            </a>
+            <a href="https://ai.studio/apps/drive/1GTt1z1F0bLdaahEtHmnvMHqvLg8HlTWL?fullscreenApplet=true" target="_blank" rel="noopener noreferrer" class="saude-card reflexoes" aria-labelledby="title-reflexoes" aria-describedby="desc-reflexoes">
+                 <div class="card-icon-title">
+                    <i class="fas fa-lightbulb"></i>
+                    <h3 id="title-reflexoes">Reflexões Diárias</h3>
+                </div>
+                <p id="desc-reflexoes">Registre seus pensamentos, gratidão e insights em nossa ferramenta externa.</p>
+            </a>
+        </div>
     </div>
 </div>

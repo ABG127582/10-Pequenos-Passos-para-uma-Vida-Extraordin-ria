@@ -2,8 +2,6 @@
 // This module contains globally shared helper functions.
 import { storageService } from './storage';
 import { STORAGE_KEYS } from './constants';
-import { eventBus } from './event-bus';
-import { GamificationProfile, Streak } from './types';
 
 /**
  * Displays a toast notification.
@@ -73,20 +71,8 @@ export async function startSpeechRecognition(button: HTMLButtonElement): Promise
 
     recognition.onresult = (event) => {
         const speechResult = event.results[0][0].transcript;
-        
-        // Append text if the input is not empty, otherwise replace.
-        if (targetInput.value && targetInput.value.trim() !== '') {
-            targetInput.value += (targetInput.value.endsWith(' ') ? '' : ' ') + speechResult;
-        } else {
-            targetInput.value = speechResult;
-        }
-
+        targetInput.value = speechResult;
         targetInput.dispatchEvent(new Event('input', { bubbles: true }));
-
-        // Special case for inline task input to auto-submit
-        if (targetInput.id === 'inline-task-input') {
-            targetInput.blur();
-        }
     };
 
     recognition.onspeechend = () => {
@@ -144,6 +130,7 @@ export function confirmAction(message: string): Promise<boolean> {
         const noBtn = document.getElementById('confirm-modal-no');
 
         if (!modal || !messageEl || !yesBtn || !noBtn) {
+            // Fallback to native confirm if the custom modal is not in the DOM
             resolve(window.confirm(message));
             return;
         }
@@ -153,6 +140,7 @@ export function confirmAction(message: string): Promise<boolean> {
 
         const cleanup = (result: boolean) => {
             modal.style.display = 'none';
+            // Use .cloneNode(true) to remove all event listeners easily
             const newYes = yesBtn.cloneNode(true);
             const newNo = noBtn.cloneNode(true);
             yesBtn.parentNode?.replaceChild(newYes, yesBtn);
@@ -177,25 +165,22 @@ export function confirmAction(message: string): Promise<boolean> {
  */
 export function trapFocus(element: HTMLElement): () => void {
     const focusableEls = element.querySelectorAll<HTMLElement>(
-        'a[href]:not([disabled]), button:not([disabled]), textarea:not([disabled]), input:not([disabled]), select:not([disabled]), [tabindex]:not([tabindex="-1"])'
+        'a[href]:not([disabled]), button:not([disabled]), textarea:not([disabled]), input[type="text"]:not([disabled]), input[type="radio"]:not([disabled]), input[type="checkbox"]:not([disabled]), select:not([disabled])'
     );
-    if (focusableEls.length === 0) {
-        return () => {};
-    }
     const firstFocusableEl = focusableEls[0];
     const lastFocusableEl = focusableEls[focusableEls.length - 1];
 
-    const handleKeyDown = (e: KeyboardEvent) => {
+    const keydownHandler = (e: KeyboardEvent) => {
         if (e.key !== 'Tab') {
             return;
         }
 
-        if (e.shiftKey) { // shift + tab
+        if (e.shiftKey) { /* shift + tab */
             if (document.activeElement === firstFocusableEl) {
                 lastFocusableEl.focus();
                 e.preventDefault();
             }
-        } else { // tab
+        } else { /* tab */
             if (document.activeElement === lastFocusableEl) {
                 firstFocusableEl.focus();
                 e.preventDefault();
@@ -203,215 +188,54 @@ export function trapFocus(element: HTMLElement): () => void {
         }
     };
 
-    element.addEventListener('keydown', handleKeyDown);
+    element.addEventListener('keydown', keydownHandler);
 
+    // Return a cleanup function
     return () => {
-        element.removeEventListener('keydown', handleKeyDown);
+        element.removeEventListener('keydown', keydownHandler);
     };
 }
 
-// --- GAMIFICATION LOGIC ---
-export const STREAK_MILESTONES: { [key: number]: { name: string, description: string, icon: string, color: string, bonus: number } } = {
-    7: { name: "Semana Consistente", description: "Você manteve o foco por 7 dias!", icon: 'fa-award', color: '#cd7f32', bonus: 100 },
-    14: { name: "Hábito em Formação", description: "Duas semanas de dedicação!", icon: 'fa-medal', color: '#c0c0c0', bonus: 250 },
-    30: { name: "Mês de Foco", description: "Um mês inteiro de pequenos passos!", icon: 'fa-trophy', color: '#ffd700', bonus: 500 },
-    90: { name: "Transformação Trimestral", description: "90 dias de progresso contínuo!", icon: 'fa-gem', color: '#e5e4e2', bonus: 1000 },
-    365: { name: "Ano Extraordinário", description: "365 dias de compromisso!", icon: 'fa-crown', color: '#ffc107', bonus: 5000 },
-};
+/**
+ * Displays a medal animation over a target element.
+ * @param targetElement The element to display the animation on top of.
+ */
+export function showMedalAnimation(targetElement: HTMLElement) {
+    const medal = document.createElement('div');
+    medal.className = 'medal-animation';
+    medal.innerHTML = '<i class="fas fa-medal"></i>';
+    document.body.appendChild(medal);
 
-let pointsBatchTimeout: number | undefined;
-let pointsBatch: { total: number, targetRect: DOMRect | undefined } = { total: 0, targetRect: undefined };
+    const targetRect = targetElement.getBoundingClientRect();
+    // Position it in the center of the target element initially
+    medal.style.top = `${targetRect.top + targetRect.height / 2}px`;
+    medal.style.left = `${targetRect.left + targetRect.width / 2}px`;
 
-
-function getGamificationProfile(): GamificationProfile {
-    const defaultProfile: GamificationProfile = { level: 1, ps: 0, nextLevelPs: 200 };
-    return storageService.get<GamificationProfile>(STORAGE_KEYS.GAMIFICATION_PROFILE) || defaultProfile;
-}
-
-function saveGamificationProfile(profile: GamificationProfile) {
-    storageService.set(STORAGE_KEYS.GAMIFICATION_PROFILE, profile);
-    eventBus.emit('gamification:update');
-}
-
-export function updateProfileWidget() {
-    const profile = getGamificationProfile();
-    const nameEl = document.getElementById('user-profile-name');
-    const levelEl = document.getElementById('user-level');
-    const psBar = document.getElementById('user-ps-bar');
-    const psText = document.getElementById('user-ps-progress-text');
-
-    if (nameEl && storageService.getCurrentProfile()) {
-        nameEl.textContent = storageService.getCurrentProfile()!.split('@')[0];
-    }
-    if (levelEl) levelEl.textContent = `Nível ${profile.level}`;
-    if (psBar) {
-        const percentage = Math.min(100, (profile.ps / profile.nextLevelPs) * 100);
-        (psBar as HTMLElement).style.width = `${percentage}%`;
-    }
-    if(psText) psText.textContent = `${profile.ps} / ${profile.nextLevelPs} PS`;
-}
-
-function showLevelUpAnimation(newLevel: number) {
-    const modal = document.getElementById('level-up-modal');
-    const levelEl = document.getElementById('new-level-text');
-    if (modal && levelEl) {
-        levelEl.textContent = `Nível ${newLevel}`;
-        modal.style.display = 'flex';
-    }
-}
-
-function showPointsAnimation(points: number, targetRect?: DOMRect) {
-    if (!targetRect) return;
-
-    const pointsEl = document.createElement('div');
-    pointsEl.className = 'ps-animation';
-    pointsEl.textContent = `+${points} PS`;
-    document.body.appendChild(pointsEl);
-
-    const x = targetRect.left + targetRect.width / 2;
-    const y = targetRect.top + targetRect.height / 2;
-    pointsEl.style.left = `${x}px`;
-    pointsEl.style.top = `${y}px`;
-
-    pointsEl.addEventListener('animationend', () => {
-        pointsEl.remove();
+    // Trigger the animation
+    requestAnimationFrame(() => {
+        medal.style.animation = 'medal-pop-and-fade 1.5s ease-out forwards';
     });
+
+    // Remove the element after the animation is done
+    setTimeout(() => {
+        medal.remove();
+    }, 1500);
 }
 
-export function showMedalAnimation(targetRect: DOMRect) {
-    const medalEl = document.createElement('div');
-    medalEl.className = 'medal-animation';
-    medalEl.innerHTML = '<i class="fas fa-medal"></i>';
-    document.body.appendChild(medalEl);
-
-    const x = targetRect.left + targetRect.width / 2;
-    const y = targetRect.top + targetRect.height / 2;
-    medalEl.style.left = `${x}px`;
-    medalEl.style.top = `${y}px`;
-
-    medalEl.addEventListener('animationend', () => {
-        medalEl.remove();
-    });
-}
-
-function awardAchievement(milestone: { name: string, description: string, icon: string, bonus: number }) {
-    const modal = document.getElementById('achievement-unlocked-modal');
-    const titleEl = document.getElementById('achievement-unlocked-title');
-    const textEl = document.getElementById('achievement-unlocked-text');
-    const bonusEl = document.getElementById('achievement-unlocked-bonus');
-    const iconEl = document.getElementById('achievement-animation-icon');
-
-    if (modal && titleEl && textEl && bonusEl && iconEl) {
-        titleEl.textContent = milestone.name;
-        textEl.textContent = milestone.description;
-        bonusEl.textContent = `+${milestone.bonus} PS`;
-        iconEl.innerHTML = `<i class="fas ${milestone.icon}"></i>`;
-        modal.style.display = 'flex';
-    }
-}
-
-export function awardPoints(points: number, options?: { targetRect?: DOMRect }) {
-    clearTimeout(pointsBatchTimeout);
-    
-    pointsBatch.total += points;
-    if (options?.targetRect) {
-        pointsBatch.targetRect = options.targetRect;
-    }
-
-    pointsBatchTimeout = window.setTimeout(() => {
-        const profile = getGamificationProfile();
-        profile.ps += pointsBatch.total;
-
-        let leveledUp = false;
-        while (profile.ps >= profile.nextLevelPs) {
-            profile.ps -= profile.nextLevelPs;
-            profile.level++;
-            profile.nextLevelPs = Math.floor(profile.nextLevelPs * 1.5);
-            leveledUp = true;
-        }
-
-        saveGamificationProfile(profile);
-        
-        if (pointsBatch.targetRect) {
-            showPointsAnimation(pointsBatch.total, pointsBatch.targetRect);
-        }
-
-        if (leveledUp) {
-            showLevelUpAnimation(profile.level);
-        }
-
-        // Reset batch
-        pointsBatch = { total: 0, targetRect: undefined };
-    }, 200); // Wait 200ms to batch points from the same action
-}
-
-export function getStreak(): Streak {
-    const defaultStreak: Streak = { current: 0, longest: 0, lastActivityDate: '' };
-    return storageService.get<Streak>(STORAGE_KEYS.ACTIVITY_STREAK) || defaultStreak;
-}
-
-export function updateStreak(options?: { targetRect?: DOMRect }) {
-    const streak = getStreak();
+/**
+ * Awards a medal for a specific health category for the current day.
+ * @param category The category key (e.g., 'fisica', 'mental').
+ */
+export function awardMedalForCategory(category: string) {
     const today = new Date().toISOString().split('T')[0];
-
-    if (streak.lastActivityDate === today) {
-        return; // Streak already updated today
-    }
-    
-    const yesterday = new Date();
-    yesterday.setDate(yesterday.getDate() - 1);
-    const yesterdayStr = yesterday.toISOString().split('T')[0];
-
-    if (streak.lastActivityDate === yesterdayStr) {
-        streak.current++;
-    } else {
-        streak.current = 1; // Streak was broken
-    }
-    
-    streak.lastActivityDate = today;
-    if (streak.current > streak.longest) {
-        streak.longest = streak.longest;
-    }
-
-    storageService.set(STORAGE_KEYS.ACTIVITY_STREAK, streak);
-
-    awardPoints(25, options); // Streak bonus
-
-    const milestone = STREAK_MILESTONES[streak.current];
-    if (milestone) {
-        const achievements = storageService.get<string[]>(STORAGE_KEYS.USER_ACHIEVEMENTS) || [];
-        const achievementId = `streak-${streak.current}`;
-        if (!achievements.includes(achievementId)) {
-            achievements.push(achievementId);
-            storageService.set(STORAGE_KEYS.USER_ACHIEVEMENTS, achievements);
-            awardPoints(milestone.bonus, options);
-            awardAchievement(milestone);
-        }
-    }
-}
-
-export function awardMedalForCategory(category: string, date: string, options?: { targetRect?: DOMRect }): boolean {
     const dailyMedals = storageService.get<{ [key: string]: string[] }>(STORAGE_KEYS.DAILY_MEDALS) || {};
 
-    // Always show the animation for completing a task
-    if(options?.targetRect) {
-        showMedalAnimation(options.targetRect);
-    }
-    
-    if (!dailyMedals[date]) {
-        dailyMedals[date] = [];
+    if (!dailyMedals[today]) {
+        dailyMedals[today] = [];
     }
 
-    // Only award points, save, and update UI if it's the first time for this category today
-    if (!dailyMedals[date].includes(category)) {
-        dailyMedals[date].push(category);
+    if (!dailyMedals[today].includes(category)) {
+        dailyMedals[today].push(category);
         storageService.set(STORAGE_KEYS.DAILY_MEDALS, dailyMedals);
-        
-        awardPoints(50, options); // Medal bonus
-        
-        eventBus.emit('datachanged:tasks');
-        return true; // Newly awarded
     }
-
-    return false; // Already awarded
 }

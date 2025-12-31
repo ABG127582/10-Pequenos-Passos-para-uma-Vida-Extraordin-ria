@@ -51,13 +51,11 @@
                         <span class="icon"><i class="fas fa-file-medical-alt"></i></span>
                         <h3>Diagnósticos e Riscos</h3>
                     </button>
+                    <button class="menu-item" data-target="preventivaTestes" aria-label="Acessar testes de longevidade e funcionais">
+                        <span class="icon"><i class="fas fa-running"></i></span>
+                        <h3>Testes de Longevidade</h3>
+                    </button>
                 </div>
-                <section class="content-section" id="preventiva-risk-score" style="margin-top: 2rem;">
-                    <h2 class="section-title">Score de Risco Cardiovascular <span class="tooltip" data-tooltip="Este é um score educacional baseado em biomarcadores e não substitui uma avaliação médica."><i class="fas fa-info-circle"></i></span></h2>
-                    <div id="risk-score-container">
-                        <!-- Score will be rendered here by JS -->
-                    </div>
-                </section>
             </div>
 
             <!-- Subpágina: Vacinação -->
@@ -99,7 +97,13 @@
             <!-- Subpágina: Exames e Indicadores -->
             <div id="preventivaExames" class="preventiva-page">
                  <section class="content-section">
-                    <h2 class="section-title">Painel de Biomarcadores</h2>
+                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
+                        <h2 class="section-title" style="margin-bottom: 0;">Painel de Biomarcadores</h2>
+                        <button id="analyze-biomarkers-btn" class="standard-button" style="font-size: 0.9rem;">
+                            <i class="fas fa-brain"></i> Analisar com IA
+                        </button>
+                    </div>
+                    
                     <div class="indicator-grid">
                         <!-- Blueprint Card -->
                         <div class="indicator-card" data-indicator-id="glicemia">
@@ -292,4 +296,319 @@
                     
                     <h3 style="margin-top: 30px; font-size: 1.2rem; color: var(--color-preventiva);">Exames de Rastreamento</h3>
                     
-                    <div class="risk-item" data
+                    <div class="risk-item" data-diagnostic-id="exame-prostata" data-gender-specific="male">
+                        <span class="toggle-switch"><input type="checkbox" id="exameProstataToggle" class="diagnostic-toggle"><label for="exameProstataToggle"></label></span>
+                        <label for="exameProstataToggle">Exame de Próstata (PSA/Toque)</label>
+                        <div class="risk-details"><label for="prostataDate">Data do Último Exame:</label><input type="date" class="diagnostic-date"><label for="prostataNotes">Observações:</label><textarea class="diagnostic-notes" placeholder="Ex: Resultado normal, próximo em 2 anos."></textarea></div>
+                    </div>
+                    
+                    <div class="risk-item" data-diagnostic-id="mamografia" data-gender-specific="female">
+                        <span class="toggle-switch"><input type="checkbox" id="mamografiaToggle" class="diagnostic-toggle"><label for="mamografiaToggle"></label></span>
+                        <label for="mamografiaToggle">Mamografia</label>
+                        <div class="risk-details">
+                             <label for="mamografiaDate">Data do Último Exame:</label><input type="date" class="diagnostic-date">
+                             <label for="mamografiaType">Resultado (BIRADS):</label><input type="text" class="diagnostic-type" placeholder="Ex: BIRADS 1">
+                             <label for="mamografiaSeverity">Recomendação:</label><input type="text" class="diagnostic-severity" placeholder="Ex: Repetir em 1 ano">
+                        </div>
+                    </div>
+
+                    <div class="risk-item" data-diagnostic-id="papanicolau" data-gender-specific="female">
+                        <span class="toggle-switch"><input type="checkbox" id="papanicolauToggle" class="diagnostic-toggle"><label for="papanicolauToggle"></label></span>
+                        <label for="papanicolauToggle">Papanicolau (Preventivo)</label>
+                        <div class="risk-details">
+                            <label for="papanicolauDate">Data do Último Exame:</label><input type="date" class="diagnostic-date">
+                            <label for="papanicolauSeverity">Resultado:</label><input type="text" class="diagnostic-severity" placeholder="Ex: Negativo para malignidade">
+                        </div>
+                    </div>
+                     <div class="risk-item" data-diagnostic-id="colonoscopia">
+                        <span class="toggle-switch"><input type="checkbox" id="colonoscopiaToggle" class="diagnostic-toggle"><label for="colonoscopiaToggle"></label></span>
+                        <label for="colonoscopiaToggle">Colonoscopia</label>
+                        <div class="risk-details">
+                            <label for="colonoscopiaDate">Data do Último Exame:</label><input type="date" class="diagnostic-date">
+                            <label for="colonoscopiaType">Achados:</label><input type="text" class="diagnostic-type" placeholder="Ex: Pólipos removidos">
+                             <label for="colonoscopiaSeverity">Recomendação:</label><input type="text" class="diagnostic-severity" placeholder="Ex: Repetir em 5 anos">
+                        </div>
+                    </div>
+                    
+                     <div class="risk-item" data-diagnostic-id="dermatologico">
+                        <span class="toggle-switch"><input type="checkbox" id="dermatologicoToggle" class="diagnostic-toggle"><label for="dermatologicoToggle"></label></span>
+                        <label for="dermatologicoToggle">Exame Dermatológico (Pele)</label>
+                        <div class="risk-details">
+                            <label for="dermatologicoDate">Data do Último Exame:</label><input type="date" class="diagnostic-date">
+                             <label for="dermatologicoSeverity">Observações:</label><input type="text" class="diagnostic-severity" placeholder="Ex: Mapeamento de nevos, sem alterações.">
+                        </div>
+                    </div>
+
+                    <div class="risk-item" data-diagnostic-id="oftalmologico">
+                        <span class="toggle-switch"><input type="checkbox" id="oftalmologicoToggle" class="diagnostic-toggle"><label for="oftalmologicoToggle"></label></span>
+                        <label for="oftalmologicoToggle">Exame Oftalmológico (Visão)</label>
+                        <div class="risk-details">
+                            <label for="oftalmologicoDate">Data do Último Exame:</label><input type="date" class="diagnostic-date">
+                            <label for="oftalmologicoType">Diagnóstico:</label><input type="text" class="diagnostic-type" placeholder="Ex: Miopia, Astigmatismo">
+                        </div>
+                    </div>
+
+                    <div class="risk-item" data-diagnostic-id="odontologico">
+                        <span class="toggle-switch"><input type="checkbox" id="odontologicoToggle" class="diagnostic-toggle"><label for="odontologicoToggle"></label></span>
+                        <label for="odontologicoToggle">Check-up Odontológico</label>
+                        <div class="risk-details">
+                             <label for="odontologicoDate">Data da Última Consulta:</label><input type="date" class="diagnostic-date">
+                             <label for="odontologicoType">Tratamentos Realizados:</label><input type="text" class="diagnostic-type" placeholder="Ex: Limpeza, restauração">
+                             <label for="odontologicoSeverity">Recomendação:</label><input type="text" class="diagnostic-severity" placeholder="Ex: Retorno em 6 meses">
+                        </div>
+                    </div>
+
+                    <div class="risk-item" data-diagnostic-id="densitometria">
+                        <span class="toggle-switch"><input type="checkbox" id="densitometriaToggle" class="diagnostic-toggle"><label for="densitometriaToggle"></label></span>
+                        <label for="densitometriaToggle">Densitometria Óssea</label>
+                        <div class="risk-details">
+                            <label for="densitometriaDate">Data do Último Exame:</label><input type="date" class="diagnostic-date">
+                            <label for="densitometriaSeverity">Resultado:</label><input type="text" class="diagnostic-severity" placeholder="Ex: Osteopenia, Normal">
+                        </div>
+                    </div>
+                </section>
+            </div>
+
+            <!-- Subpágina: Testes de Longevidade (NOVA) -->
+            <div id="preventivaTestes" class="preventiva-page">
+                <section class="mind-map-section content-section">
+                    <h2 class="section-title">Testes de Longevidade e Funcionais</h2>
+                    <p style="margin-bottom: 20px;">Uma bateria de exames e testes físicos para monitorar seu envelhecimento biológico e capacidade funcional, inspirados em protocolos de longevidade avançada.</p>
+                    
+                    <h3 style="color: var(--color-preventiva); margin-top: 20px;">Checklist de Exames Recorrentes</h3>
+                    <ul class="recursos-list" style="padding-left: 20px; list-style: none;">
+                        <li><input type="checkbox" id="check-sangue"> <strong>Coleta de Sangue:</strong> A cada 3 a 6 meses (Perfil lipídico, glicêmico, inflamatório, hormonal).</li>
+                        <li><input type="checkbox" id="check-mri"> <strong>Ressonância Magnética de Corpo Inteiro:</strong> Anualmente (Detecção precoce de anomalias).</li>
+                        <li><input type="checkbox" id="check-age"> <strong>Velocidade de Envelhecimento:</strong> 2x por ano (Teste de metilação do DNA / Epigenético).</li>
+                        <li><input type="checkbox" id="check-moles"> <strong>Inspeção de Pele/Pintas:</strong> Anualmente (Dermatoscopia digital).</li>
+                        <li><input type="checkbox" id="check-dentist"> <strong>Dentista:</strong> A cada 6 meses (Limpeza e check-up).</li>
+                        <li><input type="checkbox" id="check-eyes"> <strong>Oftalmologista:</strong> Anualmente (Saúde ocular e da retina).</li>
+                    </ul>
+
+                    <h3 style="color: var(--color-preventiva); margin-top: 30px;">Testes Físicos Funcionais</h3>
+                    
+                    <details>
+                        <summary><svg class="chevron" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path></svg>1. Flexões Contínuas (Força Superior)</summary>
+                        <div>
+                            <p><strong>Objetivo:</strong> Medir a força e a resistência muscular da parte superior do corpo.</p>
+                            <p><strong>Evidências:</strong> Associadas a um menor risco de doenças cardiovasculares.¹</p>
+                            <p><strong>Meta:</strong> Ter um desempenho "bom" ou superior para sua idade e sexo.</p>
+                            <p><strong>Instruções:</strong></p>
+                            <ol>
+                                <li>Deite-se de bruços no chão com as mãos ligeiramente mais afastadas que a largura dos ombros e os cotovelos totalmente estendidos.</li>
+                                <li>Abaixe o corpo até que o peito toque o chão, mantendo-o em linha reta da cabeça aos calcanhares. Evite curvar as costas.</li>
+                                <li>Empurre o corpo para cima, retornando à posição inicial. Isso conta como uma flexão.</li>
+                                <li>Execute o máximo de flexões que conseguir sem descanso (mantendo a posição no topo por mais de 3 segundos), com postura correta.</li>
+                            </ol>
+                            <p><strong>Medida:</strong> Contagem total.</p>
+                        </div>
+                    </details>
+
+                    <details>
+                        <summary><svg class="chevron" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path></svg>2. Teste de Sentar e Levantar (Mobilidade)</summary>
+                        <div>
+                            <p><strong>Objetivo:</strong> Avaliar flexibilidade, força e equilíbrio.</p>
+                            <p><strong>Evidências:</strong> Preditor de mortalidade por todas as causas.²</p>
+                            <p><strong>Meta:</strong> Pontuação 8 ou mais (máximo 10).</p>
+                            <p><strong>Instruções:</strong></p>
+                            <ol>
+                                <li>Descalço, em superfície plana. Partindo da posição em pé, sente-se no chão com as pernas cruzadas, sem usar as mãos, joelhos ou braços como apoio.</li>
+                                <li>Levante-se novamente, sem usar nenhum apoio.</li>
+                                <li><strong>Pontuação (começa com 10):</strong> Deduza 1 ponto para cada apoio (mão, joelho, antebraço) usado ao subir ou descer. Deduza 0,5 ponto se perder o equilíbrio.</li>
+                            </ol>
+                        </div>
+                    </details>
+
+                    <details>
+                        <summary><svg class="chevron" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path></svg>3. Sentar e Alcançar (Flexibilidade)</summary>
+                        <div>
+                            <p><strong>Objetivo:</strong> Medir a flexibilidade da região lombar e dos músculos isquiotibiais.</p>
+                            <p><strong>Meta:</strong> Pontuação "acima da média" para sua idade.</p>
+                            <p><strong>Instruções:</strong></p>
+                            <ol>
+                                <li>Sente-se no chão com as pernas estendidas. Coloque uma fita métrica entre as pernas.</li>
+                                <li>Coloque uma mão sobre a outra e incline-se para a frente o máximo possível, sem dobrar os joelhos.</li>
+                                <li>Mantenha o alongamento por 1-2 segundos e anote a distância alcançada pelos dedos na régua.</li>
+                            </ol>
+                        </div>
+                    </details>
+
+                    <details>
+                        <summary><svg class="chevron" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path></svg>4. Equilíbrio em uma Perna Só</summary>
+                        <div>
+                            <p><strong>Objetivo:</strong> Medir o equilíbrio e força inferior.</p>
+                            <p><strong>Evidências:</strong> Capacidade de manter por 10s previne quedas e prediz sobrevida.</p>
+                            <p><strong>Instruções:</strong></p>
+                            <ol>
+                                <li>Fique em pé, descalço, com os olhos <strong>fechados</strong>.</li>
+                                <li>Levante uma perna, flexionando o joelho, sem tocar o chão ou a outra perna.</li>
+                                <li>Cronometre quanto tempo consegue manter a posição. Repita com a outra perna.</li>
+                            </ol>
+                            <p><strong>Medida:</strong> Tempo em segundos.</p>
+                            <div style="margin-top: 15px; text-align: center;">
+                                <a href="https://ai.studio/apps/drive/1YpWzty6ppB-eTBOXw6rEjazmMBpZAe1I?fullscreenApplet=true" target="_blank" rel="noopener noreferrer" class="standard-button small-button">
+                                    <i class="fas fa-external-link-alt"></i> Realizar Teste Interativo
+                                </a>
+                            </div>
+                        </div>
+                    </details>
+
+                    <details>
+                        <summary><svg class="chevron" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path></svg>5. Tempo de Reação</summary>
+                        <div>
+                            <p><strong>Objetivo:</strong> Medir a rapidez de resposta neuro-motora.</p>
+                            <p><strong>Evidências:</strong> Tempos lentos associados a maior risco de mortalidade.</p>
+                            <p><strong>Instruções:</strong></p>
+                            <ol>
+                                <li>Baixe um aplicativo de "Teste de Reação/Reflexos".</li>
+                                <li>Execute o teste 5 vezes (ex: tocar na tela quando a luz mudar).</li>
+                                <li>Registre a sua melhor pontuação (menor tempo).</li>
+                            </ol>
+                            <p><strong>Medida:</strong> Tempo em milissegundos ou segundos.</p>
+                        </div>
+                    </details>
+
+                    <details>
+                        <summary><svg class="chevron" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path></svg>6. Relação Cintura-Altura</summary>
+                        <div>
+                            <p><strong>Objetivo:</strong> Avaliar gordura visceral e risco metabólico.</p>
+                            <p><strong>Evidências:</strong> Mais preditivo de riscos à saúde do que o IMC.</p>
+                            <p><strong>Meta:</strong> Relação inferior a 0,5.</p>
+                            <p><strong>Instruções:</strong></p>
+                            <ol>
+                                <li>Meça sua altura (cm).</li>
+                                <li>Meça a circunferência da cintura (cm) no ponto mais estreito (relaxe o abdômen).</li>
+                                <li>Divida a Cintura pela Altura.</li>
+                            </ol>
+                        </div>
+                    </details>
+
+                    <details>
+                        <summary><svg class="chevron" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path></svg>7. Força de Preensão Manual</summary>
+                        <div>
+                            <p><strong>Objetivo:</strong> Avaliar a força global e biomarcador de envelhecimento.</p>
+                            <p><strong>Evidências:</strong> Fortemente associada a menor mortalidade cardiovascular.³</p>
+                            <p><strong>Instruções:</strong></p>
+                            <ol>
+                                <li>Use um dinamômetro manual.</li>
+                                <li>Fique em pé, braço ao lado do corpo, e aperte com força máxima.</li>
+                                <li>Registre a maior leitura após 3 tentativas em cada mão.</li>
+                            </ol>
+                            <p><strong>Medida:</strong> Força em Kg ou Libras.</p>
+                        </div>
+                    </details>
+
+                    <div style="margin-top: 30px; padding: 20px; background-color: rgba(var(--color-info-rgb), 0.1); border-radius: var(--card-border-radius); text-align: center;">
+                        <p>Para mais detalhes sobre protocolos avançados de longevidade:</p>
+                        <a href="https://blueprint.bryanjohnson.com/blogs/news/test-your-biological-age-for-0" target="_blank" rel="noopener noreferrer" class="standard-button">Acessar Protocolo Blueprint</a>
+                    </div>
+                </section>
+            </div>
+        </main>
+        <div class="back-button-wrapper">
+            <button class="standard-button back-button" data-page="inicio"><i class="fas fa-arrow-left"></i> Voltar ao Início</button>
+        </div>
+    </div>
+</div>
+
+<!-- Biomarker History Modal -->
+<div id="biomarker-history-modal" class="modal-container" style="display: none;" role="dialog" aria-modal="true" aria-labelledby="biomarker-history-title">
+    <div class="modal-content large-modal-content">
+        <header class="modal-header">
+            <h2 id="biomarker-history-title">Histórico do Biomarcador</h2>
+            <button id="biomarker-history-close-btn" class="modal-close-button" aria-label="Fechar histórico"><i class="fas fa-times"></i></button>
+        </header>
+        <div class="modal-body">
+            <div id="biomarker-chart-container" style="height: 300px;">
+                <canvas id="biomarker-history-chart"></canvas>
+            </div>
+            <p id="biomarker-no-history" style="display: none; text-align: center;">Não há histórico suficiente para exibir um gráfico. Adicione mais medições.</p>
+        </div>
+    </div>
+</div>
+
+<style>
+/* Dashboard Styles */
+#preventiva-dashboard {
+    background-color: rgba(var(--color-preventiva-rgb), 0.05);
+    border: 1px solid rgba(var(--color-preventiva-rgb), 0.2);
+    margin-bottom: 2rem;
+}
+.dashboard-overview {
+    display: flex;
+    align-items: center;
+    gap: 2rem;
+    flex-wrap: wrap;
+}
+.progress-chart-container {
+    text-align: center;
+}
+.circular-chart {
+    display: block;
+    margin: 10px auto;
+    max-width: 150px;
+    max-height: 150px;
+}
+.circle-bg {
+    fill: none;
+    stroke: var(--border-color);
+    stroke-width: 2.8;
+}
+.circle {
+    fill: none;
+    stroke-width: 2.8;
+    stroke: var(--color-preventiva);
+    stroke-linecap: round;
+    transition: stroke-dasharray 0.5s ease-in-out;
+}
+.percentage {
+    fill: var(--color-preventiva);
+    font-family: var(--font-family-sans-serif);
+    font-size: 0.6em;
+    text-anchor: middle;
+    font-weight: bold;
+}
+.progress-chart-container p {
+    margin: 0;
+    font-weight: 500;
+    color: var(--text-color-muted);
+}
+.dashboard-stats {
+    flex: 1;
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+    gap: 1rem;
+}
+.stat-item {
+    background-color: var(--card-background-color);
+    padding: 1rem;
+    border-radius: var(--card-border-radius);
+    text-align: center;
+}
+.stat-item h4 {
+    margin: 0 0 0.5rem 0;
+    font-size: 1rem;
+    color: var(--text-color-muted);
+}
+.stat-item p {
+    margin: 0;
+    font-size: 1.2rem;
+    font-weight: bold;
+    color: var(--color-preventiva);
+}
+/* Indicator Header with History Button */
+.indicator-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 1rem;
+    margin-bottom: 1rem;
+}
+.indicator-header h3 { margin: 0; }
+.history-btn { padding: 4px 8px; font-size: 0.8rem; }
+
+/* Remove a div extra que continha os diagnósticos e riscos */
+#preventivaDiagnosticos .content-section > div {
+    all: unset;
+}
+</style>

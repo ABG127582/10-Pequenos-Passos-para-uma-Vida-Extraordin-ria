@@ -11,15 +11,15 @@ export const CONFIG = {
 
 
 export const STORAGE_KEYS = {
-    // --- Profile Management (Global, not user-specific) ---
-    USER_PROFILES: 'userProfiles',
-    CURRENT_PROFILE: 'currentProfile',
-
-    // --- User-Specific Data (will be prefixed by storageService) ---
-    // Unified Task Management System
-    TASKS_DATA: 'unifiedTasksData', // Single source of truth for all tasks
-    TASKS_CATEGORIES: 'tasksCategories',
-
+    // Page-specific goal lists
+    FISICA_GOALS: 'fisicaGoals',
+    MENTAL_GOALS: 'mentalGoals',
+    FINANCE_GOALS: 'financeiraGoals',
+    FAMILIAR_GOALS: 'familiarGoals',
+    PROFISSIONAL_GOALS: 'profissionalGoals',
+    SOCIAL_GOALS: 'socialGoals',
+    ESPIRITUAL_GOALS: 'espiritualGoals',
+    
     // Unified Reflections
     UNIFIED_REFLECTIONS: 'unifiedReflections',
     
@@ -33,17 +33,20 @@ export const STORAGE_KEYS = {
     PREVENTIVA_SUPPLEMENTS: 'preventivaSupplements',
     PREVENTIVA_DIAGNOSTICS: 'preventivaDiagnostics',
 
+    // Global task list
+    TASKS_DATA: 'tasksData',
+    TASKS_CATEGORIES: 'tasksCategories',
+
+    // Daily plan
+    DAILY_PLAN_PREFIX: 'daily-plan-', // Used with date, e.g., 'daily-plan-2024-10-26'
+    DAILY_PLAN_LAST_DATE: 'daily-plan-last-date',
+
     // User Contract
     USER_CONTRACT: 'userContractData',
 
     // App Settings
     TTS_SETTINGS: 'ttsReaderSettings',
     DAILY_MEDALS: 'dailyMedals',
-    ACTIVITY_STREAK: 'activityStreak',
-    HOME_TASKS_EXPANDED: 'homeTasksExpanded',
-    // Gamification
-    GAMIFICATION_PROFILE: 'gamificationProfile',
-    USER_ACHIEVEMENTS: 'userAchievements',
     // Sidebar menu state (prefix)
     SIDEBAR_DETAILS_PREFIX: 'sidebar-details-', // e.g., 'sidebar-details-fisica'
 } as const;

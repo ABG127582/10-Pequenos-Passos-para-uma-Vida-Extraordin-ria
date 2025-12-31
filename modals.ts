@@ -4,9 +4,20 @@
 import { storageService } from './storage';
 import { showToast, trapFocus } from './utils';
 import { STORAGE_KEYS } from './constants';
-import { ContractData } from './types';
 
 // --- Contract Modal Logic ---
+interface ContractData {
+    name: string;
+    cpf: string;
+    birthdate: string;
+    address: string;
+    commitment: string;
+    period: string;
+    goals: string;
+    signature: string;
+    date: string;
+}
+
 let removeContractFocusTrap: (() => void) | null = null;
 let lastFocusedElement: HTMLElement | null = null;
 
@@ -15,7 +26,9 @@ function loadContract() {
     const data: ContractData | null = storageService.get(STORAGE_KEYS.USER_CONTRACT);
     if (data) {
         (document.getElementById('contract-name') as HTMLInputElement).value = data.name || '';
+        (document.getElementById('contract-cpf') as HTMLInputElement).value = data.cpf || '';
         (document.getElementById('contract-birthdate') as HTMLInputElement).value = data.birthdate || '';
+        (document.getElementById('contract-address') as HTMLInputElement).value = data.address || '';
         (document.getElementById('contract-commitment') as HTMLTextAreaElement).value = data.commitment || '';
         (document.getElementById('contract-period') as HTMLInputElement).value = data.period || '';
         (document.getElementById('contract-goals') as HTMLTextAreaElement).value = data.goals || '';
@@ -27,7 +40,9 @@ function loadContract() {
 function saveContract() {
     const data: ContractData = {
         name: (document.getElementById('contract-name') as HTMLInputElement).value,
+        cpf: (document.getElementById('contract-cpf') as HTMLInputElement).value,
         birthdate: (document.getElementById('contract-birthdate') as HTMLInputElement).value,
+        address: (document.getElementById('contract-address') as HTMLInputElement).value,
         commitment: (document.getElementById('contract-commitment') as HTMLTextAreaElement).value,
         period: (document.getElementById('contract-period') as HTMLInputElement).value,
         goals: (document.getElementById('contract-goals') as HTMLTextAreaElement).value,
@@ -102,30 +117,16 @@ function closeContractModal() {
 
 function setupContractModal() {
     const modal = document.getElementById('contract-modal');
-    const footer = document.getElementById('contract-modal-actions');
     const closeBtn = document.getElementById('contract-modal-close-btn');
+    const cancelBtn = document.getElementById('contract-modal-cancel-btn');
+    const saveBtn = document.getElementById('contract-modal-save-btn');
+    const printBtn = document.getElementById('contract-modal-print-btn');
 
-    // Use event delegation on the footer for robustness
-    footer?.addEventListener('click', (e) => {
-        const target = e.target as HTMLElement;
-        const button = target.closest('button');
-        if (!button) return;
-
-        switch (button.id) {
-            case 'contract-modal-print-btn':
-                printContract();
-                break;
-            case 'contract-modal-cancel-btn':
-                closeContractModal();
-                break;
-            case 'contract-modal-save-btn':
-                saveContract();
-                break;
-        }
-    });
-
-    // Handle the 'X' close button and click-outside separately
     closeBtn?.addEventListener('click', closeContractModal);
+    cancelBtn?.addEventListener('click', closeContractModal);
+    saveBtn?.addEventListener('click', saveContract);
+    printBtn?.addEventListener('click', printContract);
+
     modal?.addEventListener('click', (e) => {
         if (e.target === modal) {
             closeContractModal();
