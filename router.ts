@@ -8,85 +8,7 @@ import { errorHandler } from './errorHandler';
 import { performanceMonitor } from './performance';
 import { CONFIG } from './constants';
 
-// --- Static HTML Content Imports ---
-// Explicit imports ensure Vite bundles these files correctly.
-// Using './' relative paths to avoid "Failed to resolve module specifier" errors in the browser.
-// @ts-ignore
-import inicioHtml from './inicio.html?raw';
-// @ts-ignore
-import fisicaHtml from './fisica.html?raw';
-// @ts-ignore
-import mentalHtml from './mental.html?raw';
-// @ts-ignore
-import financeiraHtml from './financeira.html?raw';
-// @ts-ignore
-import familiarHtml from './familiar.html?raw';
-// @ts-ignore
-import profissionalHtml from './profissional.html?raw';
-// @ts-ignore
-import socialHtml from './social.html?raw';
-// @ts-ignore
-import espiritualHtml from './espiritual.html?raw';
-// @ts-ignore
-import preventivaHtml from './preventiva.html?raw';
-// @ts-ignore
-import tarefasHtml from './tarefas.html?raw';
-// @ts-ignore
-import alongamentoHtml from './alongamento.html?raw';
-// @ts-ignore
-import sonoHtml from './sono.html?raw';
-// @ts-ignore
-import alimentacaoForteHtml from './alimentacao-forte.html?raw';
-// @ts-ignore
-import leituraGuiaFisicaHtml from './leitura-guia-fisica.html?raw';
-// @ts-ignore
-import leituraGuiaMentalHtml from './leitura-guia-mental.html?raw';
-// @ts-ignore
-import leituraGuiaFinanceiraHtml from './leitura-guia-financeira.html?raw';
-// @ts-ignore
-import leituraGuiaFamiliarHtml from './leitura-guia-familiar.html?raw';
-// @ts-ignore
-import leituraGuiaEspiritualHtml from './leitura-guia-espiritual.html?raw';
-// @ts-ignore
-import jejumVerdeHtml from './jejum-verde.html?raw';
-// @ts-ignore
-import foodGengibreHtml from './food-gengibre.html?raw';
-// @ts-ignore
-import foodAlhoHtml from './food-alho.html?raw';
-// @ts-ignore
-import foodBrocolisHtml from './food-brocolis.html?raw';
-// @ts-ignore
-import foodCouveHtml from './food-couve.html?raw';
-
-// Map of page keys to their HTML content strings
-const htmlModules: { [key: string]: string } = {
-    'inicio': inicioHtml,
-    'fisica': fisicaHtml,
-    'mental': mentalHtml,
-    'financeira': financeiraHtml,
-    'familiar': familiarHtml,
-    'profissional': profissionalHtml,
-    'social': socialHtml,
-    'espiritual': espiritualHtml,
-    'preventiva': preventivaHtml,
-    'tarefas': tarefasHtml,
-    'alongamento': alongamentoHtml,
-    'sono': sonoHtml,
-    'alimentacao-forte': alimentacaoForteHtml,
-    'leitura-guia-fisica': leituraGuiaFisicaHtml,
-    'leitura-guia-mental': leituraGuiaMentalHtml,
-    'leitura-guia-financeira': leituraGuiaFinanceiraHtml,
-    'leitura-guia-familiar': leituraGuiaFamiliarHtml,
-    'leitura-guia-espiritual': leituraGuiaEspiritualHtml,
-    'jejum-verde': jejumVerdeHtml,
-    'food-gengibre': foodGengibreHtml,
-    'food-alho': foodAlhoHtml,
-    'food-brocolis': foodBrocolisHtml,
-    'food-couve': foodCouveHtml,
-};
-
 // --- Page Module Dynamic Imports for Lazy Loading ---
-// Using relative paths './' to ensure correct resolution.
 export const pageModuleImports: { [key: string]: () => Promise<any> } = {
     'inicio': () => import('./inicio'),
     'espiritual': () => import('./espiritual'),
@@ -99,8 +21,7 @@ export const pageModuleImports: { [key: string]: () => Promise<any> } = {
     'social': () => import('./social'),
     'alongamento': () => import('./alongamento'),
     'sono': () => import('./sono'),
-    'alimentacao-forte': () => import('./alimentacao-forte'),
-    'tarefas': () => import('./tarefas'),
+    // Add other dynamically loaded pages here
 };
 
 
@@ -162,6 +83,51 @@ const pageHierarchy: { [key: string]: { parent: string | null; title: string } }
     'food-almeirao': { parent: 'fisica', title: 'Almeirão' },
     'food-denteleao': { parent: 'fisica', title: 'Dente-de-Leão' },
 };
+
+// --- Intelligent Caching for Page HTML ---
+interface CacheEntry {
+    content: string;
+    timestamp: number;
+}
+class PageCache {
+    private cache = new Map<string, CacheEntry>();
+    private readonly MAX_SIZE = CONFIG.MAX_CACHE_SIZE;
+    private readonly TTL = CONFIG.CACHE_TTL;
+
+    set(key: string, content: string) {
+        if (this.cache.size >= this.MAX_SIZE) {
+            this.evictOldest();
+        }
+        this.cache.set(key, { content, timestamp: Date.now() });
+    }
+
+    get(key: string): string | null {
+        const entry = this.cache.get(key);
+        if (!entry) return null;
+        
+        if (Date.now() - entry.timestamp > this.TTL) {
+            this.cache.delete(key);
+            return null;
+        }
+        
+        return entry.content;
+    }
+
+    private evictOldest() {
+        let oldestKey: string | null = null;
+        let oldestTime = Infinity;
+        for (const [key, value] of this.cache.entries()) {
+            if (value.timestamp < oldestTime) {
+                oldestTime = value.timestamp;
+                oldestKey = key;
+            }
+        }
+        if (oldestKey) {
+            this.cache.delete(oldestKey);
+        }
+    }
+}
+const pageCache = new PageCache();
 
 function updateBreadcrumbs(pageKey: string) {
     const nav = document.getElementById('breadcrumb-nav');
@@ -239,6 +205,7 @@ export function initRouter(pageModulesMap: typeof pageModuleImports, tts: typeof
     const loadedJSModules: { [key: string]: any } = {};
 
     const router = async () => {
+        // Fetch the wrapper dynamically on each route change to ensure it exists
         const pageContentWrapper = document.getElementById('page-content-wrapper');
         const operationId = `router-nav-${Date.now()}`;
         
@@ -246,37 +213,28 @@ export function initRouter(pageModulesMap: typeof pageModuleImports, tts: typeof
         tts.stop();
         const hash = window.location.hash.substring(1) || 'inicio';
     
-        let pageToLoad = hash;
+        let pageToLoad = 'inicio';
         let anchorId: string | null = null;
         
-        // --- 1. Resolve which page HTML to load ---
-        
-        // Check if the page exists in our static map
-        let pageHtml = htmlModules[pageToLoad];
-
-        // If not found directly, check hierarchy (e.g., hash is a sub-section anchor)
-        if (!pageHtml && pageHierarchy[hash]) {
+        // Check if the page exists in imports OR in hierarchy (for static pages)
+        if (pageModulesMap[hash] || pageHierarchy[hash]) {
+            // Check if it's a sub-page that should load a parent's module
             const hierarchyEntry = pageHierarchy[hash];
-            if (hierarchyEntry && hierarchyEntry.parent) {
-                // Try loading parent
-                const parentKey = hierarchyEntry.parent;
-                if (htmlModules[parentKey]) {
-                    pageToLoad = parentKey;
-                    anchorId = hash;
-                    pageHtml = htmlModules[parentKey];
-                }
+            if (hierarchyEntry && pageModulesMap[hierarchyEntry.parent as string] && !pageModulesMap[hash]) {
+                pageToLoad = hierarchyEntry.parent as string;
+                anchorId = hash;
+            } else {
+                pageToLoad = hash;
             }
-        }
-
-        // If still not found, default to 'inicio'
-        if (!pageHtml) {
-            console.warn(`Page ${hash} not found, redirecting to inicio.`);
+        } else {
+            // If unknown hash, check if it's likely a static page defined in hierarchy but not in JS imports
+            // This fallback prevents "Hash not found" for pure HTML pages
+            // If still not found, default to inicio
             pageToLoad = 'inicio';
-            pageHtml = htmlModules['inicio'];
         }
     
         const navKeyForStyle = pageToLoad.startsWith('food-') ? 'fisica' : pageToLoad;
-        updateBreadcrumbs(hash); // Use original hash for breadcrumbs
+        updateBreadcrumbs(hash);
         updateActiveNav(navKeyForStyle);
     
         if (!pageContentWrapper) {
@@ -285,14 +243,25 @@ export function initRouter(pageModulesMap: typeof pageModuleImports, tts: typeof
             return;
         }
     
+        pageContentWrapper.innerHTML = '<p style="text-align:center; padding: 40px;">Carregando...</p>';
+    
         const loadContent = async () => {
+            let pageHtml = pageCache.get(pageToLoad);
             if (!pageHtml) {
-                throw new Error(`Content empty for ${pageToLoad}`);
+                try {
+                    const response = await fetch(`${pageToLoad}.html`);
+                    if (!response.ok) throw new Error(`Page not found: ${pageToLoad}.html`);
+                    pageHtml = await response.text();
+                    pageCache.set(pageToLoad, pageHtml);
+                } catch (e) {
+                    console.error(e);
+                    throw new Error(`Failed to load ${pageToLoad}`);
+                }
             }
-
             pageContentWrapper.innerHTML = DOMPurify.sanitize(pageHtml, { ADD_ATTR: ['target'] });
 
-            // --- 2. Load associated JavaScript module if it exists ---
+            // Only try to load JS if it is explicitly mapped in pageModulesMap
+            // This allows static HTML pages (like food-*.html) to load without requiring a dummy JS file
             if (pageModulesMap[pageToLoad]) {
                 const moduleKey = pageToLoad;
                 let pageModule = loadedJSModules[moduleKey];
@@ -301,9 +270,13 @@ export function initRouter(pageModulesMap: typeof pageModuleImports, tts: typeof
                     loadedJSModules[moduleKey] = pageModule;
                 }
                 
+                // IMPORTANT: Always call setup when the page content is injected into the DOM.
+                // This ensures event listeners are attached to the new DOM elements.
                 if (pageModule.setup) {
                     performanceMonitor.measure(`${moduleKey}::setup`, pageModule.setup);
                 }
+                
+                // The 'show' function should be called every time the page is displayed.
                 if (pageModule.show) {
                     performanceMonitor.measure(`${moduleKey}::show`, pageModule.show);
                 }
@@ -315,15 +288,14 @@ export function initRouter(pageModulesMap: typeof pageModuleImports, tts: typeof
                 errorHandler.wrap(loadContent, 'router.loadContent')
             );
         } catch (error) {
-            // Error is handled by errorHandler, show generic error UI
-            pageContentWrapper.innerHTML = `<div class="content-section" style="text-align: center;"><h2>Erro ao carregar</h2><p>Não foi possível exibir o conteúdo.</p></div>`;
+            // Error is already handled by errorHandler, just update UI
+            pageContentWrapper.innerHTML = `<div class="content-section" style="text-align: center;"><h2>Página não encontrada</h2><p>Ocorreu um erro ao carregar o conteúdo.</p></div>`;
+            updateBreadcrumbs('inicio');
+            updateActiveNav('inicio');
         } finally {
             if (anchorId) {
-                // Wait for DOM update
-                setTimeout(() => {
-                    const element = document.getElementById(anchorId!);
-                    element?.scrollIntoView({ behavior: 'smooth', block: 'start' });
-                }, 100);
+                const element = document.getElementById(anchorId);
+                element?.scrollIntoView({ behavior: 'smooth', block: 'start' });
             } else {
                 pageContentWrapper.scrollTo(0, 0);
             }

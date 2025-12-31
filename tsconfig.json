@@ -23,7 +23,8 @@
     "noFallthroughCasesInSwitch": true,
     "noUncheckedSideEffectImports": true,
 
-    /* Vite types */
-    "types": ["vite/client"]
+    "paths": {
+      "@/*" :  ["./*"]
+    }
   }
 }
