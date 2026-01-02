@@ -16,12 +16,17 @@ export const pageModuleImports: { [key: string]: () => Promise<any> } = {
     'fisica': () => import('./fisica'),
     'mental': () => import('./mental'),
     'financeira': () => import('./financeira'),
-    'familiar': () => import('./familiar'),
+    'familiar': () => import('./src/modules/familiar/familiar'),
     'profissional': () => import('./profissional'),
     'social': () => import('./social'),
     'alongamento': () => import('./alongamento'),
     'sono': () => import('./sono'),
     // Add other dynamically loaded pages here
+};
+
+const pageHtmlPaths: { [key: string]: string } = {
+    'familiar': 'src/modules/familiar/familiar.html',
+    'leitura-guia-familiar': 'src/modules/familiar/leitura-guia-familiar.html',
 };
 
 
@@ -249,8 +254,9 @@ export function initRouter(pageModulesMap: typeof pageModuleImports, tts: typeof
             let pageHtml = pageCache.get(pageToLoad);
             if (!pageHtml) {
                 try {
-                    const response = await fetch(`${pageToLoad}.html`);
-                    if (!response.ok) throw new Error(`Page not found: ${pageToLoad}.html`);
+                    const pagePath = pageHtmlPaths[pageToLoad] || `${pageToLoad}.html`;
+                    const response = await fetch(pagePath);
+                    if (!response.ok) throw new Error(`Page not found: ${pagePath}`);
                     pageHtml = await response.text();
                     pageCache.set(pageToLoad, pageHtml);
                 } catch (e) {
